@@ -1,0 +1,12 @@
+.DS_Store
+
+# Local assistant/tooling state
+.claude/
+.playwright-cli/
+.tmp-lark-docs/
+
+# Local auth artifacts
+feishu_auth_qr.png
+
+# Generated previews, backups, and recovery artifacts
+output/

@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>痛风专病医生端 · 接诊采集版</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #eef2f7;
+      --panel: #ffffff;
+      --line: #e5eaf2;
+      --text: #1d2530;
+      --sub: #566579;
+      --hint: #8a94a6;
+      --blue: #0052d9;
+      --blue-2: #1f73f1;
+      --blue-soft: #eaf2ff;
+      --orange: #ed7b2f;
+      --orange-soft: #fff4e8;
+      --green: #2ba471;
+      --green-soft: #eaf8f2;
+      --red: #d54941;
+      --red-soft: #fff0ee;
+      --shadow: 0 16px 44px rgba(31, 42, 68, .16);
+    }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 18% 12%, rgba(69, 137, 255, .2), transparent 26%),
+        linear-gradient(135deg, #172033 0%, #243047 45%, #141923 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+    .stage {
+      display: grid;
+      grid-template-columns: 430px 260px;
+      gap: 22px;
+      align-items: start;
+    }
+    .phone {
+      width: 390px;
+      height: 844px;
+      border-radius: 44px;
+      background: #0c1220;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      background: var(--bg);
+      overflow: hidden;
+      position: relative;
+      display: none;
+      flex-direction: column;
+    }
+    .screen.active { display: flex; }
+    .statusbar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .topbar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .back {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sub);
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .topbar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-right: 30px;
+    }
+    .body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px 84px;
+    }
+    .doctor-head {
+      background: linear-gradient(135deg, #0052d9, #1f73f1);
+      color: #fff;
+      padding: 15px 16px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .doctor-name { font-size: 18px; font-weight: 850; }
+    .doctor-meta { font-size: 12px; color: rgba(255, 255, 255, .78); margin-top: 3px; }
+    .qr-btn {
+      border: 0;
+      background: rgba(255, 255, 255, .16);
+      color: #fff;
+      height: 34px;
+      padding: 0 11px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 10px;
+      min-height: 72px;
+    }
+    .stat-value { font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--hint); margin-top: 8px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 2px 8px;
+    }
+    .section-title { font-size: 14px; font-weight: 850; color: var(--text); }
+    .section-link { font-size: 12px; color: var(--blue); font-weight: 700; cursor: pointer; }
+    .main-task {
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(0, 82, 217, .18);
+      box-shadow: 0 8px 22px rgba(0, 82, 217, .07);
+    }
+    .task-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 7px;
+      background: var(--orange-soft);
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .task-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-top: 10px;
+      color: var(--text);
+    }
+    .task-sub {
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.55;
+      margin-top: 5px;
+    }
+    .task-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 12px;
+    }
+    .task-point {
+      background: #f7f9fc;
+      border-radius: 10px;
+      padding: 9px 7px;
+      min-height: 58px;
+    }
+    .point-value { font-size: 14px; font-weight: 850; color: var(--text); }
+    .point-label { font-size: 10px; color: var(--hint); margin-top: 4px; line-height: 1.35; }
+    .actions { display: flex; gap: 8px; margin-top: 13px; }
+    button { font-family: inherit; }
+    .btn-primary, .btn-secondary {
+      height: 40px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-primary {
+      flex: 1;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+    }
+    .btn-secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      padding: 0 13px;
+    }
+    .todo-list {
+      background: var(--panel);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .todo {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      border-bottom: 1px solid #f0f3f8;
+      cursor: pointer;
+    }
+    .todo:last-child { border-bottom: 0; }
+    .todo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 850;
+      flex-shrink: 0;
+    }
+    .todo-mark.warn { background: var(--orange-soft); color: var(--orange); }
+    .todo-mark.danger { background: var(--red-soft); color: var(--red); }
+    .todo-mark.blue { background: var(--blue-soft); color: var(--blue); }
+    .todo-main { flex: 1; min-width: 0; }
+    .todo-title { font-size: 14px; font-weight: 800; color: var(--text); }
+    .todo-desc { font-size: 12px; color: var(--hint); margin-top: 3px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .todo-state {
+      font-size: 11px;
+      color: var(--blue);
+      font-weight: 800;
+      align-self: center;
+      white-space: nowrap;
+    }
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 62px;
+      background: rgba(255, 255, 255, .96);
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding-top: 7px;
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 11px;
+      color: var(--hint);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .nav-item.active { color: var(--blue); }
+    .nav-icon { font-size: 18px; line-height: 20px; margin-bottom: 3px; }
+    .patient-head {
+      background: var(--panel);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+    .patient-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .patient-name { font-size: 19px; font-weight: 900; }
+    .patient-meta { font-size: 12px; color: var(--hint); margin-top: 3px; }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      height: 25px;
+      padding: 0 9px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 850;
+      margin-top: 12px;
+      background: var(--orange-soft);
+      color: var(--orange);
+    }
+    .progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .progress-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 13px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      cursor: pointer;
+    }
+    .progress-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .progress-main { flex: 1; min-width: 0; }
+    .progress-title { font-size: 14px; font-weight: 850; }
+    .progress-desc { font-size: 12px; color: var(--hint); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .progress-status {
+      font-size: 11px;
+      font-weight: 850;
+      color: var(--orange);
+      background: var(--orange-soft);
+      padding: 4px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .progress-status.done { color: var(--green); background: var(--green-soft); }
+
+    .encounter-card {
+      background: var(--panel);
+      border: 1px solid rgba(0, 82, 217, .16);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .encounter-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 11px 12px;
+      background: #f7f9fc;
+      border-radius: 11px;
+    }
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(43,164,113,.12);
+      flex-shrink: 0;
+    }
+    .encounter-live {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 850;
+      color: var(--text);
+    }
+    .encounter-time {
+      font-size: 12px;
+      font-weight: 850;
+      color: var(--green);
+    }
+    .capture-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .capture-item {
+      background: #f7f9fc;
+      border-radius: 11px;
+      padding: 10px;
+      min-height: 62px;
+    }
+    .capture-label { font-size: 11px; color: var(--hint); }
+    .capture-value { font-size: 13px; color: var(--text); font-weight: 850; margin-top: 5px; line-height: 1.35; }
+    .step-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .step {
+      text-align: center;
+      border-radius: 9px;
+      background: #f7f9fc;
+      padding: 7px 4px;
+      font-size: 10px;
+      color: var(--hint);
+      font-weight: 850;
+    }
+    .step.active { background: var(--blue-soft); color: var(--blue); }
+    .step.done { background: var(--green-soft); color: var(--green); }
+    .timeline {
+      background: var(--panel);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+    }
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f3f7;
+      font-size: 12px;
+    }
+    .timeline-row:last-child { border-bottom: 0; }
+    .timeline-time { color: var(--hint); }
+    .timeline-text { color: var(--sub); font-weight: 650; }
+    .archive-overview {
+      background: linear-gradient(135deg, #0052d9, #2277f2);
+      color: #fff;
+      border-radius: 15px;
+      padding: 15px;
+    }
+    .archive-overview .status-chip {
+      background: rgba(255, 255, 255, .18);
+      color: #fff;
+      margin-top: 0;
+    }
+    .overview-title { font-size: 20px; font-weight: 900; margin-top: 10px; }
+    .overview-sub { font-size: 12px; color: rgba(255, 255, 255, .78); line-height: 1.55; margin-top: 5px; }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 13px;
+    }
+    .overview-item {
+      background: rgba(255, 255, 255, .13);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .overview-value { font-size: 17px; font-weight: 900; }
+    .overview-label { font-size: 11px; color: rgba(255, 255, 255, .74); margin-top: 3px; }
+    .alert-card {
+      border-radius: 13px;
+      background: var(--orange-soft);
+      border: 1px solid rgba(237, 123, 47, .2);
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .alert-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .alert-title { font-size: 13px; font-weight: 850; color: var(--text); }
+    .alert-desc { font-size: 12px; color: var(--sub); line-height: 1.5; margin-top: 3px; }
+    .group {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      overflow: hidden;
+      margin-bottom: 9px;
+    }
+    .group-head {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 13px;
+      cursor: pointer;
+      background: #fbfcfe;
+    }
+    .group-title { font-size: 14px; font-weight: 850; }
+    .group-count { font-size: 11px; color: var(--hint); font-weight: 750; }
+    .field-list { display: none; border-top: 1px solid var(--line); }
+    .group.open .field-list { display: block; }
+    .field {
+      padding: 12px 13px;
+      border-bottom: 1px solid #f1f3f7;
+      cursor: pointer;
+    }
+    .field:last-child { border-bottom: 0; }
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .field-label { font-size: 12px; color: var(--hint); }
+    .source {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--blue);
+      background: var(--blue-soft);
+      padding: 3px 6px;
+      border-radius: 5px;
+      white-space: nowrap;
+    }
+    .field-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 850;
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+    .field-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 7px;
+      font-size: 11px;
+      color: var(--hint);
+    }
+    .evidence {
+      display: none;
+      margin-top: 9px;
+      background: #f7f9fc;
+      border-left: 3px solid var(--blue);
+      border-radius: 9px;
+      padding: 9px 10px;
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+    .field.open .evidence { display: block; }
+    .control {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 18px;
+      color: #dbe7ff;
+      padding: 16px;
+      width: 260px;
+      box-shadow: var(--shadow);
+    }
+    .control-title { font-size: 16px; font-weight: 900; color: #fff; }
+    .control-sub { font-size: 12px; color: rgba(255, 255, 255, .66); line-height: 1.6; margin-top: 6px; }
+    .control-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .control button {
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+      padding: 0 12px;
+    }
+    .control button.active {
+      background: rgba(77, 163, 255, .24);
+      border-color: rgba(77, 163, 255, .44);
+    }
+    .note {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      font-size: 12px;
+      color: rgba(255, 255, 255, .7);
+      line-height: 1.65;
+    }
+    @media (max-width: 760px) {
+      body { padding: 12px; align-items: flex-start; }
+      .stage { display: flex; flex-direction: column; align-items: center; }
+      .control { width: 390px; max-width: calc(100vw - 24px); }
+      .phone { width: 390px; max-width: calc(100vw - 24px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <section class="screen active" id="workbench">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="body">
+          <div class="doctor-head">
+            <div>
+              <div class="doctor-name">王文龙医生</div>
+              <div class="doctor-meta">温岭市第一人民医院 · 风湿免疫科</div>
+            </div>
+            <button class="qr-btn" onclick="showScreen('qr')">建档码</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><div class="stat-value">2</div><div class="stat-label">待接诊</div></div>
+            <div class="stat"><div class="stat-value">2</div><div class="stat-label">复查逾期</div></div>
+            <div class="stat"><div class="stat-value">4</div><div class="stat-label">待回复</div></div>
+          </div>
+
+          <div class="section-head">
+            <div class="section-title">当前主任务</div>
+            <div class="section-link" onclick="showScreen('patients')">患者队列</div>
+          </div>
+          <div class="main-task">
+            <div class="task-kicker">待接诊患者</div>
+            <div class="task-title">张明 · 等待接诊</div>
+            <div class="task-sub">诊前资料已到位。接诊时可进入诊间采集，结束后再确认字段写入档案。</div>
+            <div class="task-points">
+              <div class="task-point"><div class="point-value">诊前</div><div class="point-label">病史已补充</div></div>
+              <div class="task-point"><div class="point-value">诊间</div><div class="point-label">采集缺失字段</div></div>
+              <div class="task-point"><div class="point-value">结束后</div><div class="point-label">确认写入档案</div></div>
+            </div>
+            <div class="actions">
+              <button class="btn-primary" onclick="showScreen('encounter')">接诊患者</button>
+              <button class="btn-secondary" onclick="showScreen('archive')">看诊前资料</button>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div class="section-title">今日待办</div>
+            <div class="section-link">查看全部</div>
+          </div>
+          <div class="todo-list">
+            <div class="todo" onclick="showScreen('encounter')">
+              <div class="todo-mark warn">诊</div>
+              <div class="todo-main"><div class="todo-title">接诊张明</div><div class="todo-desc">诊前资料已提交，进入诊间采集</div></div>
+              <div class="todo-state">接诊</div>
+            </div>
+            <div class="todo">
+              <div class="todo-mark danger">访</div>
+              <div class="todo-main"><div class="todo-title">处理陈建国失访预警</div><div class="todo-desc">逾期 21 天，AI 提醒无响应</div></div>
+              <div class="todo-state">联系</div>
+            </div>
+            <div class="todo">
+              <div class="todo-mark blue">酸</div>
+              <div class="todo-main"><div class="todo-title">查看王磊尿酸不达标</div><div class="todo-desc">最近血尿酸 620 μmol/L</div></div>
+              <div class="todo-state">查看</div>
+            </div>
+          </div>
+        </div>
+        <nav class="bottom-nav">
+          <div class="nav-item active" onclick="showScreen('workbench')"><div class="nav-icon">⌂</div>工作台</div>
+          <div class="nav-item" onclick="showScreen('patients')"><div class="nav-icon">☷</div>患者</div>
+          <div class="nav-item"><div class="nav-icon">✉</div>咨询</div>
+          <div class="nav-item"><div class="nav-icon">○</div>我的</div>
+        </nav>
+      </section>
+
+      <section class="screen" id="patients">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('workbench')">‹</div><div class="topbar-title">患者队列</div></div>
+        <div class="body">
+          <div class="main-task">
+            <div class="task-kicker">队列筛选</div>
+            <div class="task-title">先处理待接诊和逾期患者</div>
+            <div class="task-sub">列表默认按“需要医生动作”的优先级排序。</div>
+          </div>
+          <div class="section-head"><div class="section-title">需要处理</div><div class="section-link">筛选</div></div>
+          <div class="todo-list">
+            <div class="todo" onclick="showScreen('detail')">
+              <div class="todo-mark warn">张</div>
+              <div class="todo-main"><div class="todo-title">张明 · 待接诊</div><div class="todo-desc">诊前资料已提交，待诊间采集</div></div>
+              <div class="todo-state">待接诊</div>
+            </div>
+            <div class="todo">
+              <div class="todo-mark warn">李</div>
+              <div class="todo-main"><div class="todo-title">李晓红 · 待完善</div><div class="todo-desc">基本信息已提交，病史未补充</div></div>
+              <div class="todo-state">提醒</div>
+            </div>
+            <div class="todo">
+              <div class="todo-mark danger">陈</div>
+              <div class="todo-main"><div class="todo-title">陈建国 · 失访风险</div><div class="todo-desc">复诊逾期 21 天，需人工联系</div></div>
+              <div class="todo-state">联系</div>
+            </div>
+            <div class="todo">
+              <div class="todo-mark blue">王</div>
+              <div class="todo-main"><div class="todo-title">王磊 · 尿酸不达标</div><div class="todo-desc">复查 06/20，尿酸 620 μmol/L</div></div>
+              <div class="todo-state">查看</div>
+            </div>
+          </div>
+        </div>
+        <nav class="bottom-nav">
+          <div class="nav-item" onclick="showScreen('workbench')"><div class="nav-icon">⌂</div>工作台</div>
+          <div class="nav-item active" onclick="showScreen('patients')"><div class="nav-icon">☷</div>患者</div>
+          <div class="nav-item"><div class="nav-icon">✉</div>咨询</div>
+          <div class="nav-item"><div class="nav-icon">○</div>我的</div>
+        </nav>
+      </section>
+
+      <section class="screen" id="detail">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('workbench')">‹</div><div class="topbar-title">患者详情</div></div>
+        <div class="body">
+          <div class="patient-head">
+            <div class="patient-top">
+              <div class="avatar">张</div>
+              <div>
+                <div class="patient-name">张明</div>
+                <div class="patient-meta">男 · 42 岁 · 138****3920</div>
+              </div>
+            </div>
+            <div class="status-chip">建档中 · 待接诊</div>
+            <div class="actions">
+              <button class="btn-primary" onclick="showScreen('encounter')">接诊患者</button>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">主线进度</div><div class="section-link">更多资料</div></div>
+          <div class="progress-list">
+            <div class="progress-card" onclick="showScreen('archive')">
+              <div class="progress-icon">档</div>
+              <div class="progress-main"><div class="progress-title">诊前资料</div><div class="progress-desc">病史 8 项已提交，等待诊间核对</div></div>
+              <div class="progress-status">待接诊</div>
+            </div>
+            <div class="progress-card" onclick="showScreen('archive')">
+              <div class="progress-icon">验</div>
+              <div class="progress-main"><div class="progress-title">化验资料</div><div class="progress-desc">尿酸化验单 1 张待确认</div></div>
+              <div class="progress-status">待确认</div>
+            </div>
+            <div class="progress-card">
+              <div class="progress-icon">访</div>
+              <div class="progress-main"><div class="progress-title">随访计划</div><div class="progress-desc">字段写入档案后生成复诊和复查安排</div></div>
+              <div class="progress-status">待生成</div>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">最近动态</div></div>
+          <div class="timeline">
+            <div class="timeline-row"><div class="timeline-time">09:22</div><div class="timeline-text">患者完成快速建档</div></div>
+            <div class="timeline-row"><div class="timeline-time">09:28</div><div class="timeline-text">补充痛风病史 8 项</div></div>
+            <div class="timeline-row"><div class="timeline-time">09:31</div><div class="timeline-text">上传血尿酸检查报告</div></div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="screen" id="encounter">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('detail')">‹</div><div class="topbar-title">诊间采集</div></div>
+        <div class="body">
+          <div class="patient-head">
+            <div class="patient-top">
+              <div class="avatar">张</div>
+              <div>
+                <div class="patient-name">张明</div>
+                <div class="patient-meta">男 · 42 岁 · 痛风专病建档中</div>
+              </div>
+            </div>
+            <div class="status-chip">接诊中 · 正在整理字段</div>
+          </div>
+
+          <div class="section-head"><div class="section-title">采集状态</div></div>
+          <div class="encounter-card">
+            <div class="task-kicker">诊间采集</div>
+            <div class="task-title">痛风病史正在整理</div>
+            <div class="task-sub">医生正常问诊即可。系统会把问诊内容整理成结构化字段，结束接诊后由医生确认写入档案。</div>
+            <div class="encounter-status">
+              <div class="encounter-live"><span class="pulse"></span><span>采集中</span></div>
+              <div class="encounter-time">06:18</div>
+            </div>
+            <div class="capture-grid">
+              <div class="capture-item"><div class="capture-label">已识别</div><div class="capture-value">首次发作时间</div></div>
+              <div class="capture-item"><div class="capture-label">已识别</div><div class="capture-value">主要发作部位</div></div>
+              <div class="capture-item"><div class="capture-label">待追问</div><div class="capture-value">用药依从性</div></div>
+              <div class="capture-item"><div class="capture-label">待核对</div><div class="capture-value">外院化验单</div></div>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">接诊流程</div></div>
+          <div class="main-task">
+            <div class="step-strip">
+              <div class="step done">诊前资料</div>
+              <div class="step active">诊间采集</div>
+              <div class="step">字段确认</div>
+              <div class="step">写入档案</div>
+            </div>
+            <div class="task-sub" style="margin-top:12px">录音只作为病史采集和 AI 依据材料，不在医生端外层作为独立模块展示。</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="showScreen('fieldConfirm')">结束接诊，确认字段</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="fieldConfirm">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('encounter')">‹</div><div class="topbar-title">字段确认</div></div>
+        <div class="body">
+          <div class="archive-overview">
+            <div class="status-chip">待确认回填</div>
+            <div class="overview-title">AI 已整理 8 项病史字段</div>
+            <div class="overview-sub">请逐项确认或修改。确认后的内容才会写入痛风专病档案。</div>
+            <div class="step-strip">
+              <div class="step done">诊前资料</div>
+              <div class="step done">诊间采集</div>
+              <div class="step active">字段确认</div>
+              <div class="step">写入档案</div>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">待写入字段</div><div class="section-link">全部确认</div></div>
+          <div class="group open">
+            <div class="group-head" onclick="toggleGroup(this)">
+              <div><div class="group-title">痛风病史</div><div class="group-count">8 项草稿 · 2 项需核对</div></div>
+              <div class="section-link">收起</div>
+            </div>
+            <div class="field-list">
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">首次发作时间</div><div class="source">诊间采集</div></div>
+                <div class="field-value">约 3 年前</div>
+                <div class="field-meta"><span>建议采用</span><span>查看依据</span></div>
+                <div class="evidence">问诊片段：患者表示“第一次大概三年前，右脚大脚趾突然红肿疼”。</div>
+              </div>
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">近一年发作次数</div><div class="source">诊前填写 + 诊间采集</div></div>
+                <div class="field-value">约 3 次</div>
+                <div class="field-meta"><span>建议采用</span><span>查看依据</span></div>
+                <div class="evidence">诊前填写为 3 次；诊间回答为“今年疼过三次左右”，两处一致。</div>
+              </div>
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">用药依从性</div><div class="source">诊间采集</div></div>
+                <div class="field-value">降尿酸药未规律服用</div>
+                <div class="field-meta"><span>需医生核对</span><span>查看依据</span></div>
+                <div class="evidence">问诊片段：患者表示“疼的时候吃，平时有时候会忘”。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert-card">
+            <div class="alert-icon">!</div>
+            <div>
+              <div class="alert-title">化验单仍需确认</div>
+              <div class="alert-desc">血尿酸 486 μmol/L 来自 OCR 识别，写入档案前需医生确认报告时间和数值。</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="showScreen('archive')">确认写入档案</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="archive">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('detail')">‹</div><div class="topbar-title">痛风专病档案</div></div>
+        <div class="body">
+          <div class="archive-overview">
+            <div class="status-chip">已写入档案</div>
+            <div class="overview-title">张明 · 痛风专病档案</div>
+            <div class="overview-sub">诊间采集字段已由医生确认写入。下一步可生成复诊与随访计划。</div>
+            <div class="overview-grid">
+              <div class="overview-item"><div class="overview-value">486</div><div class="overview-label">血尿酸 μmol/L</div></div>
+              <div class="overview-item"><div class="overview-value">3 次</div><div class="overview-label">近一年发作</div></div>
+              <div class="overview-item"><div class="overview-value">右足拇趾</div><div class="overview-label">主要部位</div></div>
+              <div class="overview-item"><div class="overview-value">1 项</div><div class="overview-label">待补充字段</div></div>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">待确认项</div></div>
+          <div class="alert-card">
+            <div class="alert-icon">!</div>
+            <div>
+              <div class="alert-title">化验单结果已纳入本次依据</div>
+              <div class="alert-desc">血尿酸 486 μmol/L 已由医生确认报告时间后写入化验结果，并作为随访计划依据。</div>
+            </div>
+          </div>
+
+          <div class="section-head"><div class="section-title">结构化字段</div><div class="section-link">全部收起</div></div>
+          <div class="group open">
+            <div class="group-head" onclick="toggleGroup(this)">
+              <div><div class="group-title">痛风病史</div><div class="group-count">8/10 已确认 · 来源可追溯</div></div>
+              <div class="section-link">收起</div>
+            </div>
+            <div class="field-list">
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">首次发作时间</div><div class="source">医生确认</div></div>
+                <div class="field-value">约 3 年前</div>
+                <div class="field-meta"><span>已写入档案</span><span>查看依据</span></div>
+                <div class="evidence">患者补充：“第一次大概是三年前，右脚大脚趾突然红肿疼。”</div>
+              </div>
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">主要发作部位</div><div class="source">患者填写</div></div>
+                <div class="field-value">右足第一跖趾关节为主</div>
+                <div class="field-meta"><span>已写入档案</span><span>查看依据</span></div>
+                <div class="evidence">患者在诊前表单中选择“脚趾/足部”，补充描述为“右脚大脚趾最明显”。</div>
+              </div>
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">近一年发作次数</div><div class="source">AI 问诊</div></div>
+                <div class="field-value">约 3 次</div>
+                <div class="field-meta"><span>已写入档案</span><span>查看依据</span></div>
+                <div class="evidence">AI 从患者回答中提取：“今年已经疼过三次左右。”</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-head" onclick="toggleGroup(this)">
+              <div><div class="group-title">化验结果</div><div class="group-count">1 张报告 · 已确认</div></div>
+              <div class="section-link">展开</div>
+            </div>
+            <div class="field-list">
+              <div class="field" onclick="toggleField(this)">
+                <div class="field-top"><div class="field-label">血尿酸</div><div class="source">OCR</div></div>
+                <div class="field-value">486 μmol/L · 报告时间 2026-06-20</div>
+                <div class="field-meta"><span>已写入档案</span><span>查看依据</span></div>
+                <div class="evidence">上传报告识别：血尿酸 UA 486 μmol/L。原图来自患者上传的外院化验单。</div>
+              </div>
+              <div class="field">
+                <div class="field-top"><div class="field-label">肌酐</div><div class="source">OCR</div></div>
+                <div class="field-value">82 μmol/L</div>
+                <div class="field-meta"><span>已写入档案</span><span>查看依据</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-head" onclick="toggleGroup(this)">
+              <div><div class="group-title">复诊与随访</div><div class="group-count">待生成计划</div></div>
+              <div class="section-link">展开</div>
+            </div>
+            <div class="field-list">
+              <div class="field">
+                <div class="field-top"><div class="field-label">建议复诊</div><div class="source">待生成</div></div>
+                <div class="field-value">确认病史和化验单后生成</div>
+                <div class="field-meta"><span>待生成</span><span>复查项目：血尿酸、肝肾功能</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="showScreen('plan')">生成随访计划</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="plan">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('archive')">‹</div><div class="topbar-title">随访计划</div></div>
+        <div class="body">
+          <div class="archive-overview">
+            <div class="status-chip">AI 已生成草稿</div>
+            <div class="overview-title">复诊与复查计划</div>
+            <div class="overview-sub">医生确认后同步到患者端，患者会看到复诊提醒和复查项目。</div>
+            <div class="overview-grid">
+              <div class="overview-item"><div class="overview-value">07月18日</div><div class="overview-label">建议复诊</div></div>
+              <div class="overview-item"><div class="overview-value">提前 3 天</div><div class="overview-label">患者提醒</div></div>
+            </div>
+          </div>
+          <div class="section-head"><div class="section-title">计划节点</div></div>
+          <div class="timeline">
+            <div class="timeline-row"><div class="timeline-time">今天</div><div class="timeline-text">接诊完成，字段已写入专病档案</div></div>
+            <div class="timeline-row"><div class="timeline-time">07/15</div><div class="timeline-text">提醒患者完成血尿酸、肝肾功能复查</div></div>
+            <div class="timeline-row"><div class="timeline-time">07/18</div><div class="timeline-text">到院复诊，医生补充复诊记录</div></div>
+            <div class="timeline-row"><div class="timeline-time">逾期</div><div class="timeline-text">未复诊自动进入医生端失访预警</div></div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" onclick="showScreen('workbench')">确认并同步患者端</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="qr">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="topbar"><div class="back" onclick="showScreen('workbench')">‹</div><div class="topbar-title">痛风专病建档码</div></div>
+        <div class="body">
+          <div class="patient-head" style="text-align:center;padding:22px 16px">
+            <div class="avatar" style="margin:0 auto 10px">王</div>
+            <div class="patient-name">王文龙医生</div>
+            <div class="patient-meta">温岭市第一人民医院 · 风湿免疫科</div>
+            <div style="width:238px;height:238px;margin:22px auto 14px;border:1px solid var(--line);background:#fff;padding:6px">
+              <img src="assets/doctor-qr.png" alt="医生建档二维码" style="width:100%;height:100%;object-fit:contain" />
+            </div>
+            <div class="patient-meta">患者扫码后填写姓名、性别和手机号，进入待确认档案。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="control">
+      <div class="control-title">医生端接诊采集版</div>
+      <div class="control-sub">单独展示医生端，把主线改成接诊患者、诊间采集、字段确认、写入档案和随访计划。</div>
+      <div class="control-buttons">
+        <button class="active" data-target="workbench" onclick="showScreen('workbench')">今日工作台</button>
+        <button data-target="patients" onclick="showScreen('patients')">患者队列</button>
+        <button data-target="detail" onclick="showScreen('detail')">张明详情</button>
+        <button data-target="encounter" onclick="showScreen('encounter')">诊间采集</button>
+        <button data-target="fieldConfirm" onclick="showScreen('fieldConfirm')">字段确认</button>
+        <button data-target="archive" onclick="showScreen('archive')">专病档案</button>
+        <button data-target="plan" onclick="showScreen('plan')">随访计划</button>
+        <button data-target="qr" onclick="showScreen('qr')">建档码</button>
+      </div>
+      <div class="note">这个版本没有减少业务内容，只把接诊过程前置：先采集，再确认字段，最后沉淀为正式档案。</div>
+    </aside>
+  </div>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.control button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.target === id);
+      });
+    }
+
+    function toggleGroup(head) {
+      const group = head.closest('.group');
+      const link = head.querySelector('.section-link');
+      if (!group) return;
+      group.classList.toggle('open');
+      if (link) link.textContent = group.classList.contains('open') ? '收起' : '展开';
+    }
+
+    function toggleField(field) {
+      field.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
