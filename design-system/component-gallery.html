@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>痛风智能体组件库</title>
+  <link rel="stylesheet" href="./components.css" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #172033;
+      font-family: var(--gout-font-family);
+      padding: 28px;
+      color: #ffffff;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: minmax(390px, 430px) minmax(390px, 430px);
+      gap: 28px;
+      align-items: start;
+    }
+    .gallery-section-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .surface {
+      width: 390px;
+      min-height: 760px;
+      border-radius: 34px;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .doctor-stack {
+      display: grid;
+      gap: 10px;
+    }
+    @media (max-width: 920px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="gallery">
+    <section>
+      <h1 class="gallery-section-title">患者端组件</h1>
+      <div class="surface ds-patient-surface">
+        <section class="ds-patient-hero">
+          <span class="ds-kicker">档案完整度 45%</span>
+          <div class="ds-patient-title">基本信息已提交</div>
+          <div class="ds-patient-desc">你可以继续补充诊前资料，医生接诊时会看到这些内容。</div>
+          <div class="ds-progress-bar"><span style="width:45%"></span></div>
+          <div class="ds-tag-row">
+            <span class="ds-tag">痛风病史</span>
+            <span class="ds-tag">化验报告</span>
+            <span class="ds-tag ds-tag-warn">医生待确认</span>
+          </div>
+        </section>
+
+        <section class="ds-chat-card">
+          <div class="ds-chat-message ds-chat-message-ai">
+            <div class="ds-chat-avatar">福</div>
+            <div class="ds-chat-bubble">你第一次出现像痛风一样的关节疼痛，大概是什么时候？不用特别准。</div>
+          </div>
+          <div class="ds-chip-row">
+            <span class="ds-chip ds-chip-primary">3 年前</span>
+            <span class="ds-chip">1 年内</span>
+            <span class="ds-chip">记不清</span>
+          </div>
+          <div class="ds-chat-message ds-chat-message-user">
+            <div class="ds-chat-bubble">大概 3 年前。</div>
+          </div>
+        </section>
+
+        <div class="ds-question-card">
+          <div class="ds-question-icon">?</div>
+          <div class="ds-question-text">复诊前我需要准备什么？</div>
+          <div class="ds-question-arrow">›</div>
+        </div>
+
+        <section class="ds-record-card">
+          <div class="ds-record-head">
+            <div>
+              <div class="ds-record-title">我的病历夹</div>
+              <div class="ds-record-desc">痛风 3 年余，首发于第一跖趾关节，近一年发作 3-5 次。</div>
+            </div>
+            <button class="ds-text-link">详情 ›</button>
+          </div>
+          <div class="ds-record-timeline">
+            <div class="ds-record-timeline-item">
+              <div class="ds-record-dot">验</div>
+              <div>
+                <div class="ds-record-title">血尿酸 486 μmol/L</div>
+                <div class="ds-record-desc">2026-06-18 温岭市第一人民医院</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="ds-compose">
+          <div class="ds-shortcut-row">
+            <span class="ds-shortcut">联系医生</span>
+            <span class="ds-shortcut">上传报告</span>
+            <span class="ds-shortcut">健康打卡</span>
+            <span class="ds-shortcut">饮食问答</span>
+          </div>
+          <div class="ds-compose-row">
+            <button class="ds-round-action" aria-label="语音输入">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v5c0 1.66 1.34 3 3 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v3M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="ds-input-box"><span>直接输入想补充的内容</span><span class="ds-plus">+</span></div>
+            <button class="ds-round-action" aria-label="发送">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 12 20 4l-4 16-4-7-8-1Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="m12 13 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section>
+      <h1 class="gallery-section-title">医生端组件</h1>
+      <div class="surface ds-doctor-surface">
+        <div class="ds-doctor-head">
+          <div>
+            <div class="ds-doctor-name">王文龙医生</div>
+            <div class="ds-doctor-meta">温岭市第一人民医院 · 风湿免疫科</div>
+          </div>
+          <button class="ds-doctor-ghost-btn">建档码</button>
+        </div>
+
+        <div class="ds-stat-grid">
+          <div class="ds-stat"><div class="ds-stat-value">3</div><div class="ds-stat-label">待接诊</div></div>
+          <div class="ds-stat"><div class="ds-stat-value">8</div><div class="ds-stat-label">复查逾期</div></div>
+          <div class="ds-stat"><div class="ds-stat-value">5</div><div class="ds-stat-label">待回复</div></div>
+        </div>
+
+        <section class="ds-main-task">
+          <span class="ds-status-chip">建档中 · 待接诊</span>
+          <div class="ds-task-title">张明 · 等待接诊</div>
+          <div class="ds-task-desc">诊前病史已补充，接诊时采集缺失字段，结束后确认写入档案。</div>
+          <div class="ds-doctor-actions">
+            <button class="ds-doctor-primary">接诊患者</button>
+            <button class="ds-doctor-secondary">看诊前资料</button>
+          </div>
+        </section>
+
+        <div class="ds-todo-list">
+          <div class="ds-todo">
+            <div class="ds-todo-mark ds-todo-mark-blue">接</div>
+            <div>
+              <div class="ds-todo-title">接诊张明</div>
+              <div class="ds-todo-desc">诊前资料已补充，待医生接诊确认</div>
+            </div>
+          </div>
+          <div class="ds-todo">
+            <div class="ds-todo-mark ds-todo-mark-danger">访</div>
+            <div>
+              <div class="ds-todo-title">处理陈建国失访预警</div>
+              <div class="ds-todo-desc">逾期 21 天，AI 提醒无响应</div>
+            </div>
+          </div>
+        </div>
+
+        <section class="ds-field-card">
+          <div class="ds-field-top">
+            <div class="ds-field-label">近一年发作次数</div>
+            <span class="ds-source-badge">诊间采集</span>
+          </div>
+          <div class="ds-field-value">3-5 次</div>
+          <div class="ds-evidence">患者复诊时描述近一年大概发作过三四次，右脚大脚趾最明显。</div>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

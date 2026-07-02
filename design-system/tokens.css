@@ -1,0 +1,60 @@
+:root {
+  --gout-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --patient-primary: #03d49f;
+  --patient-primary-2: #01a1ff;
+  --patient-primary-dark: #0785b6;
+  --patient-gradient: linear-gradient(234deg, #03d49f 0%, #01a1ff 100%);
+  --patient-bg: linear-gradient(180deg, #e8f4ff 0%, #f0fff9 52%, #f5f7fb 100%);
+  --patient-card: #ffffff;
+  --patient-text: #333333;
+  --patient-sub: #666666;
+  --patient-hint: #999999;
+  --patient-line: #f0f0f0;
+  --patient-soft-blue: rgba(1, 161, 255, 0.08);
+  --patient-soft-green: rgba(3, 212, 159, 0.10);
+
+  --doctor-primary: #0052d9;
+  --doctor-primary-2: #1f73f1;
+  --doctor-bg: #eef2f7;
+  --doctor-panel: #ffffff;
+  --doctor-line: #e5eaf2;
+  --doctor-text: #1d2530;
+  --doctor-sub: #566579;
+  --doctor-hint: #8a94a6;
+  --doctor-blue-soft: #eaf2ff;
+  --doctor-orange: #ed7b2f;
+  --doctor-orange-soft: #fff4e8;
+  --doctor-green: #2ba471;
+  --doctor-green-soft: #eaf8f2;
+  --doctor-red: #d54941;
+  --doctor-red-soft: #fff0ee;
+
+  --radius-xs: 7px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-2xl: 26px;
+  --radius-pill: 999px;
+
+  --shadow-patient-soft: 0 10px 22px rgba(1, 161, 255, 0.10);
+  --shadow-patient-card: 0 8px 22px rgba(31, 42, 68, 0.06);
+  --shadow-doctor: 0 16px 44px rgba(31, 42, 68, 0.16);
+
+  --text-xxs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+}
