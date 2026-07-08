@@ -109,14 +109,6 @@ box-shadow:
 
 当正式患者端页面发生主流程或关键状态变化时，外壳内屏文案和卡片也要同步更新，避免外壳展示的流程与真实 Demo 不一致。
 
-## 当前落地文件
+## 后续落地方式
 
-当前试验文件为：
-
-`痛风智能体_真机开发现场演示外壳.html`
-
-当前验证截图为：
-
-`output/playwright/demo-shell-iphone-only.png`
-
-该文件是视觉外壳样例。后续如果确定采用，应按实际用途重命名，例如 `痛风智能体_iPhone真机演示.html` 或纳入 `docs/03-原型与规范/` 的演示样例索引。
+如需重新制作真机展示页，从 `design-system/templates/iphone-showcase-patient.html` 复制生成新的展示文件，并按实际用途命名。
