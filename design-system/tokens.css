@@ -41,6 +41,15 @@
   --shadow-patient-soft: 0 10px 22px rgba(1, 161, 255, 0.10);
   --shadow-patient-card: 0 8px 22px rgba(31, 42, 68, 0.06);
   --shadow-doctor: 0 16px 44px rgba(31, 42, 68, 0.16);
+  --shadow-showcase-device: 0 42px 88px rgba(15, 23, 42, 0.38), 0 16px 34px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+
+  --showcase-bg-top: #edf3f8;
+  --showcase-bg-bottom: #cbd6e2;
+  --showcase-device-frame: #111827;
+  --showcase-device-island: #070b12;
+  --showcase-screen-bg: #f3f7fb;
+  --showcase-screen-bg-2: #f7fbff;
+  --showcase-glass-highlight: rgba(255, 255, 255, 0.52);
 
   --text-xxs: 10px;
   --text-xs: 11px;
@@ -57,4 +66,10 @@
   --space-4: 16px;
   --space-5: 20px;
   --space-6: 24px;
+
+  --showcase-device-width: 430px;
+  --showcase-device-width-sm: 310px;
+  --showcase-device-radius: 48px;
+  --showcase-screen-radius: 40px;
+  --showcase-device-padding: 10px;
 }

@@ -62,6 +62,70 @@
   .flow-step-title.doctor { color: #4DA3FF; }
   .flow-step-title.done { color: #2BA471; }
 
+
+  .ui-icon { width: 1em; height: 1em; display: inline-block; position: relative; flex-shrink: 0; color: currentColor; }
+  .ui-icon::before, .ui-icon::after { content: ""; position: absolute; box-sizing: border-box; }
+  .ui-icon-home::before { left: 12%; top: 42%; width: 76%; height: 48%; border: 2px solid currentColor; border-top: 0; border-radius: 2px; }
+  .ui-icon-home::after { left: 18%; top: 12%; width: 64%; height: 64%; border-left: 2px solid currentColor; border-top: 2px solid currentColor; transform: rotate(45deg); border-radius: 2px; }
+  .ui-icon-user::before { left: 31%; top: 12%; width: 38%; height: 38%; border: 2px solid currentColor; border-radius: 50%; }
+  .ui-icon-user::after { left: 18%; top: 58%; width: 64%; height: 30%; border: 2px solid currentColor; border-radius: 50% 50% 32% 32%; }
+  .ui-icon-users::before { left: 10%; top: 20%; width: 36%; height: 36%; border: 2px solid currentColor; border-radius: 50%; box-shadow: 9px 0 0 -2px currentColor; }
+  .ui-icon-users::after { left: 6%; top: 60%; width: 82%; height: 27%; border: 2px solid currentColor; border-radius: 50% 50% 28% 28%; }
+  .ui-icon-chat::before { left: 10%; top: 16%; width: 78%; height: 58%; border: 2px solid currentColor; border-radius: 5px; }
+  .ui-icon-chat::after { left: 28%; top: 68%; width: 13px; height: 10px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: skew(-24deg); }
+  .ui-icon-folder::before { left: 9%; top: 27%; width: 82%; height: 56%; border: 2px solid currentColor; border-radius: 4px; }
+  .ui-icon-folder::after { left: 13%; top: 17%; width: 36%; height: 18%; border: 2px solid currentColor; border-bottom: 0; border-radius: 4px 4px 0 0; }
+  .ui-icon-ticket::before { inset: 18% 8%; border: 2px solid currentColor; border-radius: 5px; }
+  .ui-icon-ticket::after { left: 50%; top: 20%; height: 60%; border-left: 2px dashed currentColor; transform: translateX(-50%); }
+  .ui-icon-book::before { left: 15%; top: 14%; width: 32%; height: 72%; border: 2px solid currentColor; border-radius: 4px 1px 1px 4px; }
+  .ui-icon-book::after { right: 15%; top: 14%; width: 32%; height: 72%; border: 2px solid currentColor; border-radius: 1px 4px 4px 1px; }
+  .ui-icon-doc::before { left: 22%; top: 10%; width: 56%; height: 80%; border: 2px solid currentColor; border-radius: 4px; }
+  .ui-icon-doc::after { right: 22%; top: 10%; width: 18%; height: 18%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+  .ui-icon-list::before { left: 18%; top: 22%; width: 64%; height: 56%; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; box-shadow: 0 8px 0 -6px currentColor; }
+  .ui-icon-list::after { left: 14%; top: 20%; width: 3px; height: 3px; background: currentColor; border-radius: 50%; box-shadow: 0 8px 0 currentColor, 0 16px 0 currentColor; }
+  .ui-icon-edit::before { left: 18%; top: 22%; width: 60%; height: 56%; border: 2px solid currentColor; border-radius: 4px; }
+  .ui-icon-edit::after { left: 48%; top: 14%; width: 32%; height: 8%; background: currentColor; transform: rotate(-35deg); border-radius: 2px; }
+  .ui-icon-alert::before { left: 48%; top: 18%; width: 4px; height: 46%; background: currentColor; border-radius: 2px; transform: translateX(-50%); }
+  .ui-icon-alert::after { left: 48%; bottom: 18%; width: 5px; height: 5px; background: currentColor; border-radius: 50%; transform: translateX(-50%); }
+  .ui-icon-clock::before { inset: 12%; border: 2px solid currentColor; border-radius: 50%; }
+  .ui-icon-clock::after { left: 50%; top: 26%; width: 22%; height: 32%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+  .ui-icon-lab::before { left: 32%; top: 12%; width: 36%; height: 54%; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 12px 12px; }
+  .ui-icon-lab::after { left: 26%; bottom: 18%; width: 48%; height: 20%; background: currentColor; opacity: .22; border-radius: 0 0 10px 10px; }
+  .ui-icon-plus::before { left: 18%; top: 47%; width: 64%; border-top: 2px solid currentColor; }
+  .ui-icon-plus::after { left: 47%; top: 18%; height: 64%; border-left: 2px solid currentColor; }
+  .ui-icon-search::before { left: 14%; top: 12%; width: 52%; height: 52%; border: 2px solid currentColor; border-radius: 50%; }
+  .ui-icon-search::after { right: 13%; bottom: 16%; width: 32%; border-top: 2px solid currentColor; transform: rotate(45deg); transform-origin: left center; }
+  .ui-icon-shield::before { left: 18%; top: 10%; width: 64%; height: 78%; border: 2px solid currentColor; border-radius: 40% 40% 50% 50%; }
+  .ui-icon-star::before { inset: 12%; background: currentColor; clip-path: polygon(50% 0,61% 35%,98% 35%,68% 56%,79% 91%,50% 70%,21% 91%,32% 56%,2% 35%,39% 35%); }
+  .ui-icon-info::before { inset: 12%; border: 2px solid currentColor; border-radius: 50%; }
+  .ui-icon-info::after { left: 48%; top: 30%; width: 4px; height: 42%; background: currentColor; border-radius: 2px; box-shadow: 0 -7px 0 currentColor; }
+  .ui-icon-check::before { left: 22%; top: 48%; width: 24%; height: 42%; border-right: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: rotate(45deg); }
+  .ui-icon-x::before, .ui-icon-x::after { left: 20%; top: 48%; width: 60%; border-top: 2px solid currentColor; }
+  .ui-icon-x::before { transform: rotate(45deg); } .ui-icon-x::after { transform: rotate(-45deg); }
+  .ui-icon-mic::before { left: 33%; top: 10%; width: 34%; height: 52%; border: 2px solid currentColor; border-radius: 12px; }
+  .ui-icon-mic::after { left: 24%; top: 52%; width: 52%; height: 28%; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 14px 14px; }
+  .ui-icon-chart::before { left: 16%; bottom: 18%; width: 68%; height: 58%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+  .ui-icon-chart::after { left: 28%; bottom: 30%; width: 46%; height: 32%; border-left: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: skew(-28deg); }
+  .ui-icon-med::before { left: 46%; top: 14%; width: 8%; height: 72%; background: currentColor; border-radius: 3px; }
+  .ui-icon-med::after { left: 14%; top: 46%; width: 72%; height: 8%; background: currentColor; border-radius: 3px; }
+  .ui-icon-hospital::before { left: 18%; top: 18%; width: 64%; height: 68%; border: 2px solid currentColor; border-radius: 3px; }
+  .ui-icon-hospital::after { left: 43%; top: 30%; width: 14%; height: 34%; background: currentColor; box-shadow: -10px 13px 0 -3px currentColor, 10px 13px 0 -3px currentColor; }
+  .ui-icon-beer::before { left: 20%; top: 14%; width: 42%; height: 68%; border: 2px solid currentColor; border-radius: 3px 3px 8px 8px; }
+  .ui-icon-beer::after { right: 13%; top: 30%; width: 18%; height: 28%; border: 2px solid currentColor; border-left: 0; border-radius: 0 8px 8px 0; }
+  .ui-icon-bone::before { left: 16%; top: 42%; width: 68%; height: 16%; background: currentColor; border-radius: 9px; transform: rotate(-20deg); }
+  .ui-icon-bone::after { left: 10%; top: 28%; width: 18%; height: 18%; background: currentColor; border-radius: 50%; box-shadow: 4px 13px 0 currentColor, 45px -16px 0 currentColor, 49px -3px 0 currentColor; }
+  .ui-icon-qr::before { inset: 12%; background: currentColor; clip-path: polygon(0 0,35% 0,35% 35%,0 35%,0 0,65% 0,100% 0,100% 35%,65% 35%,65% 0,0 65%,35% 65%,35% 100%,0 100%,0 65%,65% 65%,80% 65%,80% 80%,65% 80%,65% 65%,85% 85%,100% 85%,100% 100%,85% 100%,85% 85%); }
+  .ui-icon-family::before { left: 38%; top: 10%; width: 24%; height: 24%; border: 2px solid currentColor; border-radius: 50%; box-shadow: -14px 8px 0 -4px currentColor, 14px 8px 0 -4px currentColor; }
+  .ui-icon-family::after { left: 12%; bottom: 12%; width: 76%; height: 34%; border: 2px solid currentColor; border-radius: 50% 50% 28% 28%; }
+
+  .phone-status-icons { display: inline-flex; align-items: center; gap: 4px; }
+  .phone-status-icons span:first-child { width: 14px; height: 10px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
+  .phone-status-icons span:first-child::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; border-top: 2px solid currentColor; }
+  .phone-status-icons span:nth-child(2) { width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 9px solid currentColor; }
+  .phone-status-icons span:nth-child(3) { width: 10px; height: 10px; background: currentColor; border-radius: 2px; }
+  .btn-outline-d .ui-icon, .plan-tl-title .ui-icon, .ocr-conflict-title .ui-icon { width: 1.05em; height: 1.05em; vertical-align: -0.15em; margin-right: 4px; }
+  .d-tag .ui-icon { width: 1em; height: 1em; vertical-align: -0.12em; margin-right: 3px; }
+
   /* ─── Screens ─── */
   .screen { display: none; min-height: 100%; flex-direction: column; position: relative; }
   .screen.active { display: flex; }
@@ -715,7 +779,7 @@
     <div class="phone-frame">
       <div class="phone-status">
         <span>9:41</span>
-        <span>☰ ▶ ◾</span>
+        <span class="phone-status-icons" aria-hidden="true"><span></span><span></span><span></span></span>
       </div>
       <div class="phone-content" id="patientPhoneContent">
 
@@ -757,7 +821,7 @@
           <div class="home-section-title">建档后可使用</div>
           <div class="home-list-card">
             <div class="home-list-row" onclick="openPatientSimple('我的病情记录','建档后查看尿酸、发作和用药记录。','screen-patient-home')">
-              <div class="home-list-icon">档</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">我的病情记录</div>
                 <div class="home-list-desc">建档后查看尿酸、发作和用药记录</div>
@@ -765,7 +829,7 @@
               <div class="home-list-arrow">›</div>
             </div>
             <div class="home-list-row" onclick="openPatientSimple('复诊提醒','医生确认后同步复诊与复查安排。','screen-patient-home')">
-              <div class="home-list-icon">醒</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">复诊提醒</div>
                 <div class="home-list-desc">医生确认后同步复诊与复查安排</div>
@@ -773,15 +837,15 @@
               <div class="home-list-arrow">›</div>
             </div>
             <div class="home-list-row" onclick="goPatient('screen-patient-lab-upload')">
-              <div class="home-list-icon">单</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">上传复查结果</div>
-                <div class="home-list-desc">建档后可上传尿酸、肝肾功能等化验单</div>
+                <div class="home-list-desc">建档后可上传血尿酸、肝功能、肾功能等化验单</div>
               </div>
               <div class="home-list-arrow">›</div>
             </div>
             <div class="home-list-row" onclick="openPatientSimple('记录本次发作','记录疼痛部位、发作时间和用药情况。','screen-patient-home')">
-              <div class="home-list-icon">记</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">记录本次发作</div>
                 <div class="home-list-desc">记录疼痛部位、发作时间和用药情况</div>
@@ -789,7 +853,7 @@
               <div class="home-list-arrow">›</div>
             </div>
             <div class="home-list-row" onclick="openPatientSimple('健康助手','饮食、复查准备和日常管理建议。','screen-patient-home')">
-              <div class="home-list-icon">助</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">健康助手</div>
                 <div class="home-list-desc">饮食、复查准备和日常管理建议</div>
@@ -800,10 +864,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -851,14 +915,14 @@
             <div class="qr-box"><span class="scan-corners scan-corners-lg"><span></span></span></div>
             <div class="qr-label">已扫描医生“我的二维码”</div>
             <div class="qr-sublabel">温岭市第一人民医院 · 风湿免疫科 · 王文龙医生</div>
-            <div class="d-tag d-tag-success" style="margin-top:4px">✓ 二维码有效</div>
+            <div class="d-tag d-tag-success" style="margin-top:4px"><span class="ui-icon ui-icon-check" aria-hidden="true"></span> 二维码有效</div>
           </div>
         </div>
         <div class="form-body" style="flex:1;overflow-y:auto">
           <div class="form-section">
             <div class="form-label"><span class="req">*</span> 手机号</div>
             <div class="phone-auth-card" onclick="showPhoneAuth()">
-              <div class="phone-auth-icon">微</div>
+              <div class="phone-auth-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
               <div class="phone-auth-main">
                 <div class="phone-auth-title" id="phoneAuthTitle">授权微信手机号</div>
                 <div class="phone-auth-desc" id="phoneAuthDesc">用于关联医生端档案和复诊提醒</div>
@@ -879,7 +943,7 @@
           </div>
           <div class="form-section">
             <div class="consent-row">
-              <div class="consent-check">✓</div>
+              <div class="consent-check"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
               <div class="consent-text">我已阅读并同意 <a>《云医邦邦用户协议》</a> 及 <a>《隐私政策》</a>，授权使用我的健康信息用于痛风专病管理服务。</div>
             </div>
           </div>
@@ -938,7 +1002,7 @@
           <!-- Gout card waiting state -->
           <div class="gout-card gout-card-waiting">
             <div class="gout-card-header">
-              <div class="gout-icon gout-icon-wait">🦴</div>
+              <div class="gout-icon gout-icon-wait"><span class="ui-icon ui-icon-bone" aria-hidden="true"></span></div>
               <div>
                 <div class="gout-title">痛风专病管理</div>
                 <div class="gout-subtitle">温岭市第一人民医院 · 王文龙医生</div>
@@ -947,7 +1011,7 @@
             </div>
             <div class="wait-steps">
               <div class="wait-step">
-                <div class="wait-step-dot done">✓</div>
+                <div class="wait-step-dot done"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
                 <div class="wait-step-text"><b>已提交基本信息</b> · 今天 10:32</div>
               </div>
               <div class="wait-step">
@@ -986,7 +1050,7 @@
               <div class="archive-progress-item" onclick="goPatient('screen-patient-lab-upload')" style="cursor:pointer">
                 <div>
                   <div class="archive-progress-title">化验结果</div>
-                  <div class="archive-progress-desc">血尿酸、肝肾功能等报告可继续上传</div>
+                  <div class="archive-progress-desc">血尿酸、肝功能、肾功能等报告可继续上传</div>
                 </div>
                 <div class="archive-progress-status warn" id="patientLabStatus">可上传</div>
               </div>
@@ -1022,10 +1086,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1078,10 +1142,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1096,11 +1160,11 @@
         <div class="form-body" style="flex:1;overflow-y:auto">
           <div class="guide-hero">
             <div class="guide-kicker">检查资料</div>
-            <div class="guide-title">上传尿酸、肝肾功能等化验单</div>
+            <div class="guide-title">上传血尿酸、肝功能、肾功能等化验单</div>
             <div class="guide-desc">系统会先识别报告时间和关键指标，再由医生确认归档。</div>
           </div>
           <div class="upload-panel" onclick="showLabRecognized()">
-            <div class="upload-icon">单</div>
+            <div class="upload-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
             <div class="upload-title">拍照或从相册上传</div>
             <div class="upload-desc">支持血尿酸、肝功能、肾功能、血常规等报告</div>
           </div>
@@ -1141,10 +1205,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1171,7 +1235,7 @@
               </div>
               <div class="followup-row">
                 <div class="followup-row-icon">2</div>
-                <div><div class="followup-row-title">复查项目</div><div>如血尿酸、肝肾功能等。</div></div>
+                <div><div class="followup-row-title">复查项目</div><div>如血尿酸、肝功能、肾功能等。</div></div>
               </div>
               <div class="followup-row">
                 <div class="followup-row-icon">3</div>
@@ -1182,10 +1246,10 @@
           <button class="btn-secondary-p" onclick="goPatient('screen-patient-waiting')">返回专病档案</button>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1206,9 +1270,9 @@
           <div class="p-card">
             <div class="p-card-title"><div class="p-card-title-dot"></div>复查结果</div>
             <div class="upload-panel" onclick="showLabRecognized()">
-              <div class="upload-icon">单</div>
+              <div class="upload-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="upload-title">上传或查看复查结果</div>
-              <div class="upload-desc">血尿酸、肝肾功能等化验单</div>
+              <div class="upload-desc">血尿酸、肝功能、肾功能等化验单</div>
             </div>
             <div class="lab-result-card" style="margin-top:12px">
               <div class="lab-result-row">
@@ -1224,15 +1288,15 @@
             <div class="p-card-title"><div class="p-card-title-dot"></div>近期发作</div>
             <div class="followup-list">
               <div class="followup-row">
-                <div class="followup-row-icon">位</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-hospital" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">疼痛部位</div><div>右脚大脚趾，偶有脚踝酸胀。</div></div>
               </div>
               <div class="followup-row">
-                <div class="followup-row-icon">时</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">发作时间</div><div>最近一次约 3 天前，持续 2 天。</div></div>
               </div>
               <div class="followup-row">
-                <div class="followup-row-icon">药</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">用药情况</div><div>疼痛明显时服用止痛药，降尿酸药未自行停药。</div></div>
               </div>
             </div>
@@ -1241,10 +1305,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1276,11 +1340,11 @@
             </div>
             <div class="followup-list" style="margin-top:12px">
               <div class="followup-row">
-                <div class="followup-row-icon">查</div>
-                <div><div class="followup-row-title">建议复查</div><div>血尿酸、肝肾功能。</div></div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-search" aria-hidden="true"></span></div>
+                <div><div class="followup-row-title">建议复查</div><div>血尿酸、肝功能、肾功能。</div></div>
               </div>
               <div class="followup-row">
-                <div class="followup-row-icon">醒</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">提醒方式</div><div>复诊前 3 天提醒，逾期后继续提醒并同步医生端。</div></div>
               </div>
             </div>
@@ -1289,15 +1353,15 @@
             <div class="p-card-title"><div class="p-card-title-dot"></div>管理建议</div>
             <div class="followup-list">
               <div class="followup-row">
-                <div class="followup-row-icon">药</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">用药管理</div><div>按医生方案规律用药，不自行停药；急性发作时按医嘱处理。</div></div>
               </div>
               <div class="followup-row">
-                <div class="followup-row-icon">食</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-list" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">饮食与饮水</div><div>控制高嘌呤饮食，减少饮酒，保持充足饮水。</div></div>
               </div>
               <div class="followup-row">
-                <div class="followup-row-icon">记</div>
+                <div class="followup-row-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></div>
                 <div><div class="followup-row-title">发作记录</div><div>出现红肿热痛时记录部位、时间、持续天数和用药情况。</div></div>
               </div>
             </div>
@@ -1306,10 +1370,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1336,11 +1400,11 @@
         <div class="p-body" style="flex:1;overflow-y:auto">
           <div class="home-followup-card" onclick="goPatient('screen-patient-followup-reminder')">
             <div class="home-followup-top">
-              <div class="home-followup-icon">复</div>
+              <div class="home-followup-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></div>
               <div class="home-followup-main">
                 <div class="home-followup-title">下次复诊</div>
                 <div class="home-followup-date">07月18日</div>
-                <div class="home-followup-project">复查项目：血尿酸、肝肾功能</div>
+                <div class="home-followup-project">复查项目：血尿酸、肝功能、肾功能</div>
                 <div class="home-followup-desc">请在复诊前完成复查，并按时到院复诊</div>
               </div>
               <div class="home-followup-arrow">›</div>
@@ -1351,7 +1415,7 @@
           </div>
           <div class="home-contact-row">
             <div class="home-list-row" onclick="openPatientSimple('联系医生','复诊、用药、检查结果相关问题可咨询。','screen-patient-confirmed')">
-              <div class="home-list-icon">医</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">联系医生</div>
                 <div class="home-list-desc">复诊、用药、检查结果相关问题可咨询</div>
@@ -1360,10 +1424,10 @@
             </div>
           </div>
           <div class="home-list-card">
-            <div class="home-list-row" onclick="openPatientSimple('我的痛风档案','查看尿酸、发作、用药、检查资料和复诊计划。','screen-patient-confirmed')">
-              <div class="home-list-icon">档</div>
+            <div class="home-list-row" onclick="openPatientSimple('我的病历夹','查看尿酸、发作、用药、检查资料和复诊计划。','screen-patient-confirmed')">
+              <div class="home-list-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div>
               <div class="home-list-main">
-                <div class="home-list-title">我的痛风档案</div>
+                <div class="home-list-title">我的病历夹</div>
                 <div class="home-list-desc">查看尿酸、发作、用药、检查资料和复诊计划</div>
                 <div class="home-status-pill">已建档 · 医生已确认</div>
               </div>
@@ -1373,15 +1437,15 @@
           <div class="home-section-title">快捷操作</div>
           <div class="home-list-card">
             <div class="home-list-row" onclick="goPatient('screen-patient-lab-upload')">
-              <div class="home-list-icon">单</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">上传复查结果</div>
-                <div class="home-list-desc">拍照上传尿酸、肝肾功能等化验单</div>
+                <div class="home-list-desc">拍照上传血尿酸、肝功能、肾功能等化验单</div>
               </div>
               <div class="home-list-arrow">›</div>
             </div>
             <div class="home-list-row" onclick="openPatientSimple('记录本次发作','记录疼痛部位、发作时间和用药情况。','screen-patient-confirmed')">
-              <div class="home-list-icon">记</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">记录本次发作</div>
                 <div class="home-list-desc">记录疼痛部位、发作时间和用药情况</div>
@@ -1392,7 +1456,7 @@
           <div class="home-section-title">健康助手</div>
           <div class="home-list-card">
             <div class="home-list-row" onclick="toggleHealthHelper('confirmed')">
-              <div class="home-list-icon">助</div>
+              <div class="home-list-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
               <div class="home-list-main">
                 <div class="home-list-title">健康助手</div>
                 <div class="home-list-desc">饮食、复查准备和日常管理建议</div>
@@ -1409,10 +1473,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1445,7 +1509,7 @@
             <div class="followup-list">
               <div class="followup-row">
                 <div class="followup-row-icon">1</div>
-                <div><div class="followup-row-title">完成复查</div><div>建议提前完成血尿酸、肝肾功能检查。</div></div>
+                <div><div class="followup-row-title">完成复查</div><div>建议提前完成血尿酸、肝功能、肾功能检查。</div></div>
               </div>
               <div class="followup-row">
                 <div class="followup-row-icon">2</div>
@@ -1459,12 +1523,12 @@
           </div>
           <div class="followup-action-grid">
             <div class="followup-action-card" onclick="goPatient('screen-patient-lab-upload')">
-              <div class="followup-action-icon">单</div>
+              <div class="followup-action-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="followup-action-title">上传检验结果</div>
-              <div class="followup-action-desc">尿酸、肝肾功能等化验单</div>
+              <div class="followup-action-desc">血尿酸、肝功能、肾功能等化验单</div>
             </div>
             <div class="followup-action-card" onclick="openPatientSimple('联系医生','复诊、用药、检查结果相关问题可咨询。','screen-patient-followup-reminder')">
-              <div class="followup-action-icon">医</div>
+              <div class="followup-action-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
               <div class="followup-action-title">联系医生</div>
               <div class="followup-action-desc">复诊、用药、检查结果咨询</div>
             </div>
@@ -1472,10 +1536,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1539,7 +1603,7 @@
             <div class="followup-list">
               <div class="followup-row">
                 <div class="followup-row-icon">1</div>
-                <div><div class="followup-row-title">复查结果</div><div>血尿酸、肝肾功能等化验单，拍照上传或带到医院。</div></div>
+                <div><div class="followup-row-title">复查结果</div><div>血尿酸、肝功能、肾功能等化验单，拍照上传或带到医院。</div></div>
               </div>
               <div class="followup-row">
                 <div class="followup-row-icon">2</div>
@@ -1553,12 +1617,12 @@
           </div>
           <div class="followup-action-grid">
             <div class="followup-action-card" onclick="goPatient('screen-patient-lab-upload')">
-              <div class="followup-action-icon">单</div>
+              <div class="followup-action-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="followup-action-title">上传检验结果</div>
-              <div class="followup-action-desc">尿酸、肝肾功能等化验单</div>
+              <div class="followup-action-desc">血尿酸、肝功能、肾功能等化验单</div>
             </div>
             <div class="followup-action-card" onclick="openPatientSimple('联系医生','复诊、用药、检查结果相关问题可咨询。','screen-patient-followup-today')">
-              <div class="followup-action-icon">医</div>
+              <div class="followup-action-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
               <div class="followup-action-title">联系医生</div>
               <div class="followup-action-desc">复诊、用药、检查结果咨询</div>
             </div>
@@ -1575,10 +1639,10 @@
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1592,7 +1656,7 @@
         </div>
         <div class="p-body" style="flex:1;overflow-y:auto">
           <div class="followup-hero">
-            <div class="followup-result-icon">✓</div>
+            <div class="followup-result-icon"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
             <div class="followup-kicker">复诊签到已完成</div>
             <div class="followup-title">请等待医生补充复诊记录</div>
             <div class="followup-desc">医生端已收到本次复诊签到。</div>
@@ -1601,7 +1665,7 @@
             <div class="p-card-title"><div class="p-card-title-dot"></div>当前进度</div>
             <div class="wait-steps">
               <div class="wait-step">
-                <div class="wait-step-dot done">✓</div>
+                <div class="wait-step-dot done"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
                 <div class="wait-step-text"><b>复诊扫码成功</b> · 今天 09:30</div>
               </div>
               <div class="wait-step">
@@ -1617,10 +1681,10 @@
           <button class="btn-secondary-p" onclick="goPatient('screen-patient-followup-check')">无法按时复诊</button>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1634,36 +1698,36 @@
         </div>
         <div class="p-body" style="flex:1;overflow-y:auto">
           <div class="followup-hero followup-missed-hero">
-            <div class="followup-result-icon warn">!</div>
+            <div class="followup-result-icon warn"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></div>
             <div class="followup-kicker" style="background:rgba(237,123,47,0.12);color:#B45B12">复诊已逾期</div>
             <div class="followup-title">请更新复诊安排</div>
             <div class="followup-desc">如果暂时无法到院，请选择合适的处理方式。</div>
           </div>
           <div class="followup-option-list">
             <button class="followup-option" onclick="goPatient('screen-patient-followup-scan')">
-              <span class="followup-option-icon">✓</span>
+              <span class="followup-option-icon"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></span>
               <span><span class="followup-option-title">我已复诊</span><span class="followup-option-desc">去扫码完成本次复诊签到</span></span>
             </button>
             <button class="followup-option" onclick="requestFollowupChange()">
-              <span class="followup-option-icon">改</span>
+              <span class="followup-option-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></span>
               <span><span class="followup-option-title">我还没复诊，想改时间</span><span class="followup-option-desc">医生端会收到改期申请</span></span>
             </button>
             <button class="followup-option" onclick="submitOutsideLab()">
-              <span class="followup-option-icon">单</span>
+              <span class="followup-option-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></span>
               <span><span class="followup-option-title">我有外院化验单</span><span class="followup-option-desc">上传后由医生确认</span></span>
             </button>
             <button class="followup-option" onclick="confirmMissedFollowup()">
-              <span class="followup-option-icon">电</span>
+              <span class="followup-option-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></span>
               <span><span class="followup-option-title">不方便复诊，需要医生联系</span><span class="followup-option-desc">医生端将进入人工跟进</span></span>
             </button>
           </div>
           <div style="height:16px"></div>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1677,7 +1741,7 @@
         </div>
         <div class="p-body" style="flex:1;overflow-y:auto">
           <div class="followup-hero followup-complete-hero">
-            <div class="followup-result-icon">✓</div>
+            <div class="followup-result-icon"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
             <div class="followup-kicker">医生已完成本次复诊记录</div>
             <div class="followup-title">本次复诊已更新到专病档案</div>
             <div class="followup-desc">医生端已保存第 2 次复诊记录，并更新本次复诊摘要。下一次提醒将按医生确认后的计划重新计算。</div>
@@ -1691,10 +1755,10 @@
           <button class="btn-primary" onclick="goPatient('screen-patient-confirmed')">返回痛风管理卡</button>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1732,10 +1796,10 @@
           <button class="btn-primary" id="patientSimpleAction" onclick="goPatient('screen-patient-confirmed')">返回</button>
         </div>
         <div class="p-bottom-nav">
-          <div class="p-nav-item active"><div class="p-nav-icon">🏠</div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">📁</div><div class="p-nav-label">档案</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">💬</div><div class="p-nav-label">消息</div></div>
-          <div class="p-nav-item"><div class="p-nav-icon">👤</div><div class="p-nav-label">我的</div></div>
+          <div class="p-nav-item active"><div class="p-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="p-nav-label" style="color:#03D49F">首页</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div><div class="p-nav-label">档案</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="p-nav-label">消息</div></div>
+          <div class="p-nav-item"><div class="p-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="p-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -1755,7 +1819,7 @@
     <div class="phone-frame">
       <div class="phone-status">
         <span>9:41</span>
-        <span>☰ ▶ ◾</span>
+        <span class="phone-status-icons" aria-hidden="true"><span></span><span></span><span></span></span>
       </div>
       <div class="phone-content" id="doctorPhoneContent">
 
@@ -1791,7 +1855,7 @@
             <div class="d-section-title">今日待办</div>
             <div class="d-card">
               <div class="todo-item hidden" id="todoFollowupArrived" onclick="goDoctor('screen-doctor-followup-recording')">
-                <div class="todo-icon todo-icon-blue">📝</div>
+                <div class="todo-icon todo-icon-blue"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">张明到院复诊</div>
                   <div class="todo-desc">请补充本次复诊记录并确认字段依据</div>
@@ -1800,7 +1864,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item hidden" id="todoZhangMissed" onclick="goDoctor('screen-doctor-patient-detail')">
-                <div class="todo-icon todo-icon-red">🚨</div>
+                <div class="todo-icon todo-icon-red"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">张明失访预警 · 需人工介入</div>
                   <div class="todo-desc">复诊到期后未更新复诊记录，患者确认本次未复诊</div>
@@ -1809,7 +1873,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item" id="todoNewArchive" onclick="setDocTab('patients')">
-                <div class="todo-icon todo-icon-orange">📋</div>
+                <div class="todo-icon todo-icon-orange"><span class="ui-icon ui-icon-list" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">待确认专病档案</div>
                   <div class="todo-desc" id="todoNewArchiveDesc">李晓红、赵强待补全病史</div>
@@ -1819,7 +1883,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item" onclick="openDoctorSimple('复查逾期','查看超过计划复查时间仍未更新记录的患者。','screen-doctor-workbench')">
-                <div class="todo-icon todo-icon-red">⏰</div>
+                <div class="todo-icon todo-icon-red"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">复查逾期</div>
                   <div class="todo-desc">李晓红 已超期 8 天未复诊</div>
@@ -1828,7 +1892,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item" onclick="openDoctorSimple('失访预警','查看长期未复诊、提醒无响应或需要人工联系的患者。','screen-doctor-workbench')">
-                <div class="todo-icon todo-icon-red">🚨</div>
+                <div class="todo-icon todo-icon-red"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">失访预警 · 需人工介入</div>
                   <div class="todo-desc">陈建国 失联超过 21 天，AI 提醒无响应</div>
@@ -1837,7 +1901,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item" onclick="openDoctorSimple('尿酸不达标','查看尿酸持续偏高或治疗效果不理想的患者。','screen-doctor-workbench')">
-                <div class="todo-icon todo-icon-orange">🔬</div>
+                <div class="todo-icon todo-icon-orange"><span class="ui-icon ui-icon-lab" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">尿酸不达标</div>
                   <div class="todo-desc">王磊 尿酸 620μmol/L，用药 3 个月仍超标</div>
@@ -1846,7 +1910,7 @@
                 <div class="todo-arrow">›</div>
               </div>
               <div class="todo-item" onclick="setDocTab('consult')">
-                <div class="todo-icon todo-icon-blue">💬</div>
+                <div class="todo-icon todo-icon-blue"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
                 <div class="todo-main">
                   <div class="todo-title">复杂咨询待回复</div>
                   <div class="todo-desc">刘洋 问及急性发作处理，AI 转人工</div>
@@ -1872,7 +1936,7 @@
             </div>
             <div class="d-section-title">工具入口</div>
             <div class="quick-intake-card" onclick="goDoctor('screen-doctor-my-qr')">
-              <div class="quick-intake-icon">＋</div>
+              <div class="quick-intake-icon"><span class="ui-icon ui-icon-plus" aria-hidden="true"></span></div>
               <div style="flex:1;min-width:0">
                 <div class="quick-intake-title">快速建档</div>
                 <div class="quick-intake-desc">出示医生二维码，患者扫码后 5 分钟内完成建档。</div>
@@ -1883,20 +1947,20 @@
         </div>
         <div class="d-bottom-nav" id="docNav">
           <div class="d-nav-item active" id="dnav-workbench" onclick="setDocTab('workbench')">
-            <div class="d-nav-icon">🏠</div>
+            <div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div>
             <div class="d-nav-label">工作台</div>
           </div>
           <div class="d-nav-item" id="dnav-patients" onclick="setDocTab('patients')">
-            <div class="d-nav-icon">👥</div>
+            <div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div>
             <div class="d-nav-label">患者</div>
             <div class="d-nav-badge">3</div>
           </div>
           <div class="d-nav-item" id="dnav-consult" onclick="setDocTab('consult')">
-            <div class="d-nav-icon">💬</div>
+            <div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
             <div class="d-nav-label">咨询</div>
           </div>
           <div class="d-nav-item" id="dnav-mine" onclick="setDocTab('mine')">
-            <div class="d-nav-icon">👤</div>
+            <div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div>
             <div class="d-nav-label">我的</div>
           </div>
         </div>
@@ -1912,7 +1976,7 @@
         </div>
         <div style="padding:12px 12px 0">
           <div class="quick-intake-card" onclick="goDoctor('screen-doctor-my-qr')" style="margin-bottom:10px">
-            <div class="quick-intake-icon">＋</div>
+            <div class="quick-intake-icon"><span class="ui-icon ui-icon-plus" aria-hidden="true"></span></div>
             <div style="flex:1;min-width:0">
               <div class="quick-intake-title">新增痛风专病档案</div>
               <div class="quick-intake-desc">患者扫码后自动关联手机号和医生端档案。</div>
@@ -1920,7 +1984,7 @@
             <div class="todo-arrow">›</div>
           </div>
           <div class="d-search">
-            <div class="d-search-icon">🔍</div>
+            <div class="d-search-icon"><span class="ui-icon ui-icon-search" aria-hidden="true"></span></div>
             <input class="d-search-input" placeholder="搜索患者姓名/手机号" />
           </div>
           <div style="display:flex;gap:8px;margin-bottom:8px;overflow-x:auto;padding-bottom:2px">
@@ -2000,10 +2064,10 @@
         </div>
         <!-- copy d-bottom-nav -->
         <div class="d-bottom-nav">
-          <div class="d-nav-item" id="dnav2-workbench" onclick="setDocTab('workbench')"><div class="d-nav-icon">🏠</div><div class="d-nav-label">工作台</div></div>
-          <div class="d-nav-item active" id="dnav2-patients" onclick="setDocTab('patients')"><div class="d-nav-icon">👥</div><div class="d-nav-label">患者</div></div>
-          <div class="d-nav-item" id="dnav2-consult" onclick="setDocTab('consult')"><div class="d-nav-icon">💬</div><div class="d-nav-label">咨询</div></div>
-          <div class="d-nav-item" id="dnav2-mine" onclick="setDocTab('mine')"><div class="d-nav-icon">👤</div><div class="d-nav-label">我的</div></div>
+          <div class="d-nav-item" id="dnav2-workbench" onclick="setDocTab('workbench')"><div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="d-nav-label">工作台</div></div>
+          <div class="d-nav-item active" id="dnav2-patients" onclick="setDocTab('patients')"><div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div><div class="d-nav-label">患者</div></div>
+          <div class="d-nav-item" id="dnav2-consult" onclick="setDocTab('consult')"><div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="d-nav-label">咨询</div></div>
+          <div class="d-nav-item" id="dnav2-mine" onclick="setDocTab('mine')"><div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="d-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -2025,7 +2089,7 @@
           <div style="background:#fff;padding:12px 16px;border-bottom:1px solid #f0f0f0">
             <div style="font-size:12px;color:#86909C;margin-bottom:8px">档案模块</div>
             <div class="archive-entry" onclick="goDoctor('screen-doctor-gout-archive')">
-              <div class="archive-entry-icon">档</div>
+              <div class="archive-entry-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div>
               <div class="archive-entry-main">
                 <div class="archive-entry-title">
                   痛风专病档案
@@ -2039,35 +2103,35 @@
             </div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
               <div class="pd-module" onclick="goDoctor('screen-doctor-gout-archive')">
-                <div class="pd-module-icon highlight">📋</div>
+                <div class="pd-module-icon highlight"><span class="ui-icon ui-icon-list" aria-hidden="true"></span></div>
                 <div class="pd-module-label">结构化档案</div>
               </div>
               <div class="pd-module" onclick="goTo('screen-doctor-ocr')">
-                <div class="pd-module-icon highlight">📄</div>
+                <div class="pd-module-icon highlight"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
                 <div class="pd-module-label">化验单</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('既往史','查看和补充患者既往疾病、手术史和长期用药史。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">📝</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></div>
                 <div class="pd-module-label">既往史</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('生活史','查看和补充饮酒、饮食、运动等生活方式信息。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">🍺</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-beer" aria-hidden="true"></span></div>
                 <div class="pd-module-label">生活史</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('过敏史','查看和补充药物、食物及其他过敏信息。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">⚠️</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></div>
                 <div class="pd-module-label">过敏史</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('家族史','查看和补充痛风、高尿酸血症及相关家族史。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">👨‍👩‍👦</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-family" aria-hidden="true"></span></div>
                 <div class="pd-module-label">家族史</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('体格检查','记录关节红肿、压痛、痛风石等体格检查信息。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">🩺</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
                 <div class="pd-module-label">体格检查</div>
               </div>
               <div class="pd-module" onclick="openDoctorSimple('病情评估','查看痛风控制情况、复发风险和管理建议。','screen-doctor-patient-detail')">
-                <div class="pd-module-icon">📊</div>
+                <div class="pd-module-icon"><span class="ui-icon ui-icon-chart" aria-hidden="true"></span></div>
                 <div class="pd-module-label">病情评估</div>
               </div>
             </div>
@@ -2084,14 +2148,14 @@
             </div>
             <button class="btn-primary-d" onclick="goDoctor('screen-doctor-gout-archive')">确认痛风专病档案</button>
             <button class="btn-primary-d hidden" id="btnStartFollowupRecording" onclick="goDoctor('screen-doctor-followup-recording')" style="display:none">补充复诊记录</button>
-            <button class="btn-outline-d" onclick="goTo('screen-doctor-ocr')">📄 上传化验单</button>
+            <button class="btn-outline-d" onclick="goTo('screen-doctor-ocr')"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span> 上传化验单</button>
           </div>
         </div>
         <div class="d-bottom-nav">
-          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon">🏠</div><div class="d-nav-label">工作台</div></div>
-          <div class="d-nav-item active" onclick="setDocTab('patients')"><div class="d-nav-icon">👥</div><div class="d-nav-label">患者</div></div>
-          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon">💬</div><div class="d-nav-label">咨询</div></div>
-          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon">👤</div><div class="d-nav-label">我的</div></div>
+          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="d-nav-label">工作台</div></div>
+          <div class="d-nav-item active" onclick="setDocTab('patients')"><div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div><div class="d-nav-label">患者</div></div>
+          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="d-nav-label">咨询</div></div>
+          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="d-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -2202,7 +2266,7 @@
           </div>
           <div class="d-card">
             <div class="todo-item" onclick="goTo('screen-doctor-ocr')">
-              <div class="todo-icon todo-icon-orange">📄</div>
+              <div class="todo-icon todo-icon-orange"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="todo-main">
                 <div class="todo-title">化验单冲突待确认</div>
                 <div class="todo-desc">当前用药记录与化验单信息不一致</div>
@@ -2210,10 +2274,10 @@
               <div class="todo-arrow">›</div>
             </div>
             <div class="todo-item" onclick="openDoctorSimple('新上传资料','查看患者新上传的化验单和补充材料。','screen-doctor-gout-archive')">
-              <div class="todo-icon todo-icon-blue">📎</div>
+              <div class="todo-icon todo-icon-blue"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="todo-main">
                 <div class="todo-title">患者新上传资料</div>
-                <div class="todo-desc">外院肝肾功能报告待归档</div>
+                <div class="todo-desc">外院肝功能、肾功能指标待归档</div>
               </div>
               <div class="todo-arrow">›</div>
             </div>
@@ -2379,7 +2443,7 @@
             <div class="archive-field-row" onclick="toggleArchiveHistory(this)">
               <div class="archive-field-head">
                 <div>
-                  <div class="field-label">5. 目前是否疼痛</div>
+                  <div class="field-label">5. 当前是否疼痛</div>
                   <div class="archive-field-value" id="archivePainValue">偶有脚趾酸胀，无急性发作</div>
                 </div>
                 <span class="archive-source-badge">复诊更新</span>
@@ -2509,9 +2573,9 @@
                 <span class="archive-source-badge">化验单识别</span>
               </div>
               <div class="archive-field-meta">
-                <span>来源：肾功能化验单</span>
+                <span>来源：生化检验报告单</span>
                 <span>化验时间：2026-06-23 09:20</span>
-                <span>目录：肝肾功能</span>
+                <span>字段模块：尿酸指标</span>
               </div>
             </div>
           </div>
@@ -2539,11 +2603,11 @@
               <div style="font-size:14px;font-weight:700;color:#1D2129">管理计划与依据</div>
               <div style="font-size:12px;color:#0052D9;cursor:pointer" onclick="goTo('screen-doctor-plan')">查看计划</div>
             </div>
-            <div style="font-size:13px;color:#4E5969;line-height:1.6;margin-bottom:10px">下次复诊 07月07日，复查血尿酸、肝肾功能。</div>
+            <div style="font-size:13px;color:#4E5969;line-height:1.6;margin-bottom:10px">下次复诊 07月07日，复查血尿酸、肝功能、肾功能。</div>
             <div style="display:flex;flex-wrap:wrap;gap:7px">
               <span class="d-tag d-tag-primary">字段级问诊录音片段 2</span>
               <span class="d-tag d-tag-primary">尿酸化验单 1</span>
-              <span class="d-tag d-tag-primary">肝肾功能化验单 1</span>
+              <span class="d-tag d-tag-primary">生化检验报告单 1</span>
               <span class="d-tag d-tag-gray">患者补充信息</span>
               <span class="d-tag d-tag-gray">医生手动确认</span>
             </div>
@@ -2568,7 +2632,7 @@
           <!-- recording phase -->
           <div id="recPhase">
             <div class="rec-area">
-              <div class="rec-pulse" id="recBtn" onclick="stopRecording()">🎙️</div>
+              <div class="rec-pulse" id="recBtn" onclick="stopRecording()"><span class="ui-icon ui-icon-mic" aria-hidden="true"></span></div>
               <div class="rec-label">正在录音中</div>
               <div class="rec-timer" id="recTimer">00:47</div>
             </div>
@@ -2659,7 +2723,7 @@
                 <div class="field-expand">查看 AI 依据 ▾</div>
               </div>
               <div class="field-row" onclick="toggleEvidence(this)">
-                <div class="field-label">5. 目前是否疼痛</div>
+                <div class="field-label">5. 当前是否疼痛</div>
                 <div class="field-value">偶有轻微酸感，无明显疼痛 <span class="field-ai-badge">AI 提取</span></div>
                 <div class="field-evidence">
                   <div class="evidence-source-list">
@@ -2701,7 +2765,7 @@
             <div style="background:#f5f7fb;border-radius:12px;padding:12px 14px">
               <div style="font-size:12px;color:#86909C;margin-bottom:6px">其他档案模块</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px">
-                <span class="d-tag d-tag-gray">基本信息 ✓</span>
+                <span class="d-tag d-tag-gray">基本信息</span>
                 <span class="d-tag d-tag-gray">痛风病史 待确认</span>
                 <span class="d-tag d-tag-gray">既往史</span>
                 <span class="d-tag d-tag-gray">生活史</span>
@@ -2739,7 +2803,7 @@
               </div>
             </div>
             <div class="rec-area">
-              <div class="rec-pulse" onclick="stopFollowupRecording()">🎙️</div>
+              <div class="rec-pulse" onclick="stopFollowupRecording()"><span class="ui-icon ui-icon-mic" aria-hidden="true"></span></div>
               <div class="rec-label">正在录音中</div>
               <div class="rec-timer">00:36</div>
             </div>
@@ -2803,13 +2867,13 @@
         <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
           <div id="ocrUploadArea">
             <div class="ocr-upload" onclick="showOCRResult()">
-              <div class="ocr-upload-icon">📸</div>
+              <div class="ocr-upload-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="ocr-upload-text">点击上传化验单</div>
               <div class="ocr-upload-sub">外院报告、历史资料和复诊化验可在这里补录</div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;margin-top:10px;background:#f5f7fb;border-radius:10px;padding:10px 12px">
-              <span>ℹ️</span>
-              <div style="font-size:12px;color:#86909C;line-height:1.5">识别后按血常规、肝肾功能、尿酸等目录归档。</div>
+              <span class="ui-icon ui-icon-info" aria-hidden="true"></span>
+              <div style="font-size:12px;color:#86909C;line-height:1.5">识别后按血常规检验报告单、生化检验报告单、尿常规检验报告单等报告单归档。</div>
             </div>
           </div>
           <div id="ocrResultArea" style="display:none;flex-direction:column;gap:12px">
@@ -2820,10 +2884,10 @@
             <!-- UA result -->
             <div class="ocr-result">
               <div class="ocr-result-header">
-                <span>🔬</span>
-                <div class="ocr-result-title">血尿酸检查</div>
+                <span class="ui-icon ui-icon-lab" aria-hidden="true"></span>
+                <div class="ocr-result-title">生化检验报告单</div>
                 <div class="d-tag d-tag-gray" style="font-size:11px">2026-06-20</div>
-                <div class="d-tag d-tag-primary" style="font-size:11px;margin-left:4px">尿酸子目录</div>
+                <div class="d-tag d-tag-primary" style="font-size:11px;margin-left:4px">生化检验报告单 · 尿酸指标</div>
               </div>
               <div class="ocr-field-row">
                 <div class="ocr-field-name">血尿酸 (UA)</div>
@@ -2835,7 +2899,7 @@
               </div>
               <div style="padding:8px 16px">
                 <div class="ocr-conflict">
-                  <div class="ocr-conflict-title">⚠️ 数据确认</div>
+                  <div class="ocr-conflict-title"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span> 数据确认</div>
                   <div style="font-size:12px;color:#666;margin-bottom:6px">以下项目存在两个来源，请确认使用哪个：</div>
                   <div class="ocr-conflict-row">
                     <span>当前用药（苯溴马隆）</span>
@@ -2855,10 +2919,10 @@
             <!-- Renal function -->
             <div class="ocr-result">
               <div class="ocr-result-header">
-                <span>🧪</span>
-                <div class="ocr-result-title">肝肾功能</div>
+                <span class="ui-icon ui-icon-lab" aria-hidden="true"></span>
+                <div class="ocr-result-title">生化检验报告单</div>
                 <div class="d-tag d-tag-gray" style="font-size:11px">2026-06-20</div>
-                <div class="d-tag d-tag-primary" style="font-size:11px;margin-left:4px">肝肾功能子目录</div>
+                <div class="d-tag d-tag-primary" style="font-size:11px;margin-left:4px">肾功能指标 · 肝功能</div>
               </div>
               <div class="ocr-field-row">
                 <div class="ocr-field-name">肌酐 (Cr)</div>
@@ -2949,8 +3013,8 @@
                 <div class="plan-tl-right">
                   <div class="plan-tl-date">2026-07-07 · 2 周后复诊</div>
                   <div class="plan-tl-card">
-                    <div class="plan-tl-title">🏥 复查尿酸 + 肝肾功能</div>
-                    <div class="plan-tl-desc">复查血尿酸、肝肾功能；由医生评估治疗效果并确认处理方案</div>
+                    <div class="plan-tl-title"><span class="ui-icon ui-icon-hospital" aria-hidden="true"></span> 复查血尿酸 + 肝功能 + 肾功能</div>
+                    <div class="plan-tl-desc">复查血尿酸、肝功能、肾功能；由医生评估治疗效果并确认处理方案</div>
                   </div>
                 </div>
               </div>
@@ -2962,7 +3026,7 @@
                 <div class="plan-tl-right">
                   <div class="plan-tl-date">2026-07-14 · 超期 1 周未复诊</div>
                   <div class="plan-tl-card" style="background:#FFF9E8;border:1px solid rgba(237,123,47,0.2)">
-                    <div class="plan-tl-title" style="color:#ED7B2F">⚠️ 医生待办 · 失访预警</div>
+                    <div class="plan-tl-title" style="color:#ED7B2F"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span> 医生待办 · 失访预警</div>
                     <div class="plan-tl-desc">患者超期未复诊，AI 提醒无响应，转为医生工作台待办</div>
                   </div>
                 </div>
@@ -3037,10 +3101,10 @@
           </div>
         </div>
         <div class="d-bottom-nav">
-          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon">🏠</div><div class="d-nav-label">工作台</div></div>
-          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon">👥</div><div class="d-nav-label">患者</div></div>
-          <div class="d-nav-item active" onclick="setDocTab('consult')"><div class="d-nav-icon">💬</div><div class="d-nav-label">咨询</div></div>
-          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon">👤</div><div class="d-nav-label">我的</div></div>
+          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="d-nav-label">工作台</div></div>
+          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div><div class="d-nav-label">患者</div></div>
+          <div class="d-nav-item active" onclick="setDocTab('consult')"><div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="d-nav-label">咨询</div></div>
+          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="d-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -3056,41 +3120,41 @@
               <div class="mine-role">专科医生 · 风湿免疫科</div>
               <div class="mine-dept">温岭市第一人民医院</div>
             </div>
-            <div class="mine-qr-shortcut" onclick="goDoctor('screen-doctor-my-qr')"><img class="mine-qr-icon" src="assets/qr-icon.png" alt="我的二维码" /></div>
+            <div class="mine-qr-shortcut" onclick="goDoctor('screen-doctor-my-qr')"><img class="mine-qr-icon" src="assets/qr-icon.svg" alt="我的二维码" /></div>
           </div>
           <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
             <div class="mine-menu-section">
               <div class="mine-menu-item" onclick="goDoctor('screen-doctor-my-qr')">
-                <div class="mine-menu-icon"><img class="mine-qr-icon" src="assets/qr-icon.png" alt="" /></div>
+                <div class="mine-menu-icon"><img class="mine-qr-icon" src="assets/qr-icon.svg" alt="" /></div>
                 <div class="mine-menu-text">我的二维码</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
             </div>
             <div class="mine-menu-section">
               <div class="mine-menu-item" onclick="openDoctorSimple('欢迎使用','查看产品说明和医生端使用引导。','screen-doctor-mine')">
-                <div class="mine-menu-icon">⭐</div>
+                <div class="mine-menu-icon"><span class="ui-icon ui-icon-star" aria-hidden="true"></span></div>
                 <div class="mine-menu-text">欢迎使用</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
               <div class="mine-menu-item" onclick="openDoctorSimple('隐私政策','查看医疗健康信息授权和隐私保护说明。','screen-doctor-mine')">
-                <div class="mine-menu-icon">🔒</div>
+                <div class="mine-menu-icon"><span class="ui-icon ui-icon-shield" aria-hidden="true"></span></div>
                 <div class="mine-menu-text">隐私政策</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
               <div class="mine-menu-item" onclick="openDoctorSimple('用户协议','查看医生端服务协议。','screen-doctor-mine')">
-                <div class="mine-menu-icon">📄</div>
+                <div class="mine-menu-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
                 <div class="mine-menu-text">用户协议</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
             </div>
             <div class="mine-menu-section">
               <div class="mine-menu-item" onclick="openDoctorSimple('意见反馈','提交医生端使用问题和产品建议。','screen-doctor-mine')">
-                <div class="mine-menu-icon">💬</div>
+                <div class="mine-menu-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>
                 <div class="mine-menu-text">意见反馈</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
               <div class="mine-menu-item" onclick="openDoctorSimple('关于云医邦邦','查看产品和服务信息。','screen-doctor-mine')">
-                <div class="mine-menu-icon">ℹ️</div>
+                <div class="mine-menu-icon"><span class="ui-icon ui-icon-info" aria-hidden="true"></span></div>
                 <div class="mine-menu-text">关于云医邦邦</div>
                 <div class="mine-menu-arrow">›</div>
               </div>
@@ -3100,10 +3164,10 @@
           <div style="text-align:center;font-size:12px;color:#C9CDD4;padding:20px 0">云医邦邦工作台 v2.0.0</div>
         </div>
         <div class="d-bottom-nav">
-          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon">🏠</div><div class="d-nav-label">工作台</div></div>
-          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon">👥</div><div class="d-nav-label">患者</div></div>
-          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon">💬</div><div class="d-nav-label">咨询</div></div>
-          <div class="d-nav-item active" onclick="setDocTab('mine')"><div class="d-nav-icon">👤</div><div class="d-nav-label">我的</div></div>
+          <div class="d-nav-item" onclick="setDocTab('workbench')"><div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="d-nav-label">工作台</div></div>
+          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div><div class="d-nav-label">患者</div></div>
+          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="d-nav-label">咨询</div></div>
+          <div class="d-nav-item active" onclick="setDocTab('mine')"><div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="d-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -3141,7 +3205,7 @@
           </div>
           <div class="doctor-qr-info-card">
             <div class="doctor-qr-info-main">
-              <div class="doctor-qr-info-icon">▣</div>
+              <div class="doctor-qr-info-icon"><span class="ui-icon ui-icon-qr" aria-hidden="true"></span></div>
               <div>
                 <div class="doctor-qr-info-title">面对面建档</div>
                 <div class="doctor-qr-info-desc">患者扫描此二维码，建立专病档案。</div>
@@ -3151,7 +3215,7 @@
           </div>
           <div class="doctor-qr-info-card">
             <div class="doctor-qr-info-main">
-              <div class="doctor-qr-info-icon" style="color:#ED7B2F">☑</div>
+              <div class="doctor-qr-info-icon" style="color:#ED7B2F"><span class="ui-icon ui-icon-check" aria-hidden="true"></span></div>
               <div>
                 <div class="doctor-qr-info-title">扫码后需医生确认</div>
                 <div class="doctor-qr-info-desc">AI 提取内容仅作为草稿，确认后才生效。</div>
@@ -3197,10 +3261,10 @@
           <button class="btn-primary-d" id="doctorSimpleAction" onclick="goDoctor('screen-doctor-workbench')">返回</button>
         </div>
         <div class="d-bottom-nav">
-          <div class="d-nav-item active" onclick="setDocTab('workbench')"><div class="d-nav-icon">🏠</div><div class="d-nav-label">工作台</div></div>
-          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon">👥</div><div class="d-nav-label">患者</div></div>
-          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon">💬</div><div class="d-nav-label">咨询</div></div>
-          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon">👤</div><div class="d-nav-label">我的</div></div>
+          <div class="d-nav-item active" onclick="setDocTab('workbench')"><div class="d-nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div><div class="d-nav-label">工作台</div></div>
+          <div class="d-nav-item" onclick="setDocTab('patients')"><div class="d-nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div><div class="d-nav-label">患者</div></div>
+          <div class="d-nav-item" onclick="setDocTab('consult')"><div class="d-nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div><div class="d-nav-label">咨询</div></div>
+          <div class="d-nav-item" onclick="setDocTab('mine')"><div class="d-nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div><div class="d-nav-label">我的</div></div>
         </div>
       </div>
 
@@ -3220,40 +3284,40 @@
         <div class="nav-state-group">
           <button class="nav-state-toggle" onclick="togglePageNav('patientHomeGroupToggle','patientHomeGroup')" id="patientHomeGroupToggle"><span class="nav-state-title">首页状态</span><span class="nav-count">2</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content" id="patientHomeGroup">
-            <button class="page-btn patient" onclick="goPatient('screen-patient-home')"><span class="page-icon">首</span><span class="page-title">未建档首页</span></button>
-            <button class="page-btn patient" onclick="confirmPlan()"><span class="page-icon">管</span><span class="page-title">已纳管首页</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-home')"><span class="page-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></span><span class="page-title">未建档首页</span></button>
+            <button class="page-btn patient" onclick="confirmPlan()"><span class="page-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></span><span class="page-title">已纳管首页</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('patientArchiveGroupToggle','patientArchiveGroup')" id="patientArchiveGroupToggle"><span class="nav-state-title">建档与资料补充</span><span class="nav-count">5</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="patientArchiveGroup">
-            <button class="page-btn patient" onclick="goPatient('screen-patient-scanning')"><span class="page-icon">扫</span><span class="page-title">扫码识别医生</span></button>
-            <button class="page-btn patient" onclick="goPatient('screen-patient-scan')"><span class="page-icon">填</span><span class="page-title">填写基本信息</span></button>
-            <button class="page-btn patient" onclick="submitPatientProfile()"><span class="page-icon">等</span><span class="page-title">建档中待确认</span></button>
-            <button class="page-btn patient" onclick="goPatient('screen-patient-gout-history')"><span class="page-icon">史</span><span class="page-title">补充痛风病史</span></button>
-            <button class="page-btn patient" onclick="goPatient('screen-patient-lab-upload')"><span class="page-icon">验</span><span class="page-title">上传化验结果</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-scanning')"><span class="page-icon"><span class="ui-icon ui-icon-qr" aria-hidden="true"></span></span><span class="page-title">扫码识别医生</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-scan')"><span class="page-icon"><span class="ui-icon ui-icon-edit" aria-hidden="true"></span></span><span class="page-title">填写基本信息</span></button>
+            <button class="page-btn patient" onclick="submitPatientProfile()"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">建档中待确认</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-gout-history')"><span class="page-icon"><span class="ui-icon ui-icon-list" aria-hidden="true"></span></span><span class="page-title">补充痛风病史</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-lab-upload')"><span class="page-icon"><span class="ui-icon ui-icon-lab" aria-hidden="true"></span></span><span class="page-title">上传化验结果</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('patientPlanGroupToggle','patientPlanGroup')" id="patientPlanGroupToggle"><span class="nav-state-title">管理计划状态</span><span class="nav-count">2</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="patientPlanGroup">
-            <button class="page-btn patient" onclick="goPatient('screen-patient-care-plan')"><span class="page-icon">待</span><span class="page-title">待确认管理计划</span></button>
-            <button class="page-btn patient" onclick="goPatient('screen-patient-care-plan-confirmed')"><span class="page-icon">管</span><span class="page-title">已确认管理计划</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-care-plan')"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">待确认管理计划</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-care-plan-confirmed')"><span class="page-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></span><span class="page-title">已确认管理计划</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('patientFollowupGroupToggle','patientFollowupGroup')" id="patientFollowupGroupToggle"><span class="nav-state-title">复诊状态</span><span class="nav-count">3</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="patientFollowupGroup">
-            <button class="page-btn patient" onclick="goPatient('screen-patient-followup-reminder')"><span class="page-icon">复</span><span class="page-title">复诊提醒页</span></button>
-            <button class="page-btn patient" onclick="goPatient('screen-patient-followup-today')"><span class="page-icon">今</span><span class="page-title">今日复诊页</span></button>
-            <button class="page-btn alert" onclick="goPatient('screen-patient-followup-check')"><span class="page-icon">逾</span><span class="page-title">逾期未复诊</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-followup-reminder')"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">复诊提醒页</span></button>
+            <button class="page-btn patient" onclick="goPatient('screen-patient-followup-today')"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">今日复诊页</span></button>
+            <button class="page-btn alert" onclick="goPatient('screen-patient-followup-check')"><span class="page-icon"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></span><span class="page-title">逾期未复诊</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('patientCommonGroupToggle','patientCommonGroup')" id="patientCommonGroupToggle"><span class="nav-state-title">通用功能</span><span class="nav-count">2</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="patientCommonGroup">
-            <button class="page-btn patient" onclick="openPatientSimple('联系医生','复诊、用药、检查结果相关问题可咨询。','screen-patient-confirmed')"><span class="page-icon">医</span><span class="page-title">联系医生</span></button>
-            <button class="page-btn patient" onclick="openPatientSimple('我的痛风档案','查看尿酸、发作、用药、检查资料和复诊计划。','screen-patient-confirmed')"><span class="page-icon">档</span><span class="page-title">我的痛风档案</span></button>
+            <button class="page-btn patient" onclick="openPatientSimple('联系医生','复诊、用药、检查结果相关问题可咨询。','screen-patient-confirmed')"><span class="page-icon"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></span><span class="page-title">联系医生</span></button>
+            <button class="page-btn patient" onclick="openPatientSimple('我的病历夹','查看尿酸、发作、用药、检查资料和复诊计划。','screen-patient-confirmed')"><span class="page-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></span><span class="page-title">我的病历夹</span></button>
           </div>
         </div>
       </div>
@@ -3264,26 +3328,26 @@
         <div class="nav-state-group">
           <button class="nav-state-toggle" onclick="togglePageNav('doctorWorkbenchGroupToggle','doctorWorkbenchGroup')" id="doctorWorkbenchGroupToggle"><span class="nav-state-title">工作台状态</span><span class="nav-count">3</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content" id="doctorWorkbenchGroup">
-            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-my-qr')"><span class="page-icon">码</span><span class="page-title">出示建档码</span></button>
-            <button class="page-btn doctor" onclick="setDocTab('workbench')"><span class="page-icon">办</span><span class="page-title">今日待办</span></button>
-            <button class="page-btn doctor" onclick="setDocTab('patients')"><span class="page-icon">患</span><span class="page-title">患者管理</span></button>
+            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-my-qr')"><span class="page-icon"><span class="ui-icon ui-icon-qr" aria-hidden="true"></span></span><span class="page-title">出示建档码</span></button>
+            <button class="page-btn doctor" onclick="setDocTab('workbench')"><span class="page-icon"><span class="ui-icon ui-icon-list" aria-hidden="true"></span></span><span class="page-title">今日待办</span></button>
+            <button class="page-btn doctor" onclick="setDocTab('patients')"><span class="page-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></span><span class="page-title">患者管理</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('doctorArchiveGroupToggle','doctorArchiveGroup')" id="doctorArchiveGroupToggle"><span class="nav-state-title">患者档案状态</span><span class="nav-count">4</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="doctorArchiveGroup">
-            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-patient-detail')"><span class="page-icon">详</span><span class="page-title">张明详情</span></button>
-            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-gout-archive')"><span class="page-icon">档</span><span class="page-title">确认专病档案</span></button>
-            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-ocr')"><span class="page-icon">单</span><span class="page-title">补充化验单</span></button>
-            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-plan')"><span class="page-icon">随</span><span class="page-title">确认随访计划</span></button>
+            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-patient-detail')"><span class="page-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></span><span class="page-title">张明详情</span></button>
+            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-gout-archive')"><span class="page-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></span><span class="page-title">确认专病档案</span></button>
+            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-ocr')"><span class="page-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></span><span class="page-title">补充化验单</span></button>
+            <button class="page-btn doctor" onclick="goDoctor('screen-doctor-plan')"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">确认随访计划</span></button>
           </div>
         </div>
         <div class="nav-state-group">
           <button class="nav-state-toggle collapsed" onclick="togglePageNav('doctorFollowupGroupToggle','doctorFollowupGroup')" id="doctorFollowupGroupToggle"><span class="nav-state-title">随访预警状态</span><span class="nav-count">3</span><span class="nav-chevron">⌄</span></button>
           <div class="nav-state-content collapsed" id="doctorFollowupGroup">
-            <button class="page-btn doctor" onclick="openDoctorSimple('复查逾期','查看超过计划复查时间仍未更新记录的患者。','screen-doctor-workbench')"><span class="page-icon">期</span><span class="page-title">复查逾期</span></button>
-            <button class="page-btn doctor" onclick="openDoctorSimple('高风险患者','查看尿酸异常、复诊逾期或近期频繁发作的患者。','screen-doctor-workbench')"><span class="page-icon">险</span><span class="page-title">高风险患者</span></button>
-            <button class="page-btn alert" onclick="confirmMissedFollowup()"><span class="page-icon">访</span><span class="page-title">失访待办</span></button>
+            <button class="page-btn doctor" onclick="openDoctorSimple('复查逾期','查看超过计划复查时间仍未更新记录的患者。','screen-doctor-workbench')"><span class="page-icon"><span class="ui-icon ui-icon-clock" aria-hidden="true"></span></span><span class="page-title">复查逾期</span></button>
+            <button class="page-btn doctor" onclick="openDoctorSimple('高风险患者','查看尿酸异常、复诊逾期或近期频繁发作的患者。','screen-doctor-workbench')"><span class="page-icon"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></span><span class="page-title">高风险患者</span></button>
+            <button class="page-btn alert" onclick="confirmMissedFollowup()"><span class="page-icon"><span class="ui-icon ui-icon-alert" aria-hidden="true"></span></span><span class="page-title">失访待办</span></button>
           </div>
         </div>
         <button class="control-btn reset" onclick="resetDemo()">重置场景</button>
@@ -3396,14 +3460,14 @@
   function openPatientSimple(title, desc, backId) {
     const backTarget = backId || 'screen-patient-confirmed';
     const patientTasks = {
-      '我的痛风档案': {
-        kicker: '专病档案',
+      '我的病历夹': {
+        kicker: '我的病历夹',
         section: '档案内容',
         desc: '查看尿酸、发作、用药、检查资料和复诊计划。',
         action: '查看管理计划',
         actionTarget: 'screen-patient-care-plan-confirmed',
         rows: [
-          { icon: '验', title: '尿酸与化验结果', desc: '查看血尿酸、肝肾功能和外院报告归档记录。' },
+          { icon: '验', title: '尿酸与化验结果', desc: '查看血尿酸、肝功能、肾功能和外院报告归档记录。' },
           { icon: '药', title: '发作与用药记录', desc: '查看急性发作、疼痛部位、用药处理和医生建议。' },
           { icon: '复', title: '复诊与管理计划', desc: '查看下次复诊时间、复查项目和随访安排。' }
         ]
@@ -3428,7 +3492,7 @@
         actionTarget: 'screen-patient-followup-reminder',
         rows: [
           { icon: '日', title: '复诊日期', desc: '07月18日，按医生确认的计划提醒。' },
-          { icon: '验', title: '复查项目', desc: '血尿酸、肝肾功能，建议复诊前完成。' },
+          { icon: '验', title: '复查项目', desc: '血尿酸、肝功能、肾功能，建议复诊前完成。' },
           { icon: '状', title: '复诊状态', desc: '到院、改期、上传外院报告都可以同步医生端。' }
         ]
       },
@@ -3439,7 +3503,7 @@
         action: '返回管理计划',
         rows: [
           { icon: '史', title: '痛风病史', desc: '发病时间、发作频率、当前症状和用药情况。' },
-          { icon: '验', title: '化验结果', desc: '血尿酸、肝肾功能和外院报告归档信息。' },
+          { icon: '验', title: '化验结果', desc: '血尿酸、肝功能、肾功能和外院报告归档信息。' },
           { icon: '医', title: '医生确认', desc: '医生确认后的字段作为复诊和随访计划依据。' }
         ]
       },
@@ -3450,7 +3514,7 @@
         action: '返回管理计划',
         rows: [
           { icon: '药', title: '用药执行', desc: '按医生方案规律用药，不自行停药。' },
-          { icon: '查', title: '复查执行', desc: '按计划完成血尿酸、肝肾功能等复查。' },
+          { icon: '查', title: '复查执行', desc: '按计划完成血尿酸、肝功能、肾功能等复查。' },
           { icon: '记', title: '发作记录', desc: '记录红肿热痛、持续时间和用药处理。' }
         ]
       },
@@ -3505,7 +3569,7 @@
         action: '上传复查结果',
         actionTarget: 'screen-patient-lab-upload',
         rows: [
-          { icon: '验', title: '复查项目', desc: '血尿酸、肝肾功能，按医生确认的计划准备。' },
+          { icon: '验', title: '复查项目', desc: '血尿酸、肝功能、肾功能，按医生确认的计划准备。' },
           { icon: '单', title: '检查报告', desc: '报告时间按化验时间记录，不按上传时间记录。' },
           { icon: '院', title: '到院提醒', desc: '携带近期化验结果和用药信息，按时到院复诊。' }
         ]
@@ -3579,7 +3643,7 @@
         desc: '查看近期需要复查或已经临近复诊的患者列表。',
         rows: [
           { icon: '列', title: '查看患者列表', desc: '按复诊日期、复查项目和提醒状态排序。' },
-          { icon: '提', title: '发送复诊提醒', desc: '提醒患者提前完成血尿酸、肝肾功能复查。' },
+          { icon: '提', title: '发送复诊提醒', desc: '提醒患者提前完成血尿酸、肝功能、肾功能复查。' },
           { icon: '踪', title: '跟踪复诊状态', desc: '到院、改期、外院复查都可更新到随访记录。' }
         ]
       },
@@ -3599,7 +3663,7 @@
         desc: '查看尿酸异常、复诊逾期或近期频繁发作的患者。',
         rows: [
           { icon: '因', title: '风险原因', desc: '尿酸不达标、反复发作、复查逾期会被标记。' },
-          { icon: '标', title: '最近指标', desc: '查看最近血尿酸、肝肾功能和用药变化。' },
+          { icon: '标', title: '最近指标', desc: '查看最近血尿酸、肝功能、肾功能和用药变化。' },
           { icon: '议', title: '处理建议', desc: '确认是否调整复查、用药或人工随访。' }
         ]
       },
@@ -3898,13 +3962,13 @@
     setDisplay('todoFollowupArrived', 'flex');
     setDisplay('todoZhangMissed', 'none');
     setText('doctorPendingCount', '3');
-    setText('zhangListStatus', '📝 到院复诊 · 待补充记录');
+    setText('zhangListStatus', '到院复诊 · 待补充记录');
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-primary';
     setText('zhangListTime', '今天 09:30 到院扫码');
     const detailStatus = document.getElementById('zhangDetailStatus');
     if (detailStatus) {
-      detailStatus.textContent = '📝 到院复诊 · 待补充复诊记录';
+      detailStatus.textContent = '到院复诊 · 待补充复诊记录';
       detailStatus.className = 'pd-status warn';
     }
     setDisplay('doctorDetailHint', 'none');
@@ -3924,13 +3988,13 @@
     setDisplay('todoFollowupArrived', 'none');
     setDisplay('todoZhangMissed', 'none');
     setText('doctorPendingCount', '2');
-    setText('zhangListStatus', '✓ 第 2 次复诊已完成');
+    setText('zhangListStatus', '第 2 次复诊已完成');
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-success';
     setText('zhangListTime', '今天 09:36 复诊');
     const detailStatus = document.getElementById('zhangDetailStatus');
     if (detailStatus) {
-      detailStatus.textContent = '✓ 已纳管 · 第 2 次复诊已完成';
+      detailStatus.textContent = '已纳管 · 第 2 次复诊已完成';
       detailStatus.className = 'pd-status';
     }
     setDisplay('doctorDetailHint', 'none');
@@ -3951,13 +4015,13 @@
     const missedDesc = missedTodo ? missedTodo.querySelector('.todo-desc') : null;
     if (missedTitle) missedTitle.textContent = '张明请求医生联系';
     if (missedDesc) missedDesc.textContent = '患者反馈不方便复诊，需人工跟进';
-    setText('zhangListStatus', '🚨 复诊未到 · 失访风险');
+    setText('zhangListStatus', '复诊未到 · 失访风险');
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-danger';
     setText('zhangListTime', '复诊逾期');
     const detailStatus = document.getElementById('zhangDetailStatus');
     if (detailStatus) {
-      detailStatus.textContent = '🚨 复诊未到 · 失访风险';
+      detailStatus.textContent = '复诊未到 · 失访风险';
       detailStatus.className = 'pd-status danger';
     }
     setDisplay('doctorDetailHint', 'none');
@@ -4002,14 +4066,14 @@
     const missedTitle = missedTodo ? missedTodo.querySelector('.todo-title') : null;
     const missedDesc = missedTodo ? missedTodo.querySelector('.todo-desc') : null;
     if (missedTitle) missedTitle.textContent = '张明上传外院化验单';
-    if (missedDesc) missedDesc.textContent = '请确认报告时间并归档到肝肾功能目录';
-    setText('zhangListStatus', '📄 外院化验单 · 待确认');
+    if (missedDesc) missedDesc.textContent = '请确认报告时间并归档到生化检验报告单';
+    setText('zhangListStatus', '外院化验单 · 待确认');
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-primary';
     setText('zhangListTime', '患者上传报告');
     const detailStatus = document.getElementById('zhangDetailStatus');
     if (detailStatus) {
-      detailStatus.textContent = '📄 外院化验单 · 待医生确认';
+      detailStatus.textContent = '外院化验单 · 待医生确认';
       detailStatus.className = 'pd-status warn';
     }
     setDisplay('doctorDetailHint', 'none');
@@ -4065,13 +4129,13 @@
     setText('archiveClinicSourceStatus', '已确认');
     const btn = document.getElementById('btnArchiveRecording');
     if (btn) btn.textContent = '补充问诊采集';
-    setText('zhangListStatus', '✓ 已纳管 · 专病档案已建立');
+    setText('zhangListStatus', '已纳管 · 专病档案已建立');
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-success';
     setText('zhangListTime', '今天 10:58 纳管');
     const detailStatus = document.getElementById('zhangDetailStatus');
     if (detailStatus) {
-      detailStatus.textContent = '✓ 已纳管 · 痛风专病档案已建立';
+      detailStatus.textContent = '已纳管 · 痛风专病档案已建立';
       detailStatus.className = 'pd-status';
     }
     setDisplay('doctorDetailHint', 'none');

@@ -10,3 +10,4 @@ feishu_auth_qr.png
 
 # Generated previews, backups, and recovery artifacts
 output/
+_backup/
