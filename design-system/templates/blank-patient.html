@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+  痛风智能体 · 患者端空白业务页骨架
+  用途：新做患者端页面时复制本文件，只改文案/状态，不另起样式。
+  引用：../components.css（组件库，已有 ds-patient-hero / ds-chat-* / ds-compose / ds-shortcut 等）。
+  视口：390 x 844 手机。阿福式对话容器 + 底部四胶囊 + 输入框固定结构。
+  规则源：docs/03-原型与规范/痛风智能体Demo设计规范_AI执行版.md
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>痛风智能体 · 患者端空白骨架</title>
+  <link rel="stylesheet" href="../components.css" />
+  <style>
+    body { margin: 0; background: #eef3f7; font-family: -apple-system, "PingFang SC", sans-serif; }
+    .phone { max-width: 390px; margin: 0 auto; min-height: 844px; background: #f4f9fb; display: flex; flex-direction: column; }
+    .screen { flex: 1; padding: 16px; overflow-y: auto; }
+    .bottom { position: sticky; bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <!-- ① 状态大卡：建档中/已纳管/复诊各状态复用 ds-patient-hero，只换文案与标签 -->
+      <section class="ds-patient-hero">
+        <div class="ds-hero-kicker">晚上好，张明</div>
+        <div class="ds-hero-title">档案完整度 45%</div>
+        <div class="ds-hero-tags">
+          <span class="ds-status-chip">医生待确认</span>
+          <span class="ds-chip">待补：痛风病史</span>
+        </div>
+        <!-- 右上角固定「我的病历夹」入口胶囊（与首页一致） -->
+        <a class="ds-record-pill" href="#">我的病历夹</a>
+      </section>
+
+      <!-- ② 对话区：AI 左侧白气泡，患者右侧浅绿气泡，逐轮追加 -->
+      <div class="ds-chat-card">
+        <div class="ds-chat-message ds-chat-message-ai">
+          <div class="ds-chat-bubble">你好，我是你的健康助手。可以先补充一下痛风病史，医生接诊时能看到。</div>
+        </div>
+        <div class="ds-chat-message ds-chat-message-user">
+          <div class="ds-chat-bubble">好的，第一次发作大概是三年前。</div>
+        </div>
+        <!-- 对话内胶囊按钮：主操作渐变，次操作白底；不用横向滑动 -->
+        <div class="ds-chip-row">
+          <button class="ds-chip ds-chip-primary">补充痛风病史</button>
+          <button class="ds-chip">暂时跳过</button>
+        </div>
+      </div>
+
+      <!-- ③ 推荐问题卡（统一组件，不要另起样式） -->
+      <div class="ds-question-card">
+        <span class="ds-q-icon"></span>
+        <span class="ds-q-text">最近尿酸偏高要不要调药？</span>
+        <span class="ds-q-arrow">›</span>
+      </div>
+    </div>
+
+    <!-- ④ 底部固定：快捷胶囊（四固定：联系医生/上传报告/健康打卡/饮食问答）+ 输入框 -->
+    <div class="bottom">
+      <div class="ds-shortcut-row">
+        <button class="ds-shortcut">联系医生</button>
+        <button class="ds-shortcut">上传报告</button>
+        <button class="ds-shortcut">健康打卡</button>
+        <button class="ds-shortcut">饮食问答</button>
+      </div>
+      <div class="ds-compose">
+        <div class="ds-compose-row">
+          <button class="ds-voice-btn" aria-label="语音"></button>
+          <div class="ds-input-box">给王文龙医生留言…</div>
+          <button class="ds-plus-btn" aria-label="附件"></button>
+          <button class="ds-send-btn" aria-label="发送"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<!-- 医生端 Demo 原型 · 基于《医生端Demo设计系统确认书 v2（青绿蓝靠拢版）》+ 医生端Demo设计令牌_v1.0
+     设计系统：design-system/tokens.css（复用 --patient-* / --doctor-*）
+     外壳：复用 templates/iphone-showcase-patient.html 四层外壳
+     主色：青绿蓝渐变 --patient-gradient (#03d49f→#01a1ff)，大圆角，宽松行高
+     状态铁律：橙=待确认 / 绿=已确认 / 红=异常
+     AI 卡必标「诊疗辅助建议」；图标全部内联 SVG outline -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>痛风智能体 · 医生端 Demo</title>
+<style>
+/* ============ 共享变量（来自 tokens.css，内联以保证单文件运行） ============ */
+:root{
+  --gout-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --patient-primary:#03d49f; --patient-primary-2:#01a1ff; --patient-primary-dark:#0785b6;
+  --patient-gradient:linear-gradient(234deg,#03d49f 0%,#01a1ff 100%);
+  --patient-bg:linear-gradient(180deg,#e8f4ff 0%,#f0fff9 52%,#f5f7fb 100%);
+  --patient-card:#ffffff; --patient-soft-blue:rgba(1,161,255,0.08); --patient-soft-green:rgba(3,212,159,0.10);
+  --doctor-panel:#ffffff; --doctor-line:#e5eaf2;
+  --doctor-text:#1d2530; --doctor-sub:#566579; --doctor-hint:#8a94a6;
+  --doctor-blue-soft:#eaf2ff;
+  --doctor-orange:#ed7b2f; --doctor-orange-soft:#fff4e8;
+  --doctor-green:#2ba471; --doctor-green-soft:#eaf8f2;
+  --doctor-red:#d54941; --doctor-red-soft:#fff0ee;
+  --radius-xs:7px; --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:22px; --radius-2xl:26px; --radius-pill:999px;
+  --shadow-doctor:0 16px 44px rgba(31,42,68,0.16);
+  --shadow-showcase-device:0 42px 88px rgba(15,23,42,0.38),0 16px 34px rgba(15,23,42,0.22),0 0 0 1px rgba(255,255,255,0.16) inset;
+  --showcase-bg-top:#edf3f8; --showcase-bg-bottom:#cbd6e2; --showcase-device-frame:#111827; --showcase-device-island:#070b12;
+  --showcase-screen-bg:#f3f7fb; --showcase-screen-bg-2:#f7fbff; --showcase-glass-highlight:rgba(255,255,255,0.52);
+  --text-xxs:10px; --text-xs:11px; --text-sm:12px; --text-md:13px; --text-base:14px; --text-lg:16px; --text-xl:18px; --text-2xl:22px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px;
+  --showcase-device-width:430px; --showcase-device-radius:48px; --showcase-screen-radius:40px; --showcase-device-padding:10px;
+}
+
+/* ============ 外壳四层（复用患者端模板结构） ============ */
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-x:auto;}
+.ds-showcase-stage{position:relative;width:100%;min-height:760px;display:flex;align-items:flex-start;justify-content:center;gap:24px;overflow:hidden;padding:72px 24px 40px;font-family:var(--gout-font-family);
+  background:radial-gradient(circle at 50% 18%,rgba(255,255,255,0.90),rgba(231,238,245,0.62) 28%,transparent 52%),linear-gradient(180deg,var(--showcase-bg-top) 0%,#dce5ee 54%,var(--showcase-bg-bottom) 100%);}
+.ds-showcase-shadow{position:absolute;left:215px;bottom:6%;width:min(520px,82%);height:80px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(26,43,69,0.24),transparent 68%);filter:blur(18px);pointer-events:none;}
+.ds-showcase-device{position:relative;width:min(var(--showcase-device-width),84vw);min-width:330px;aspect-ratio:390/844;border-radius:var(--showcase-device-radius);background:var(--showcase-device-frame);padding:var(--showcase-device-padding);box-shadow:var(--shadow-showcase-device);z-index:2;flex-shrink:0;}
+.ds-showcase-device::before{content:"";position:absolute;left:50%;top:17px;width:118px;height:34px;transform:translateX(-50%);border-radius:22px;background:var(--showcase-device-island);z-index:5;}
+.ds-showcase-device::after{content:"";position:absolute;right:-4px;top:150px;width:4px;height:86px;border-radius:0 4px 4px 0;background:var(--showcase-device-frame);}
+.ds-showcase-screen{position:relative;width:100%;height:100%;border-radius:var(--showcase-screen-radius);overflow:hidden;background:var(--showcase-screen-bg);}
+.ds-showcase-reflection{position:absolute;inset:0;background:linear-gradient(110deg,transparent 0 28%,rgba(255,255,255,0.42) 38%,transparent 48%),radial-gradient(circle at 15% 6%,var(--showcase-glass-highlight),transparent 18%);pointer-events:none;mix-blend-mode:screen;opacity:0.52;z-index:60;}
+.ds-simulator-bar{position:absolute;left:50%;top:-48px;transform:translateX(-50%);width:min(430px,90vw);height:46px;border-radius:24px;background:#0b1018;color:#fff;display:flex;align-items:center;gap:13px;padding:0 17px;box-shadow:0 18px 38px rgba(0,0,0,0.26);z-index:8;}
+.ds-simulator-lights{display:flex;gap:8px;}
+.ds-simulator-lights span{width:13px;height:13px;border-radius:50%;display:block;}
+.ds-simulator-lights span:nth-child(1){background:#ff5f57;}
+.ds-simulator-lights span:nth-child(2){background:#febc2e;}
+.ds-simulator-lights span:nth-child(3){background:#28c840;}
+.ds-simulator-name{font-size:var(--text-md);line-height:1.05;font-weight:850;}
+.ds-simulator-name small{display:block;color:rgba(255,255,255,0.55);font-size:var(--text-xs);margin-top:2px;}
+.ds-simulator-actions{margin-left:auto;display:flex;gap:16px;color:rgba(255,255,255,0.86);font-size:20px;}
+
+/* ============ 工作流导航（右侧，六组 + 重置） ============ */
+.ds-nav{position:relative;width:248px;flex-shrink:0;align-self:flex-start;max-height:844px;display:flex;flex-direction:column;gap:10px;z-index:3;}
+.ds-nav-title{font-size:var(--text-sm);font-weight:850;color:#cdd6e2;letter-spacing:1px;padding:0 4px;}
+.ds-nav-group{background:rgba(255,255,255,0.62);border:1px solid rgba(255,255,255,0.5);border-radius:18px;padding:10px;backdrop-filter:blur(6px);}
+.ds-nav-group h4{margin:0 0 8px;font-size:var(--text-xs);font-weight:850;color:var(--doctor-sub);letter-spacing:.5px;padding:0 4px;}
+.ds-nav-item{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:12px;cursor:pointer;color:var(--doctor-text);font-size:var(--text-base);font-weight:800;font-family:inherit;transition:background .15s,color .15s;}
+.ds-nav-item:hover{background:rgba(1,161,255,0.10);}
+.ds-nav-item.active{background:var(--patient-gradient);color:#fff;box-shadow:0 8px 18px rgba(1,161,255,0.28);}
+.ds-nav-item.active .ds-nav-ico{color:#fff;}
+.ds-nav-ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--patient-primary-2);flex-shrink:0;}
+.ds-nav-num{margin-left:auto;font-size:var(--text-xxs);font-weight:850;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.18);min-width:18px;height:18px;border-radius:9px;display:none;align-items:center;justify-content:center;padding:0 5px;}
+.ds-nav-item.active .ds-nav-num{display:inline-flex;}
+.ds-nav-reset{margin-top:2px;position:sticky;bottom:0;border:0;cursor:pointer;border-radius:16px;padding:13px;font-size:var(--text-base);font-weight:850;font-family:inherit;color:#fff;background:linear-gradient(234deg,#ff8a4c,#ed7b2f);box-shadow:0 10px 22px rgba(237,123,47,0.34);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;}
+.ds-nav-reset:hover{transform:translateY(-1px);}
+.ds-nav-reset:active{transform:translateY(1px);}
+
+/* ============ 内屏容器 ============ */
+.ds-doctor-screen{position:absolute;inset:0;background:var(--patient-bg);display:none;flex-direction:column;overflow:hidden;font-family:var(--gout-font-family);}
+.ds-doctor-screen.active{display:flex;}
+.ds-statusbar{height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:var(--text-md);font-weight:850;color:var(--doctor-text);}
+.ds-statusbar .sb-right{display:flex;gap:6px;align-items:center;}
+.ds-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 var(--space-4) var(--space-5);}
+.ds-body::-webkit-scrollbar{display:none;}
+.ds-body{padding-top:4px;}
+
+/* ============ 顶部栏（渐变） ============ */
+.ds-topbar{background:var(--patient-gradient);color:#fff;border-radius:var(--radius-lg);padding:15px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0;box-shadow:0 8px 22px rgba(1,161,255,0.18);}
+.ds-topbar .doc-name{font-size:var(--text-xl);font-weight:850;}
+.ds-topbar .doc-meta{margin-top:3px;color:rgba(255,255,255,0.82);font-size:var(--text-sm);}
+.ds-ghost-btn{height:34px;border:0;border-radius:12px;background:rgba(255,255,255,0.18);color:#fff;padding:0 12px;font-size:var(--text-sm);font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s;}
+.ds-ghost-btn:hover{background:rgba(255,255,255,0.30);}
+
+/* ============ 导航栏（白底返回） ============ */
+.ds-navbar{height:50px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 12px;background:rgba(255,255,255,0.78);border-radius:var(--radius-lg);margin-bottom:6px;}
+.ds-navbar .nav-title{font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);flex:1;text-align:center;}
+.ds-back{border:0;background:rgba(1,161,255,0.08);width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--patient-primary-2);}
+.ds-navbar .nav-ico-right{color:var(--patient-primary-2);display:flex;align-items:center;cursor:pointer;}
+
+/* ============ 卡片基类 ============ */
+.ds-card{background:var(--doctor-panel);border:1px solid var(--doctor-line);border-radius:var(--radius-xl);padding:14px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-card.grad-border{border:1px solid rgba(1,161,255,0.20);box-shadow:0 6px 18px rgba(1,161,255,0.07);}
+.ds-section-title{font-size:var(--text-xl);font-weight:850;color:var(--doctor-text);margin:16px 4px 10px;}
+.ds-card-title{font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);}
+.ds-sub{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.5;}
+
+/* ============ 指标卡 grid ============ */
+.ds-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.ds-stat{min-height:74px;border-radius:var(--radius-lg);background:#fff;border:1px solid var(--doctor-line);padding:11px 10px;display:flex;flex-direction:column;justify-content:center;}
+.ds-stat .v{font-size:var(--text-2xl);font-weight:900;line-height:1;color:var(--doctor-text);}
+.ds-stat .v.accent{background:var(--patient-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.ds-stat .l{margin-top:7px;color:var(--doctor-hint);font-size:var(--text-sm);font-weight:700;}
+
+/* ============ 主任务卡 ============ */
+.ds-maintask{margin-top:12px;border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,0.20);box-shadow:0 8px 22px rgba(1,161,255,0.08);padding:16px;}
+.ds-kicker{display:inline-flex;align-items:center;min-height:24px;border-radius:var(--radius-pill);padding:4px 11px;background:var(--patient-soft-blue);color:var(--patient-primary-dark);font-size:var(--text-sm);font-weight:850;}
+.ds-maintask .mt-title{margin-top:10px;font-size:var(--text-2xl);font-weight:900;color:var(--doctor-text);line-height:1.25;}
+.ds-maintask .mt-desc{margin-top:6px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;}
+.ds-actions{display:flex;gap:8px;margin-top:14px;}
+
+/* ============ 按钮 ============ */
+.ds-btn-primary{height:42px;border:0;border-radius:var(--radius-pill);background:var(--patient-gradient);color:#fff;font-size:var(--text-base);font-weight:850;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;box-shadow:0 8px 18px rgba(1,161,255,0.24);transition:transform .12s,box-shadow .15s;flex:1;}
+.ds-btn-primary:hover{transform:translateY(-1px);}
+.ds-btn-primary:active{transform:translateY(1px);}
+.ds-btn-secondary{height:42px;border:1px solid var(--doctor-line);border-radius:var(--radius-pill);background:#fff;color:var(--patient-primary-2);font-size:var(--text-base);font-weight:850;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;transition:background .15s;}
+.ds-btn-secondary:hover{background:var(--patient-soft-blue);}
+.ds-btn-danger{height:42px;border:1px solid var(--doctor-red);border-radius:var(--radius-pill);background:#fff;color:var(--doctor-red);font-size:var(--text-base);font-weight:850;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;}
+.ds-link{background:transparent;border:0;color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:850;cursor:pointer;font-family:inherit;}
+
+/* ============ 待办列表 ============ */
+.ds-todo-list{border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);overflow:hidden;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-todo{display:flex;gap:11px;padding:13px;align-items:flex-start;border-bottom:1px solid #f1f4f8;cursor:pointer;}
+.ds-todo:last-child{border-bottom:0;}
+.ds-todo:hover{background:rgba(1,161,255,0.04);}
+.ds-todo-ico{width:36px;height:36px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ico-blue{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.ico-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.ico-green{background:var(--doctor-green-soft);color:var(--doctor-green);}
+.ico-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.ds-todo-body{flex:1;min-width:0;}
+.ds-todo-title{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);}
+.ds-todo-desc{margin-top:3px;font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;}
+
+/* ============ 患者列表行 ============ */
+.ds-patient-list{background:#fff;border:1px solid var(--doctor-line);border-radius:var(--radius-xl);overflow:hidden;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-prow{display:flex;align-items:center;gap:11px;padding:12px 13px;border-bottom:1px solid var(--doctor-line);cursor:pointer;background:#fff;transition:background .14s;}
+.ds-prow:last-child{border-bottom:0;}
+.ds-prow:hover{background:rgba(1,161,255,0.05);}
+.ds-avatar{width:38px;height:38px;border-radius:13px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-lg);font-weight:900;flex-shrink:0;}
+.ds-pinfo{flex:1;min-width:0;}
+.ds-pname{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;gap:7px;}
+.ds-pname .psexy{font-size:var(--text-sm);font-weight:700;color:var(--doctor-hint);}
+.ds-pphone{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;margin-top:2px;}
+.ds-pbrief{font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ds-pright{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ds-ptime{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:800;}
+
+/* ============ 状态 chip & 来源 badge ============ */
+.ds-chip{display:inline-flex;align-items:center;min-height:25px;border-radius:var(--radius-xs);padding:0 9px;font-size:var(--text-xs);font-weight:850;white-space:nowrap;}
+.chip-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.chip-green{background:var(--doctor-green-soft);color:var(--doctor-green);}
+.chip-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.chip-blue{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.ds-source{display:inline-flex;align-items:center;min-height:22px;border-radius:var(--radius-xs);padding:0 7px;font-size:var(--text-xs);font-weight:850;}
+.src-self{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-upload{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-voice{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-ai{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-doctor{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.src-confirm{background:var(--doctor-green-soft);color:var(--doctor-green);}
+
+/* ============ 角标 ============ */
+.ds-badge-count{min-width:18px;height:18px;padding:0 5px;border-radius:var(--radius-pill);background:var(--doctor-orange);color:#fff;font-size:var(--text-xxs);font-weight:850;display:inline-flex;align-items:center;justify-content:center;}
+
+/* ============ 搜索框 ============ */
+.ds-search{display:flex;align-items:center;gap:8px;height:42px;border-radius:var(--radius-pill);background:#fff;border:1px solid var(--doctor-line);padding:0 14px;margin-top:12px;color:var(--doctor-hint);}
+.ds-search input{border:0;outline:0;font-family:inherit;font-size:var(--text-base);font-weight:700;color:var(--doctor-text);flex:1;background:transparent;}
+
+/* ============ 档案字段块 ============ */
+.ds-field-block{border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);padding:14px;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-field-block h5{margin:0 0 4px;font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;justify-content:space-between;}
+.ds-frow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6fa;}
+.ds-frow:last-child{border-bottom:0;}
+.ds-fname{font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;flex-shrink:0;max-width:46%;}
+.ds-fval{font-size:var(--text-md);color:var(--doctor-text);font-weight:850;text-align:right;display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+
+/* ============ AI 辅助卡 ============ */
+.ds-ai-card{border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,0.22);box-shadow:0 8px 22px rgba(1,161,255,0.08);padding:15px;margin-top:12px;}
+.ds-ai-head{display:flex;align-items:center;gap:9px;}
+.ds-ai-badge{width:30px;height:30px;border-radius:12px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ds-ai-title{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);flex:1;}
+.ds-ai-conf{font-size:var(--text-xs);font-weight:850;color:var(--patient-primary-2);background:var(--doctor-blue-soft);padding:3px 9px;border-radius:var(--radius-xs);}
+.ds-ai-seg{margin-top:12px;border-radius:12px;padding:10px 11px;font-size:var(--text-sm);font-weight:700;line-height:1.5;border-left:3px solid;}
+.seg-basis{background:#f5f9ff;border-color:var(--patient-primary-2);color:var(--doctor-sub);}
+.seg-risk{background:var(--doctor-red-soft);border-color:var(--doctor-red);color:var(--doctor-red);}
+.seg-advice{background:var(--doctor-green-soft);border-color:var(--doctor-green);color:var(--doctor-green);}
+.ds-ai-seg .seg-label{font-weight:850;display:block;margin-bottom:3px;font-size:var(--text-xs);}
+
+/* ============ 底部操作条 ============ */
+.ds-actionbar{position:absolute;left:0;right:0;bottom:0;min-height:64px;background:rgba(255,255,255,0.94);border-top:1px solid var(--doctor-line);display:flex;align-items:center;gap:10px;padding:10px 16px;box-shadow:0 -4px 16px rgba(31,42,68,0.06);z-index:30;backdrop-filter:blur(8px);}
+.ds-actionbar .ds-link{flex-shrink:0;}
+
+/* ============ 二维码区 ============ */
+.ds-qr-area{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-qr-box{width:200px;height:200px;border-radius:18px;background:#fff;border:1px solid var(--doctor-line);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.ds-qr-box img{width:100%;height:100%;object-fit:contain;}
+.ds-qr-hint{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;text-align:center;line-height:1.5;}
+.ds-refresh-msg{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:800;display:flex;align-items:center;gap:5px;}
+
+/* ============ OCR / 语音采集卡 ============ */
+.ds-ocr-card,.ds-voice-card,.ds-visitqr,.ds-enroll-card{border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,0.20);padding:16px;margin-top:12px;box-shadow:0 6px 18px rgba(1,161,255,0.07);}
+.ds-ocr-status{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-sm);font-weight:850;color:var(--patient-primary);}
+.ds-ocr-status.is-done{color:var(--doctor-green);}
+.ds-wave{height:46px;border-radius:var(--radius-pill);background:var(--patient-soft-blue);display:flex;align-items:center;justify-content:center;gap:4px;color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:850;margin:10px 0;overflow:hidden;padding:0 14px;}
+.ds-wave .bar{width:4px;background:var(--patient-primary);border-radius:3px;animation:wave 1s ease-in-out infinite;opacity:.7;}
+@keyframes wave{0%,100%{height:10px;}50%{height:34px;}}
+.ds-transcript{background:#f6fbff;border-radius:14px;padding:11px 13px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;margin:8px 0;}
+.ds-transcript .who{color:var(--patient-primary-2);font-weight:850;}
+.ds-extract-row{border-bottom:1px solid #f4f6fa;padding:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.ds-extract-row:last-child{border-bottom:0;}
+.ds-extract-name{font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;}
+.ds-extract-val{font-size:var(--text-md);color:var(--doctor-text);font-weight:850;display:flex;align-items:center;gap:6px;}
+
+/* ============ 到院预警 / 回写提示 ============ */
+.ds-arrived-warn{display:inline-flex;align-items:center;gap:5px;background:var(--doctor-red-soft);color:var(--doctor-red);border-radius:var(--radius-xs);padding:7px 11px;font-size:var(--text-sm);font-weight:850;margin-top:12px;}
+.ds-synced-tip{display:flex;align-items:center;gap:7px;background:var(--doctor-green-soft);color:var(--doctor-green);border-radius:var(--radius-xs);padding:10px 12px;font-size:var(--text-sm);font-weight:850;margin-top:12px;}
+
+/* ============ 表单 ============ */
+.ds-form-field{margin-top:13px;}
+.ds-form-field label{display:block;font-size:var(--text-sm);font-weight:850;color:var(--doctor-text);margin-bottom:6px;}
+.ds-form-field input,.ds-form-field select{width:100%;height:44px;border-radius:14px;border:1px solid var(--doctor-line);background:#fff;padding:0 14px;font-family:inherit;font-size:var(--text-base);font-weight:700;color:var(--doctor-text);outline:0;}
+.ds-form-field input:focus,.ds-form-field select:focus{border-color:var(--patient-primary-2);}
+.ds-seg-group{display:flex;gap:8px;}
+.ds-seg-group .seg-opt{flex:1;height:44px;border-radius:14px;border:1px solid var(--doctor-line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-base);font-weight:800;color:var(--doctor-sub);cursor:pointer;font-family:inherit;}
+.ds-seg-group .seg-opt.sel{background:var(--patient-gradient);color:#fff;border-color:transparent;}
+
+/* ============ 登录屏 ============ */
+.ds-login-brand{display:flex;flex-direction:column;align-items:center;gap:14px;padding:36px 0 24px;}
+.ds-login-logo{width:84px;height:84px;border-radius:28px;background:var(--patient-gradient);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(1,161,255,0.30);}
+.ds-login-name{font-size:24px;font-weight:950;color:var(--doctor-text);}
+.ds-login-sub{font-size:var(--text-md);color:var(--doctor-sub);font-weight:700;margin-top:-6px;}
+.ds-login-card{background:#fff;border-radius:var(--radius-2xl);border:1px solid var(--doctor-line);padding:22px;margin-top:8px;box-shadow:0 10px 26px rgba(31,42,68,0.07);}
+.ds-login-methods{display:flex;gap:10px;margin-top:8px;}
+
+/* ============ toast ============ */
+.ds-toast{position:absolute;left:50%;top:54px;transform:translateX(-50%) translateY(-12px);background:rgba(29,37,48,0.92);color:#fff;font-size:var(--text-sm);font-weight:850;padding:10px 18px;border-radius:var(--radius-pill);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;white-space:nowrap;}
+.ds-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ============ 弹层 ============ */
+.ds-modal-mask{position:absolute;inset:0;background:rgba(15,23,42,0.42);display:none;align-items:center;justify-content:center;z-index:70;padding:24px;}
+.ds-modal-mask.show{display:flex;}
+.ds-modal{background:#fff;border-radius:var(--radius-2xl);padding:22px;width:100%;max-width:320px;box-shadow:var(--shadow-doctor);}
+.ds-modal h3{margin:0 0 8px;font-size:var(--text-xl);font-weight:900;color:var(--doctor-text);}
+.ds-modal p{margin:0 0 16px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;}
+.ds-modal .ds-actions{margin-top:0;}
+
+/* ============ 右下角患者端联动模拟入口（演示用，低侵入） ============ */
+.ds-link-panel{position:fixed;right:18px;bottom:18px;width:230px;background:rgba(255,255,255,0.96);border:1px solid rgba(1,161,255,0.25);border-radius:18px;padding:14px;box-shadow:0 16px 40px rgba(15,23,42,0.18);z-index:90;font-family:var(--gout-font-family);}
+.ds-link-panel h5{margin:0 0 4px;font-size:var(--text-sm);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;gap:6px;}
+.ds-link-panel .lp-sub{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:700;margin-bottom:10px;line-height:1.4;}
+.ds-link-panel .lp-btn{width:100%;border:0;border-radius:12px;padding:9px;margin-top:7px;font-family:inherit;font-size:var(--text-sm);font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;justify-content:center;}
+.lp-blue{background:var(--patient-soft-blue);color:var(--patient-primary-dark);}
+.lp-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.lp-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.ds-link-panel .lp-close{position:absolute;top:10px;right:12px;border:0;background:transparent;color:var(--doctor-hint);cursor:pointer;font-size:16px;}
+
+/* ============ 响应式 ============ */
+@media (max-width:880px){
+  .ds-showcase-stage{flex-direction:column;align-items:center;padding-top:64px;}
+  .ds-nav{width:min(430px,92vw);max-height:none;flex-direction:row;flex-wrap:wrap;}
+  .ds-nav-title{width:100%;}
+  .ds-nav-group{flex:1;min-width:200px;}
+  .ds-nav-reset{width:100%;}
+  .ds-link-panel{display:none;}
+}
+</style>
+</head>
+<body>
+
+<main class="ds-showcase-stage" aria-label="痛风智能体 医生端 Demo">
+  <div class="ds-showcase-shadow"></div>
+
+  <!-- ====== iPhone 机身 ====== -->
+  <section class="ds-showcase-device" aria-label="iPhone 预览">
+    <div class="ds-simulator-bar">
+      <div class="ds-simulator-lights"><span></span><span></span><span></span></div>
+      <div class="ds-simulator-name">痛风智能体 · 医生端<small>王文龙医生 · 痛风专病</small></div>
+      <div class="ds-simulator-actions" aria-hidden="true"><span>⌂</span><span>▣</span><span>⤴</span></div>
+    </div>
+    <div class="ds-showcase-screen">
+
+      <!-- toast 容器 -->
+      <div class="ds-toast" id="toast"></div>
+
+      <!-- ============ 屏 1：登录 ============ -->
+      <section class="ds-doctor-screen active" id="screen-login">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-body" style="display:flex;flex-direction:column;">
+          <div class="ds-login-brand">
+            <div class="ds-login-logo">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <div class="ds-login-name">痛风智能体 · 医生端</div>
+            <div class="ds-login-sub">专科工作台 · 结构化痛风档案</div>
+          </div>
+          <div class="ds-login-card">
+            <div class="ds-card-title" style="margin-bottom:4px;">医生身份登录</div>
+            <div class="ds-sub" style="margin-bottom:14px;">已绑定：温岭市第一人民医院 · 风湿免疫科</div>
+            <div class="ds-form-field">
+              <label>工号</label>
+              <input type="text" value="WENL0007" readonly />
+            </div>
+            <div class="ds-form-field">
+              <label>姓名</label>
+              <input type="text" value="王文龙" readonly />
+            </div>
+            <div class="ds-login-methods">
+              <button class="ds-btn-primary" onclick="loginIn()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                登录工作台
+              </button>
+            </div>
+            <div class="ds-sub" style="margin-top:14px;text-align:center;color:var(--doctor-hint);">登录即进入今日工作台，演示可直接点击登录</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 2：今日工作台 ============ -->
+      <section class="ds-doctor-screen" id="screen-workbench">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-topbar">
+          <div>
+            <div class="doc-name">王文龙 医生</div>
+            <div class="doc-meta">风湿免疫科 · 痛风专病 · 今日 07-13</div>
+          </div>
+          <button class="ds-ghost-btn" onclick="goScreen('screen-qrcode')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+            建档码
+          </button>
+        </div>
+        <div class="ds-body">
+          <div class="ds-stats">
+            <div class="ds-stat">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="v accent" id="stat-pending">1</div>
+                <span class="ds-badge-count" id="badge-pending">1</span>
+              </div>
+              <div class="l">待接诊</div>
+            </div>
+            <div class="ds-stat"><div class="v" id="stat-confirm">0</div><div class="l">已纳管</div></div>
+            <div class="ds-stat"><div class="v" id="stat-overdue">1</div><div class="l">复诊逾期</div></div>
+          </div>
+
+          <div class="ds-maintask">
+            <span class="ds-kicker">优先任务</span>
+            <div class="mt-title">待接诊确认 · 张明</div>
+            <div class="mt-desc">张明已扫码建档并补充诊前资料，档案待你确认后纳入专病管理。</div>
+            <div class="ds-actions">
+              <button class="ds-btn-primary" onclick="goScreen('screen-confirm')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                去确认档案
+              </button>
+              <button class="ds-btn-secondary" onclick="goScreen('screen-patients')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                患者队列
+              </button>
+            </div>
+          </div>
+
+          <div class="ds-section-title">待办</div>
+          <div class="ds-todo-list" id="workbench-todos"><!-- JS 渲染 --></div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 3：患者队列 ============ -->
+      <section class="ds-doctor-screen" id="screen-patients">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar" style="background:var(--patient-gradient);color:#fff;">
+          <button class="ds-back" style="background:rgba(255,255,255,0.2);color:#fff;" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" style="color:#fff;">患者队列</div>
+          <div class="nav-ico-right" style="color:#fff;" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="搜索姓名、手机号" />
+          </div>
+          <div class="ds-patient-list" id="patient-list"><!-- JS 渲染 --></div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 4：患者详情档案 ============ -->
+      <section class="ds-doctor-screen" id="screen-profile">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" id="profile-title">患者档案</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="profile-body"><!-- JS 渲染 --></div>
+      </section>
+
+      <!-- ============ 屏 5：看诊前资料（含 OCR） ============ -->
+      <section class="ds-doctor-screen" id="screen-material">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">看诊前资料</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="material-body"><!-- JS 渲染 --></div>
+      </section>
+
+      <!-- ============ 屏 6：AI 辅助 ============ -->
+      <section class="ds-doctor-screen" id="screen-aiassist">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">AI 辅助</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-confirm')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-ai-card">
+            <div class="ds-ai-head">
+              <div class="ds-ai-badge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+              </div>
+              <div class="ds-ai-title">诊疗辅助建议</div>
+              <div class="ds-ai-conf">置信度 92%</div>
+            </div>
+
+            <div class="ds-ai-seg seg-basis">
+              <span class="seg-label">依据</span>
+              张明，男，45 岁，痛风病史 10 余年，近 1 年反复发作 5 次以上；长期间断服用非布司他，近 3 月自行停药；血尿酸 542 μmol/L。
+            </div>
+            <div class="ds-ai-seg seg-risk">
+              <span class="seg-label">风险</span>
+              近 1 年发作频率上升，存在痛风石风险；当前未规律降尿酸，急性发作期不建议直接启用强效降尿酸药。
+            </div>
+            <div class="ds-ai-seg seg-advice">
+              <span class="seg-label">建议</span>
+              先以消炎止痛控制急性症状；建议低剂量秋水仙碱 + 短期 NSAID；症状缓解 2 周后重启非布司他 20mg/日，4 周后复查血尿酸。
+            </div>
+          </div>
+
+          <div class="ds-sub" style="margin-top:14px;padding:0 4px;line-height:1.55;">
+            以上为 AI 依据患者资料生成的辅助建议，仅供医生参考，不构成诊断结论。
+          </div>
+
+          <div style="height:14px;"></div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" onclick="goScreen('screen-profile')">返回档案</button>
+          <button class="ds-btn-primary" onclick="goScreen('screen-confirm')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            采纳并确认
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 7：医生确认 ============ -->
+      <section class="ds-doctor-screen" id="screen-confirm">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">医生确认</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-card grad-border" style="margin-top:12px;">
+            <div class="ds-card-title">确认痛风专病档案</div>
+            <div class="ds-sub" style="margin-top:4px;" id="confirm-patient">张明 · 男 · 45 · 138****6688</div>
+            <div id="confirm-body"><!-- JS 渲染核心字段摘要 --></div>
+          </div>
+          <div class="ds-synced-tip" id="confirm-synced" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            患者端已纳管，回写成功
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-btn-danger" onclick="rejectArchive()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            驳回
+          </button>
+          <button class="ds-btn-primary" onclick="confirmArchive()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            确认并纳管
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 8：复诊逾期 ============ -->
+      <section class="ds-doctor-screen" id="screen-overdue">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar" style="background:var(--patient-gradient);color:#fff;">
+          <button class="ds-back" style="background:rgba(255,255,255,0.2);color:#fff;" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" style="color:#fff;">复诊逾期</div>
+          <div class="nav-ico-right" style="color:#fff;" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="overdue-body"><!-- JS 渲染 --></div>
+      </section>
+
+      <!-- ============ 屏 9：建档码 ============ -->
+      <section class="ds-doctor-screen" id="screen-qrcode">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">建档码</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-enroll')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-qr-area">
+            <div class="ds-qr-box" id="qr-fixed"><!-- JS 载入 doctor-qr.png 或内嵌 SVG --></div>
+            <div style="font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);">王文龙医生 · 痛风专病建档码</div>
+            <div class="ds-qr-hint">患者扫码后自动带出医生与专病信息，进入快速建档。适用于候诊自助建档、诊室门口张贴。</div>
+          </div>
+          <div class="ds-card" style="margin-top:12px;">
+            <div class="ds-card-title">使用说明</div>
+            <div class="ds-sub" style="margin-top:6px;line-height:1.6;">
+              · 建档码为固定二维码，绑定当前医生与痛风专病。<br>
+              · 患者扫建档码 → 填写姓名/性别/手机号 → 进入诊前资料补充。<br>
+              · 接诊请切换至「就诊码」动态码，二者流程严格分开。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 10：语音接诊 ============ -->
+      <section class="ds-doctor-screen" id="screen-voice">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-material')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">语音接诊</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-visitqr')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-voice-card" id="voice-card">
+            <div class="ds-card-title">诊间语音采集</div>
+            <div class="ds-sub" style="margin-top:4px;">当前患者：张明 · 男 · 45</div>
+            <div class="ds-wave" id="voice-wave" style="display:none;"></div>
+            <div class="ds-ocr-status" id="voice-status">待开始录音</div>
+            <div class="ds-transcript" id="voice-transcript" style="display:none;"></div>
+            <div id="voice-extract" style="display:none;margin-top:10px;">
+              <div class="ds-card-title" style="font-size:var(--text-base);margin-bottom:4px;">AI 抽取字段</div>
+            </div>
+          </div>
+          <div class="ds-synced-tip" id="voice-synced" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            已写入档案，来源标记「录音识别」
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" id="voice-toggle-txt" onclick="toggleVoice()">继续录音</button>
+          <button class="ds-btn-primary" id="voice-confirm" onclick="writeVoice()" disabled style="opacity:.5;cursor:not-allowed;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            确认写入档案
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 11：就诊码 ============ -->
+      <section class="ds-doctor-screen" id="screen-visitqr">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-confirm')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">就诊码</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-visitqr">
+            <div class="ds-qr-box" id="qr-dynamic"><!-- JS 生成动态码 --></div>
+            <div style="font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);">动态接诊码</div>
+            <div class="ds-refresh-msg">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              <span id="visit-refresh">每 60s 刷新 · 上次 09:24</span>
+            </div>
+            <button class="ds-btn-secondary" style="margin-top:10px;" onclick="refreshVisitQR()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              立即刷新
+            </button>
+          </div>
+          <div class="ds-arrived-warn" id="visit-arrived" style="display:none;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span id="visit-arrived-text">张明已扫码到院</span>
+          </div>
+          <div class="ds-card" style="margin-top:12px;">
+            <div class="ds-card-title">说明</div>
+            <div class="ds-sub" style="margin-top:6px;line-height:1.6;">
+              就诊码为实时刷新动态码，用于患者到院「扫码就诊」。患者扫码后医生端即时收到到院提示并生成接诊待办。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 12：主动建档 ============ -->
+      <section class="ds-doctor-screen" id="screen-enroll">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-qrcode')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">主动建档</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-enroll-card">
+            <div class="ds-card-title">医生发起建档</div>
+            <div class="ds-sub" style="margin-top:4px;">王文龙医生 · 痛风专病</div>
+            <div class="ds-form-field">
+              <label>姓名</label>
+              <input type="text" id="enroll-name" placeholder="请输入患者姓名" />
+            </div>
+            <div class="ds-form-field">
+              <label>性别</label>
+              <div class="ds-seg-group" id="enroll-sex">
+                <div class="seg-opt sel" data-v="男" onclick="segPick(this)">男</div>
+                <div class="seg-opt" data-v="女" onclick="segPick(this)">女</div>
+              </div>
+            </div>
+            <div class="ds-form-field">
+              <label>手机号（脱敏）</label>
+              <input type="text" id="enroll-phone" placeholder="1XX****XXXX" />
+            </div>
+            <div class="ds-form-field">
+              <label>备注</label>
+              <input type="text" id="enroll-note" placeholder="候诊现场建档，待补充病史" />
+            </div>
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" onclick="goScreen('screen-qrcode')">取消</button>
+          <button class="ds-btn-primary" onclick="submitEnroll()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            确认建档
+          </button>
+        </div>
+      </section>
+
+      <!-- 弹层：建档成功 / 提示 -->
+      <div class="ds-modal-mask" id="modal">
+        <div class="ds-modal">
+          <h3 id="modal-title">提示</h3>
+          <p id="modal-text">内容</p>
+          <div class="ds-actions">
+            <button class="ds-btn-secondary" onclick="closeModal()">关闭</button>
+            <button class="ds-btn-primary" onclick="closeModal()">好的</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-showcase-reflection"></div>
+    </div>
+  </section>
+
+  <!-- ====== 右侧工作流导航 ====== -->
+  <aside class="ds-nav">
+    <div class="ds-nav-title">工作流导航</div>
+
+    <div class="ds-nav-group">
+      <h4>登录与身份</h4>
+      <button class="ds-nav-item" data-screen="screen-login" onclick="goNav(this,'screen-login')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg></span>
+        登录 <span class="ds-nav-num">1</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-qrcode" onclick="goNav(this,'screen-qrcode')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg></span>
+        建档码 <span class="ds-nav-num">9</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-enroll" onclick="goNav(this,'screen-enroll')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>
+        主动建档 <span class="ds-nav-num">12</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>今日工作台</h4>
+      <button class="ds-nav-item" data-screen="screen-workbench" onclick="goNav(this,'screen-workbench')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+        今日工作台 <span class="ds-nav-num">2</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>患者管理</h4>
+      <button class="ds-nav-item" data-screen="screen-patients" onclick="goNav(this,'screen-patients')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+        患者队列 <span class="ds-nav-num">3</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-profile" onclick="goNav(this,'screen-profile')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
+        患者详情档案 <span class="ds-nav-num">4</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-overdue" onclick="goNav(this,'screen-overdue')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        复诊逾期 <span class="ds-nav-num">8</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>诊间采集与确认</h4>
+      <button class="ds-nav-item" data-screen="screen-material" onclick="goNav(this,'screen-material')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        看诊前资料 <span class="ds-nav-num">5</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-voice" onclick="goNav(this,'screen-voice')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg></span>
+        语音接诊 <span class="ds-nav-num">10</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-visitqr" onclick="goNav(this,'screen-visitqr')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg></span>
+        就诊码 <span class="ds-nav-num">11</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-confirm" onclick="goNav(this,'screen-confirm')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        医生确认 <span class="ds-nav-num">7</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>AI 辅助</h4>
+      <button class="ds-nav-item" data-screen="screen-aiassist" onclick="goNav(this,'screen-aiassist')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg></span>
+        AI 辅助 <span class="ds-nav-num">6</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>建档与复诊</h4>
+      <div class="ds-sub" style="padding:4px 4px 2px;line-height:1.5;">建档码、主动建档、复诊逾期入口见上方分组；下方为全局演示控制。</div>
+    </div>
+
+    <button class="ds-nav-reset" onclick="resetDemo()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      重置演示
+    </button>
+  </aside>
+</main>
+
+<!-- ====== 患者端联动模拟入口（演示用，低侵入，模拟同域患者动作） ====== -->
+<div class="ds-link-panel" id="linkPanel">
+  <button class="lp-close" onclick="document.getElementById('linkPanel').style.display='none'">×</button>
+  <h5>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--patient-primary-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+    患者端联动（演示）
+  </h5>
+  <div class="lp-sub">模拟患者侧动作，验证医生端双向联动实时刷新。</div>
+  <button class="lp-btn lp-blue" onclick="simPatientEnroll()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    患者扫建档码建档
+  </button>
+  <button class="lp-btn lp-orange" onclick="simPatientSupplement()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    患者补病史/报告
+  </button>
+  <button class="lp-btn lp-red" onclick="simPatientArrive()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+    患者到院扫接诊码
+  </button>
+</div>
+
+<script>
+/* ============ 全局状态（双向联动核心） ============ */
+const ASSET_QR = "assets/doctor-qr.png";
+const PATIENTS_SEED = [
+  { id:"p-zhang", name:"张明", sex:"男", age:45, phone:"138****6688", brief:"痛风 10 余年，近一年反复发作", status:"pending", statusText:"待接诊", time:"建档 07-10", confirmed:false, arrived:false, sources:{} },
+  { id:"p-chen", name:"陈建国", sex:"男", age:63, phone:"139****2031", brief:"痛风 3 年，合并糖尿病", status:"overdue", statusText:"复查逾期", time:"逾期 21 天", confirmed:false, arrived:false, sources:{} }
+];
+
+let demoState;
+function freshState(){
+  return {
+    loggedIn:false,
+    screen:"screen-login",
+    patients: JSON.parse(JSON.stringify(PATIENTS_SEED)),
+    pendingCount:1,          // 待接诊角标（张明）
+    confirmCount:0,          // 已纳管
+    overdueCount:1,          // 复诊逾期（陈建国）
+    arrived:false,           // 张明是否到院
+    visitArrivedName:null,
+    voiceDone:false,
+    voiceWritten:false,
+    materialPending:2,       // 看诊前资料待确认项数（OCR 入库后递减）
+    patientSupplied:false,   // 患者是否补充过资料
+    todos:[
+      {type:"orange", title:"确认张明痛风专病档案", desc:"候诊建档，待接诊确认", target:"screen-confirm"},
+      {type:"red", title:"陈建国复查逾期 21 天", desc:"痛风合并糖尿病，需联系改期", target:"screen-overdue"}
+    ]
+  };
+}
+
+/* ============ 工具 ============ */
+function $(id){return document.getElementById(id);}
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function goScreen(id){
+  document.querySelectorAll(".ds-doctor-screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  demoState.screen=id;
+  // 同步导航高亮
+  document.querySelectorAll(".ds-nav-item").forEach(n=>{
+    n.classList.toggle("active", n.dataset.screen===id);
+  });
+  if(id==="screen-workbench") renderWorkbench();
+  if(id==="screen-patients") renderPatients();
+  if(id==="screen-profile") renderProfile("p-zhang");
+  if(id==="screen-material") renderMaterial();
+  if(id==="screen-overdue") renderOverdue();
+  if(id==="screen-confirm") renderConfirm();
+  if(id==="screen-qrcode") loadFixedQR();
+  if(id==="screen-visitqr") renderVisitQR();
+  // 滚到顶部
+  const b=$(id).querySelector(".ds-body"); if(b) b.scrollTop=0;
+}
+function goNav(el,id){ goScreen(id); }
+
+/* ============ 登录 ============ */
+function loginIn(){
+  demoState.loggedIn=true;
+  goScreen("screen-workbench");
+  toast("已登录工作台");
+}
+
+/* ============ 工作台 ============ */
+function renderWorkbench(){
+  $("stat-pending").textContent=demoState.pendingCount;
+  $("badge-pending").textContent=demoState.pendingCount;
+  $("stat-confirm").textContent=demoState.confirmCount;
+  $("stat-overdue").textContent=demoState.overdueCount;
+  const list=$("workbench-todos"); list.innerHTML="";
+  const icons={
+    orange:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+    red:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    blue:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>',
+    green:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+  };
+  demoState.todos.forEach(t=>{
+    const d=document.createElement("div");
+    d.className="ds-todo"; d.onclick=()=>goScreen(t.target);
+    d.innerHTML='<div class="ds-todo-ico ico-'+t.type+'">'+icons[t.type]+'</div><div class="ds-todo-body"><div class="ds-todo-title">'+t.title+'</div><div class="ds-todo-desc">'+t.desc+'</div></div>';
+    list.appendChild(d);
+  });
+}
+
+/* ============ 患者队列 ============ */
+function renderPatients(){
+  const list=$("patient-list"); list.innerHTML="";
+  demoState.patients.forEach(p=>{
+    const chipCls = p.status==="pending"?"chip-orange":(p.status==="confirmed"?"chip-green":(p.status==="overdue"?"chip-red":"chip-blue"));
+    const row=document.createElement("div");
+    row.className="ds-prow";
+    row.onclick=()=>goScreen("screen-profile");
+    row.innerHTML=
+      '<div class="ds-avatar">'+p.name.charAt(0)+'</div>'+
+      '<div class="ds-pinfo">'+
+        '<div class="ds-pname">'+p.name+'<span class="psexy">'+p.sex+' · '+p.age+'</span></div>'+
+        '<div class="ds-pphone">'+p.phone+'</div>'+
+        '<div class="ds-pbrief">'+p.brief+'</div>'+
+      '</div>'+
+      '<div class="ds-pright">'+
+        '<span class="ds-chip '+chipCls+'">'+p.statusText+'</span>'+
+        '<span class="ds-ptime">'+p.time+'</span>'+
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+/* ============ 患者详情档案 ============ */
+function renderProfile(pid){
+  const p=demoState.patients.find(x=>x.id===pid)||demoState.patients[0];
+  $("profile-title").textContent=p.name+" · 档案";
+  const body=$("profile-body");
+  const src=(k,def)=> p.sources[k]||def;
+  function badge(s){return '<span class="ds-source '+s.cls+'">'+s.txt+'</span>';}
+  body.innerHTML=
+    '<div class="ds-field-block" style="margin-top:12px;">'+
+      '<h5>基本信息</h5>'+
+      '<div class="ds-frow"><div class="ds-fname">姓名 / 性别 / 年龄</div><div class="ds-fval">'+p.name+' · '+p.sex+' · '+p.age+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">手机号（脱敏）</div><div class="ds-fval">'+p.phone+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">当前状态</div><div class="ds-fval">'+ (p.status==="confirmed"?badge({cls:"src-confirm",txt:"已纳管"}):badge({cls:"src-doctor",txt:p.statusText})) +'</div></div>'+
+    '</div>'+
+
+    '<div class="ds-field-block"><h5>痛风结构化档案（9 项）</h5>'+
+      frow("首次痛风样疼痛时间","10 余年前",src("f1",{cls:"src-self",txt:"患者自填"}))+
+      frow("首次发作部位","第一跖趾关节（大脚趾根部）",src("f2",{cls:"src-self",txt:"患者自填"}))+
+      frow("是否有痛风石","未触及明显痛风石",src("f3",{cls:"src-self",txt:"患者自填"}))+
+      frow("合并症 / 并发症","无",src("f4",{cls:"src-self",txt:"患者自填"}))+
+      frow("当前疼痛和红肿活动状态","近一周大脚趾红肿明显",src("f5",{cls:"src-self",txt:"患者自填"}))+
+      frow("长期降尿酸用药情况","非布司他，间断服用",src("f6",{cls:"src-ai",txt:"AI识别"}))+
+      frow("当前消炎止痛用药情况","秋水仙碱",src("f7",{cls:"src-self",txt:"患者自填"}))+
+      frow("近 1 年发作次数","5 次以上",src("f8",{cls:"src-self",txt:"患者自填"}))+
+      frow("图片或资料补充","关节红肿照片 2 张",src("f9",{cls:"src-upload",txt:"患者上传"}))+
+    '</div>'+
+
+    '<div class="ds-field-block"><h5>化验单归档（按报告时间）</h5>'+
+      '<div class="ds-frow"><div class="ds-fname">2026-07-08 血尿酸</div><div class="ds-fval">542 μmol/L '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">2026-07-08 肌酐</div><div class="ds-fval">78 μmol/L '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">2026-07-08 肝功能</div><div class="ds-fval">ALT 26 U/L '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+      (p.status==="confirmed"? '<div class="ds-synced-tip" style="margin-top:12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>患者端已纳管，回写成功</div>':'')+
+    '</div>'+
+    '<div style="height:16px;"></div>';
+  function frow(name,val,s){
+    return '<div class="ds-frow"><div class="ds-fname">'+name+'</div><div class="ds-fval">'+val+' '+badge(s)+'</div></div>';
+  }
+}
+
+/* ============ 看诊前资料（含 OCR 模式） ============ */
+function renderMaterial(){
+  const body=$("material-body");
+  body.innerHTML=
+    '<div class="ds-field-block" style="margin-top:12px;">'+
+      '<h5>待确认资料 <span class="ds-chip chip-orange" id="material-pending-chip">'+demoState.materialPending+' 项待确认</span></h5>'+
+      '<div class="ds-frow"><div class="ds-fname">2026-07-08 化验单（OCR）</div><div class="ds-fval">待归档 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">关节红肿照片</div><div class="ds-fval">已读 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+    '</div>'+
+    '<div class="ds-section-title">OCR 识别 · 补充资料</div>'+
+    '<div class="ds-ocr-card" id="ocr-card">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<div class="ds-card-title" style="font-size:var(--text-base);">化验单 OCR 识别</div>'+
+        '<button class="ds-btn-secondary" style="height:34px;font-size:var(--text-sm);" onclick="runOCR()">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>'+
+          '开始识别</button>'+
+      '</div>'+
+      '<div class="ds-ocr-status" id="ocr-status">待识别</div>'+
+      '<div id="ocr-extract" style="display:none;margin-top:10px;"></div>'+
+    '</div>'+
+    '<div style="height:16px;"></div>';
+}
+
+/* OCR 模拟 */
+function runOCR(){
+  const st=$("ocr-status"); const ex=$("ocr-extract");
+  st.classList.remove("is-done"); st.textContent="上传中…";
+  setTimeout(()=>{ st.textContent="识别中…"; },600);
+  setTimeout(()=>{
+    st.textContent="提取完成"; st.classList.add("is-done");
+    ex.style.display="block";
+    ex.innerHTML=
+      '<div class="ds-extract-row"><div class="ds-extract-name">报告时间</div><div class="ds-extract-val">2026-07-08 '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">血尿酸</div><div class="ds-extract-val">542 μmol/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">肌酐</div><div class="ds-extract-val">78 μmol/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">肝功能 ALT</div><div class="ds-extract-val">26 U/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-actions" style="margin-top:12px;">'+
+        '<button class="ds-btn-secondary" style="height:38px;" onclick="toast(\'已转入人工修正\')">人工修正</button>'+
+        '<button class="ds-btn-primary" style="height:38px;" onclick="confirmOCR()">确认入库</button>'+
+      '</div>';
+    toast("OCR 提取完成");
+  },1600);
+  function badge(s){return '<span class="ds-source '+s.cls+'">'+s.txt+'</span>';}
+}
+function confirmOCR(){
+  if(demoState.materialPending>0) demoState.materialPending-=1;
+  const chip=$("material-pending-chip");
+  if(chip) chip.textContent=demoState.materialPending+" 项待确认";
+  if(demoState.materialPending===0 && chip) chip.textContent="全部已确认";
+  toast("已入库，来源「AI识别」");
+  // 资料确认后更新 workbench
+  renderWorkbench();
+}
+
+/* ============ 复诊逾期 ============ */
+function renderOverdue(){
+  const body=$("overdue-body");
+  const overdue=demoState.patients.filter(p=>p.status==="overdue");
+  let html='<div class="ds-arrived-warn" style="margin-top:12px;width:100%;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>共 '+overdue.length+' 名患者复查逾期</div>';
+  overdue.forEach(p=>{
+    html+=
+      '<div class="ds-card" style="margin-top:12px;border-left:4px solid var(--doctor-red);">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+          '<div class="ds-card-title">'+p.name+'</div>'+
+          '<span class="ds-chip chip-red">'+p.statusText+' '+p.time.replace("逾期 ","")+'</span>'+
+        '</div>'+
+        '<div class="ds-sub" style="margin-top:6px;line-height:1.55;">'+p.brief+'，合并糖尿病。建议尽快联系改期复查血尿酸与肝肾功能。</div>'+
+        '<div class="ds-actions" style="margin-top:12px;">'+
+          '<button class="ds-btn-secondary" style="height:38px;" onclick="toast(\'已发送改期提醒\')">联系改期</button>'+
+          '<button class="ds-btn-primary" style="height:38px;" onclick="toast(\'已标记为已联系\')">标记已联系</button>'+
+        '</div>'+
+      '</div>';
+  });
+  body.innerHTML=html+'<div style="height:16px;"></div>';
+}
+
+/* ============ 医生确认 ============ */
+function renderConfirm(){
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  $("confirm-patient").textContent=p.name+" · "+p.sex+" · "+p.age+" · "+p.phone;
+  $("confirm-synced").style.display = p.confirmed ? "flex":"none";
+  $("confirm-body").innerHTML=
+    '<div style="margin-top:12px;">'+
+      '<div class="ds-frow"><div class="ds-fname">首次发作 / 部位</div><div class="ds-fval">10 余年前 · 第一跖趾关节</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">近 1 年发作</div><div class="ds-fval">5 次以上</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">降尿酸用药</div><div class="ds-fval">非布司他（间断）</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">血尿酸</div><div class="ds-fval">542 μmol/L</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">合并症</div><div class="ds-fval">无</div></div>'+
+    '</div>'+
+    '<div class="ds-sub" style="margin-top:12px;line-height:1.55;">确认后档案纳入痛风专病管理，患者端即时进入「已纳管」，下次复诊与复查项目将同步下发。</div>';
+}
+
+function confirmArchive(){
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  if(p.confirmed){ toast("已确认纳管"); return; }
+  p.confirmed=true; p.status="confirmed"; p.statusText="已纳管"; p.time="已纳管";
+  // 来源标记变「医生确认」
+  ["f1","f2","f3","f4","f5","f6","f7","f8","f9"].forEach(k=>p.sources[k]={cls:"src-confirm",txt:"医生确认"});
+  // 角标 -1，纳管 +1
+  demoState.pendingCount=Math.max(0,demoState.pendingCount-1);
+  demoState.confirmCount+=1;
+  // 待办移除确认项
+  demoState.todos=demoState.todos.filter(t=>!t.title.includes("确认张明"));
+  renderConfirm();
+  renderWorkbench();
+  renderPatients();
+  // 同步回写提示
+  $("confirm-synced").style.display="flex";
+  toast("档案已确认，患者端进入已纳管");
+}
+
+function rejectArchive(){
+  showModal("驳回档案","驳回后档案退回「待补充」，患者端收到补充提示。演示环境仅作状态提示，不实际退回。");
+}
+
+/* ============ 建档码（固定 QR） ============ */
+function loadFixedQR(){
+  const box=$("qr-fixed");
+  // 优先使用仓库素材，失败则内嵌 SVG 占位
+  box.innerHTML='<img src="'+ASSET_QR+'" alt="建档码" onerror="this.style.display=\'none\';this.parentNode.innerHTML=window.QR_SVG_PLACEHOLDER;" />';
+}
+
+/* ============ 就诊码（动态 QR） ============ */
+function buildQRsvg(seed){
+  // 简易伪随机 QR 风格 SVG（演示用，非真实可扫）
+  let r=0; for(const c of seed) r=(r*31+c.charCodeAt(0))>>>0;
+  const N=11, cell=15, pad=8, size=pad*2+N*cell;
+  let rects='<rect width="'+size+'" height="'+size+'" fill="#fff"/>';
+  function corner(x,y){ return '<rect x="'+(pad+x*cell)+'" y="'+(pad+y*cell)+'" width="'+(cell*3)+'" height="'+(cell*3)+'" fill="#0b1f3a"/><rect x="'+(pad+x*cell+cell)+'" y="'+(pad+y*cell+cell)+'" width="'+cell+'" height="'+cell+'" fill="#fff"/>'; }
+  let rnd=r;
+  for(let i=0;i<N;i++){for(let j=0;j<N;j++){
+    rnd=(rnd*1103515245+12345)&0x7fffffff;
+    if(rnd%100<48){ rects+='<rect x="'+(pad+i*cell)+'" y="'+(pad+j*cell)+'" width="'+cell+'" height="'+cell+'" fill="#0b1f3a"/>'; }
+  }}
+  rects+=corner(0,0)+corner(N-3,0)+corner(0,N-3);
+  return '<svg width="200" height="200" viewBox="0 0 '+size+' '+size+'" xmlns="http://www.w3.org/2000/svg">'+rects+'</svg>';
+}
+function renderVisitQR(){
+  const seed="VISIT-"+Math.floor(Math.random()*1e6);
+  $("qr-dynamic").innerHTML=buildQRsvg(seed);
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,"0"); const mm=String(now.getMinutes()).padStart(2,"0");
+  $("visit-refresh").textContent="每 60s 刷新 · 上次 "+hh+":"+mm;
+  if(demoState.arrived){
+    $("visit-arrived").style.display="flex";
+    $("visit-arrived-text").textContent=(demoState.visitArrivedName||"患者")+"已扫码到院";
+  } else {
+    $("visit-arrived").style.display="none";
+  }
+}
+function refreshVisitQR(){ renderVisitQR(); toast("接诊码已刷新"); }
+
+/* ============ 语音接诊 ============ */
+let voiceTimer=null;
+function toggleVoice(){
+  const wave=$("voice-wave"); const status=$("voice-status"); const trans=$("voice-transcript");
+  const extract=$("voice-extract"); const confirmBtn=$("voice-confirm"); const toggleTxt=$("voice-toggle-txt");
+  if(!demoState.voiceStarted){
+    demoState.voiceStarted=true;
+    wave.style.display="flex";
+    let bars=''; for(let i=0;i<22;i++) bars+='<span class="bar"></span>';
+    wave.innerHTML=bars;
+    status.textContent="录音中 00:12";
+    toggleTxt.textContent="结束录音";
+    setTimeout(()=>{
+      trans.style.display="block";
+      trans.innerHTML='<span class="who">医生：</span>张明这次发作主要是大脚趾红肿，最近疼得比较明显，之前吃的非布司他后来自己停了。';
+      status.textContent="转写完成";
+      extract.style.display="block";
+      extract.innerHTML='<div class="ds-card-title" style="font-size:var(--text-base);margin-bottom:4px;">AI 抽取字段</div>'+
+        '<div class="ds-extract-row"><div class="ds-extract-name">当前疼痛红肿</div><div class="ds-extract-val">明显疼痛、红肿 '+badge({cls:"src-voice",txt:"录音识别"})+'</div></div>'+
+        '<div class="ds-extract-row"><div class="ds-extract-name">长期用药</div><div class="ds-extract-val">非布司他（自行停用） '+badge({cls:"src-voice",txt:"录音识别"})+'</div></div>';
+      confirmBtn.disabled=false; confirmBtn.style.opacity="1"; confirmBtn.style.cursor="pointer";
+      toggleTxt.textContent="重录";
+    },1400);
+  } else {
+    // 重录
+    demoState.voiceStarted=false;
+    wave.style.display="none"; status.textContent="待开始录音";
+    trans.style.display="none"; extract.style.display="none";
+    confirmBtn.disabled=true; confirmBtn.style.opacity=".5"; confirmBtn.style.cursor="not-allowed";
+    toggleTxt.textContent="继续录音";
+    $("voice-synced").style.display="none";
+  }
+  function badge(s){return '<span class="ds-source '+s.cls+'">'+s.txt+'</span>';}
+}
+function writeVoice(){
+  if($("voice-confirm").disabled) return;
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  p.sources["f5"]={cls:"src-voice",txt:"录音识别"};
+  p.sources["f6"]={cls:"src-voice",txt:"录音识别"};
+  demoState.voiceWritten=true;
+  $("voice-synced").style.display="flex";
+  toast("已写入档案，来源「录音识别」");
+}
+
+/* ============ 主动建档 ============ */
+function segPick(el){
+  el.parentNode.querySelectorAll(".seg-opt").forEach(o=>o.classList.remove("sel"));
+  el.classList.add("sel");
+}
+function submitEnroll(){
+  const name=$("enroll-name").value.trim();
+  if(!name){ toast("请输入患者姓名"); return; }
+  const sex=document.querySelector("#enroll-sex .seg-opt.sel").dataset.v;
+  const phone=$("enroll-phone").value.trim()||"1XX****XXXX";
+  const note=$("enroll-note").value.trim()||"候诊现场建档";
+  const np={ id:"p-"+Date.now(), name, sex, age:0, phone, brief:note, status:"pending", statusText:"待接诊", time:"建档 "+new Date().toLocaleDateString("zh-CN").slice(5), confirmed:false, arrived:false, sources:{} };
+  demoState.patients.unshift(np);
+  demoState.pendingCount+=1;
+  demoState.todos.unshift({type:"orange", title:"确认"+name+"痛风专病档案", desc:"医生主动建档，待接诊确认", target:"screen-confirm"});
+  renderWorkbench(); renderPatients();
+  showModal("建档成功","已为 "+name+" 创建痛风专病档案，进入待接诊队列。");
+  $("enroll-name").value=""; $("enroll-phone").value=""; $("enroll-note").value="";
+}
+
+/* ============ 弹层 ============ */
+function showModal(title,text){
+  $("modal-title").textContent=title; $("modal-text").textContent=text;
+  $("modal").classList.add("show");
+}
+function closeModal(){ $("modal").classList.remove("show"); }
+
+/* ============ 患者端联动模拟（同域 demoState 驱动） ============ */
+function simPatientEnroll(){
+  if(demoState.pendingCount>=2 && demoState.patients.some(p=>p.id==="p-new")) { toast("患者已建档"); return; }
+  if(demoState.patients.some(p=>p.id==="p-new")) { toast("患者已建档"); return; }
+  const np={ id:"p-new", name:"李红", sex:"女", age:52, phone:"137****8820", brief:"扫码建档，待补充诊前资料", status:"pending", statusText:"待接诊", time:"建档 07-13", confirmed:false, arrived:false, sources:{} };
+  demoState.patients.splice(1,0,np);
+  demoState.pendingCount+=1;
+  demoState.todos.unshift({type:"orange", title:"确认李红痛风专病档案", desc:"候诊建档，待接诊确认", target:"screen-confirm"});
+  renderWorkbench(); renderPatients();
+  toast("患者建档 → 工作台待接诊 +1，队列新增李红");
+}
+function simPatientSupplement(){
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  if(!p){ toast("无示例患者"); return; }
+  p.sources["f6"]={cls:"src-ai",txt:"AI识别"};
+  p.sources["f7"]={cls:"src-self",txt:"患者自填"};
+  demoState.patientSupplied=true;
+  // 刷新档案来源标记
+  if(demoState.screen==="screen-profile") renderProfile("p-zhang");
+  toast("患者补资料 → 张明档案来源标记刷新");
+}
+function simPatientArrive(){
+  if(demoState.arrived){ toast("患者已到院"); return; }
+  demoState.arrived=true; demoState.visitArrivedName="张明";
+  demoState.todos.unshift({type:"orange", title:"接诊张明", desc:"已扫码到院，待接诊", target:"screen-visitqr"});
+  if(demoState.screen==="screen-visitqr") renderVisitQR();
+  renderWorkbench();
+  toast("张明已扫码到院 → 就诊码红预警 + 待办新增");
+}
+
+/* ============ 重置 ============ */
+function resetDemo(){
+  demoState=freshState();
+  demoState.voiceStarted=false;
+  // 复位语音/就诊码屏 UI
+  $("voice-wave").style.display="none";
+  $("voice-status").textContent="待开始录音";
+  $("voice-transcript").style.display="none";
+  $("voice-extract").style.display="none";
+  $("voice-synced").style.display="none";
+  $("voice-confirm").disabled=true; $("voice-confirm").style.opacity=".5"; $("voice-confirm").style.cursor="not-allowed";
+  $("voice-toggle-txt").textContent="继续录音";
+  $("visit-arrived").style.display="none";
+  goScreen("screen-login");
+  toast("演示已重置");
+}
+
+/* ============ 内嵌 QR 占位（素材缺失时回退） ============ */
+window.QR_SVG_PLACEHOLDER = buildQRsvg("FIXED-DOCTOR-QR");
+
+/* ============ 初始化 ============ */
+demoState=freshState();
+// 默认进入登录屏；登录后进入工作台
+goScreen("screen-login");
+</script>
+</body>
+</html>

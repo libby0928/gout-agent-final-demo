@@ -3,58 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>痛风专病医生端 · 接诊采集版</title>
+  <title>痛风专病医生端 · AI 诊疗辅助版</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230052d9'/%3E%3Cpath d='M9 16h14M16 9v14' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../design-system/components.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #eef2f7;
+      --bg: #f5f7fb;
       --panel: #ffffff;
-      --line: #e5eaf2;
-      --text: #1d2530;
-      --sub: #566579;
-      --hint: #8a94a6;
-      --blue: #0052d9;
-      --blue-2: #1f73f1;
-      --blue-soft: #eaf2ff;
+      --line: #f0f2f5;
+      --text: #333333;
+      --sub: #666666;
+      --hint: #999999;
+      --blue: #01A1FF;
+      --blue-2: #03D49F;
+      --blue-soft: rgba(1, 161, 255, .10);
+      --grad: linear-gradient(234deg, #03D49F 0%, #01A1FF 100%);
+      --soft-grad: linear-gradient(135deg, #E8F9F4 0%, #E8F4FF 100%);
       --orange: #ed7b2f;
       --orange-soft: #fff4e8;
       --green: #2ba471;
       --green-soft: #eaf8f2;
       --red: #d54941;
       --red-soft: #fff0ee;
-      --shadow: 0 16px 44px rgba(31, 42, 68, .16);
+      --shadow: 0 30px 80px rgba(0, 0, 0, .6);
+      --card-shadow: 0 3px 14px rgba(0, 0, 0, .05);
     }
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at 18% 12%, rgba(69, 137, 255, .2), transparent 26%),
-        linear-gradient(135deg, #172033 0%, #243047 45%, #141923 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
       color: var(--text);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 28px;
+      padding: 24px;
+      overflow-x: auto;
     }
     .stage {
       display: grid;
-      grid-template-columns: 430px 260px;
-      gap: 22px;
+      grid-template-columns: 390px 280px;
+      gap: 24px;
       align-items: start;
     }
     .phone {
       width: 390px;
+      min-width: 390px;
       height: 844px;
       border-radius: 44px;
-      background: #0c1220;
-      padding: 12px;
+      background: #fff;
+      overflow: hidden;
+      position: relative;
       box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, .12);
+      display: flex;
+      flex-direction: column;
     }
     .screen {
       width: 100%;
       height: 100%;
-      border-radius: 34px;
       background: var(--bg);
       overflow: hidden;
       position: relative;
@@ -79,7 +85,7 @@
       align-items: center;
       gap: 12px;
       padding: 0 16px;
-      background: var(--panel);
+      background: rgba(255, 255, 255, .98);
       border-bottom: 1px solid var(--line);
       flex-shrink: 0;
     }
@@ -105,17 +111,19 @@
     .body {
       flex: 1;
       overflow-y: auto;
-      padding: 12px 14px 84px;
+      padding: 14px 16px 86px;
     }
+    .body::-webkit-scrollbar { display: none; }
     .doctor-head {
-      background: linear-gradient(135deg, #0052d9, #1f73f1);
+      background: var(--grad);
       color: #fff;
-      padding: 15px 16px;
-      border-radius: 14px;
+      padding: 18px 16px;
+      border-radius: 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      box-shadow: 0 12px 28px rgba(1, 161, 255, .18);
     }
     .doctor-name { font-size: 18px; font-weight: 850; }
     .doctor-meta { font-size: 12px; color: rgba(255, 255, 255, .78); margin-top: 3px; }
@@ -123,9 +131,9 @@
       border: 0;
       background: rgba(255, 255, 255, .16);
       color: #fff;
-      height: 34px;
-      padding: 0 11px;
-      border-radius: 9px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 18px;
       font-size: 12px;
       font-weight: 750;
       cursor: pointer;
@@ -139,9 +147,10 @@
     .stat {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 11px 10px;
-      min-height: 72px;
+      border-radius: 18px;
+      padding: 12px 10px;
+      min-height: 76px;
+      box-shadow: var(--card-shadow);
     }
     .stat-value { font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
     .stat-label { font-size: 12px; color: var(--hint); margin-top: 8px; }
@@ -155,10 +164,10 @@
     .section-link { font-size: 12px; color: var(--blue); font-weight: 700; cursor: pointer; }
     .main-task {
       background: var(--panel);
-      border-radius: 14px;
-      padding: 14px;
-      border: 1px solid rgba(0, 82, 217, .18);
-      box-shadow: 0 8px 22px rgba(0, 82, 217, .07);
+      border-radius: 22px;
+      padding: 16px;
+      border: 1.5px solid rgba(3, 212, 159, .18);
+      box-shadow: var(--card-shadow);
     }
     .task-kicker {
       display: inline-flex;
@@ -166,9 +175,9 @@
       gap: 6px;
       height: 24px;
       padding: 0 8px;
-      border-radius: 7px;
-      background: var(--orange-soft);
-      color: var(--orange);
+      border-radius: 999px;
+      background: rgba(1, 161, 255, .10);
+      color: #0184CF;
       font-size: 11px;
       font-weight: 800;
     }
@@ -191,8 +200,8 @@
       margin-top: 12px;
     }
     .task-point {
-      background: #f7f9fc;
-      border-radius: 10px;
+      background: #f7fbff;
+      border-radius: 14px;
       padding: 9px 7px;
       min-height: 58px;
     }
@@ -202,7 +211,7 @@
     button { font-family: inherit; }
     .btn-primary, .btn-secondary {
       height: 40px;
-      border-radius: 10px;
+      border-radius: 20px;
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
@@ -210,19 +219,21 @@
     .btn-primary {
       flex: 1;
       border: 0;
-      background: var(--blue);
+      background: var(--grad);
+      box-shadow: 0 8px 18px rgba(1, 161, 255, .18);
       color: #fff;
     }
     .btn-secondary {
-      border: 1px solid var(--line);
+      border: 1.5px solid rgba(1, 161, 255, .20);
       background: #fff;
-      color: var(--blue);
+      color: #0184CF;
       padding: 0 13px;
     }
     .todo-list {
       background: var(--panel);
-      border-radius: 14px;
+      border-radius: 18px;
       border: 1px solid var(--line);
+      box-shadow: var(--card-shadow);
       overflow: hidden;
     }
     .todo {
@@ -276,13 +287,14 @@
       cursor: pointer;
       font-weight: 700;
     }
-    .nav-item.active { color: var(--blue); }
+    .nav-item.active { color: var(--blue-2); }
     .nav-icon { font-size: 18px; line-height: 20px; margin-bottom: 3px; }
     .patient-head {
       background: var(--panel);
-      border-radius: 14px;
+      border-radius: 22px;
       border: 1px solid var(--line);
-      padding: 14px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
     }
     .patient-top {
       display: flex;
@@ -292,9 +304,9 @@
     .avatar {
       width: 48px;
       height: 48px;
-      border-radius: 14px;
-      background: var(--blue-soft);
-      color: var(--blue);
+      border-radius: 16px;
+      background: var(--grad);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -324,8 +336,9 @@
     .progress-card {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 13px;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--card-shadow);
       display: flex;
       align-items: center;
       gap: 11px;
@@ -334,12 +347,12 @@
     .progress-icon {
       width: 38px;
       height: 38px;
-      border-radius: 11px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--blue);
-      background: var(--blue-soft);
+      color: #0184CF;
+      background: rgba(1, 161, 255, .10);
       font-weight: 900;
       flex-shrink: 0;
     }
@@ -359,9 +372,10 @@
 
     .encounter-card {
       background: var(--panel);
-      border: 1px solid rgba(0, 82, 217, .16);
-      border-radius: 14px;
-      padding: 14px;
+      border: 1.5px solid rgba(3, 212, 159, .18);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
     }
     .encounter-status {
       display: flex;
@@ -370,8 +384,8 @@
       gap: 12px;
       margin-top: 12px;
       padding: 11px 12px;
-      background: #f7f9fc;
-      border-radius: 11px;
+      background: #f7fbff;
+      border-radius: 16px;
     }
     .pulse {
       width: 10px;
@@ -416,20 +430,21 @@
     }
     .step {
       text-align: center;
-      border-radius: 9px;
-      background: #f7f9fc;
+      border-radius: 999px;
+      background: #f7fbff;
       padding: 7px 4px;
       font-size: 10px;
       color: var(--hint);
       font-weight: 850;
     }
-    .step.active { background: var(--blue-soft); color: var(--blue); }
+    .step.active { background: rgba(1, 161, 255, .10); color: #0184CF; }
     .step.done { background: var(--green-soft); color: var(--green); }
     .timeline {
       background: var(--panel);
-      border-radius: 14px;
+      border-radius: 18px;
       border: 1px solid var(--line);
       padding: 12px 14px;
+      box-shadow: var(--card-shadow);
     }
     .timeline-row {
       display: grid;
@@ -443,10 +458,11 @@
     .timeline-time { color: var(--hint); }
     .timeline-text { color: var(--sub); font-weight: 650; }
     .archive-overview {
-      background: linear-gradient(135deg, #0052d9, #2277f2);
+      background: var(--grad);
       color: #fff;
-      border-radius: 15px;
-      padding: 15px;
+      border-radius: 22px;
+      padding: 18px 16px;
+      box-shadow: 0 12px 28px rgba(1, 161, 255, .18);
     }
     .archive-overview .status-chip {
       background: rgba(255, 255, 255, .18);
@@ -470,7 +486,7 @@
     .overview-value { font-size: 17px; font-weight: 900; }
     .overview-label { font-size: 11px; color: rgba(255, 255, 255, .74); margin-top: 3px; }
     .alert-card {
-      border-radius: 13px;
+      border-radius: 18px;
       background: var(--orange-soft);
       border: 1px solid rgba(237, 123, 47, .2);
       padding: 12px;
@@ -495,8 +511,9 @@
     .group {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 13px;
+      border-radius: 18px;
       overflow: hidden;
+      box-shadow: var(--card-shadow);
       margin-bottom: 9px;
     }
     .group-head {
@@ -506,7 +523,7 @@
       justify-content: space-between;
       padding: 0 13px;
       cursor: pointer;
-      background: #fbfcfe;
+      background: #fbfffd;
     }
     .group-title { font-size: 14px; font-weight: 850; }
     .group-count { font-size: 11px; color: var(--hint); font-weight: 750; }
@@ -527,8 +544,8 @@
     .source {
       font-size: 10px;
       font-weight: 800;
-      color: var(--blue);
-      background: var(--blue-soft);
+      color: #0184CF;
+      background: rgba(1, 161, 255, .10);
       padding: 3px 6px;
       border-radius: 5px;
       white-space: nowrap;
@@ -551,9 +568,9 @@
     .evidence {
       display: none;
       margin-top: 9px;
-      background: #f7f9fc;
-      border-left: 3px solid var(--blue);
-      border-radius: 9px;
+      background: #f7fbff;
+      border-left: 3px solid var(--blue-2);
+      border-radius: 12px;
       padding: 9px 10px;
       font-size: 12px;
       color: var(--sub);
@@ -561,13 +578,15 @@
     }
     .field.open .evidence { display: block; }
     .control {
-      background: rgba(255, 255, 255, .08);
+      background: rgba(255, 255, 255, .07);
       border: 1px solid rgba(255, 255, 255, .12);
       border-radius: 18px;
-      color: #dbe7ff;
-      padding: 16px;
-      width: 260px;
-      box-shadow: var(--shadow);
+      color: rgba(255, 255, 255, .72);
+      padding: 14px;
+      width: 280px;
+      box-shadow: none;
+      position: sticky;
+      top: 24px;
     }
     .control-title { font-size: 16px; font-weight: 900; color: #fff; }
     .control-sub { font-size: 12px; color: rgba(255, 255, 255, .66); line-height: 1.6; margin-top: 6px; }
@@ -578,8 +597,8 @@
       margin-top: 14px;
     }
     .control button {
-      height: 40px;
-      border-radius: 10px;
+      min-height: 42px;
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, .14);
       background: rgba(255, 255, 255, .1);
       color: #fff;
@@ -589,8 +608,8 @@
       padding: 0 12px;
     }
     .control button.active {
-      background: rgba(77, 163, 255, .24);
-      border-color: rgba(77, 163, 255, .44);
+      background: linear-gradient(234deg, rgba(3, 212, 159, .22), rgba(1, 161, 255, .20));
+      border-color: rgba(3, 212, 159, .34);
     }
     .note {
       margin-top: 14px;
@@ -617,67 +636,93 @@
       z-index: 20;
     }
     .toast.show { opacity: 1; }
+    .login-screen {
+      background: linear-gradient(180deg, #eef9ff 0%, #f7fbff 45%, #f5f7fb 100%);
+    }
+    .login-hero {
+      padding: 18px 18px 14px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 14px 34px rgba(1, 161, 255, .18);
+    }
+    .login-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      margin-top: 10px;
+    }
+    .login-title { font-size: 24px; font-weight: 950; margin-top: 18px; letter-spacing: -.4px; }
+    .login-sub { font-size: 13px; color: rgba(255, 255, 255, .78); line-height: 1.6; margin-top: 6px; }
+    .login-card {
+      margin: -8px 16px 0;
+      background: var(--panel);
+      border: 1px solid rgba(1, 161, 255, .10);
+      border-radius: 24px;
+      box-shadow: var(--card-shadow);
+      padding: 16px;
+    }
+    .login-field { margin-top: 12px; }
+    .login-label { font-size: 12px; color: var(--hint); font-weight: 800; margin-bottom: 7px; }
+    .login-input {
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      padding: 0 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 760;
+    }
+    .login-input span:last-child { color: var(--hint); font-size: 12px; font-weight: 700; }
+    .login-row { display: grid; grid-template-columns: 1fr 96px; gap: 8px; }
+    .verify-btn {
+      height: 44px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(1, 161, 255, .20);
+      background: #fff;
+      color: #0184CF;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .login-safe {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 14px;
+      background: #f7fbff;
+      color: var(--sub);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .login-safe .ui-icon { color: var(--green); margin-top: 1px; }
+    .login-footer {
+      padding: 14px 16px 0;
+      font-size: 11px;
+      color: var(--hint);
+      line-height: 1.55;
+      text-align: center;
+    }
     @media (max-width: 760px) {
       body { padding: 12px; align-items: flex-start; }
       .stage { display: flex; flex-direction: column; align-items: center; }
-      .control { width: 390px; max-width: calc(100vw - 24px); }
+      .control { width: 390px; max-width: calc(100vw - 24px); position: static; }
       .phone { width: 390px; max-width: calc(100vw - 24px); }
     }
   
-  .ui-icon { width: 1em; height: 1em; display: inline-block; position: relative; flex-shrink: 0; color: currentColor; }
-  .ui-icon::before, .ui-icon::after { content: ""; position: absolute; box-sizing: border-box; }
-  .ui-icon-home::before { left: 12%; top: 42%; width: 76%; height: 48%; border: 2px solid currentColor; border-top: 0; border-radius: 2px; }
-  .ui-icon-home::after { left: 18%; top: 12%; width: 64%; height: 64%; border-left: 2px solid currentColor; border-top: 2px solid currentColor; transform: rotate(45deg); border-radius: 2px; }
-  .ui-icon-user::before { left: 31%; top: 12%; width: 38%; height: 38%; border: 2px solid currentColor; border-radius: 50%; }
-  .ui-icon-user::after { left: 18%; top: 58%; width: 64%; height: 30%; border: 2px solid currentColor; border-radius: 50% 50% 32% 32%; }
-  .ui-icon-users::before { left: 10%; top: 20%; width: 36%; height: 36%; border: 2px solid currentColor; border-radius: 50%; box-shadow: 9px 0 0 -2px currentColor; }
-  .ui-icon-users::after { left: 6%; top: 60%; width: 82%; height: 27%; border: 2px solid currentColor; border-radius: 50% 50% 28% 28%; }
-  .ui-icon-chat::before { left: 10%; top: 16%; width: 78%; height: 58%; border: 2px solid currentColor; border-radius: 5px; }
-  .ui-icon-chat::after { left: 28%; top: 68%; width: 13px; height: 10px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: skew(-24deg); }
-  .ui-icon-folder::before { left: 9%; top: 27%; width: 82%; height: 56%; border: 2px solid currentColor; border-radius: 4px; }
-  .ui-icon-folder::after { left: 13%; top: 17%; width: 36%; height: 18%; border: 2px solid currentColor; border-bottom: 0; border-radius: 4px 4px 0 0; }
-  .ui-icon-ticket::before { inset: 18% 8%; border: 2px solid currentColor; border-radius: 5px; }
-  .ui-icon-ticket::after { left: 50%; top: 20%; height: 60%; border-left: 2px dashed currentColor; transform: translateX(-50%); }
-  .ui-icon-book::before { left: 15%; top: 14%; width: 32%; height: 72%; border: 2px solid currentColor; border-radius: 4px 1px 1px 4px; }
-  .ui-icon-book::after { right: 15%; top: 14%; width: 32%; height: 72%; border: 2px solid currentColor; border-radius: 1px 4px 4px 1px; }
-  .ui-icon-doc::before { left: 22%; top: 10%; width: 56%; height: 80%; border: 2px solid currentColor; border-radius: 4px; }
-  .ui-icon-doc::after { right: 22%; top: 10%; width: 18%; height: 18%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
-  .ui-icon-list::before { left: 18%; top: 22%; width: 64%; height: 56%; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; box-shadow: 0 8px 0 -6px currentColor; }
-  .ui-icon-list::after { left: 14%; top: 20%; width: 3px; height: 3px; background: currentColor; border-radius: 50%; box-shadow: 0 8px 0 currentColor, 0 16px 0 currentColor; }
-  .ui-icon-edit::before { left: 18%; top: 22%; width: 60%; height: 56%; border: 2px solid currentColor; border-radius: 4px; }
-  .ui-icon-edit::after { left: 48%; top: 14%; width: 32%; height: 8%; background: currentColor; transform: rotate(-35deg); border-radius: 2px; }
-  .ui-icon-alert::before { left: 48%; top: 18%; width: 4px; height: 46%; background: currentColor; border-radius: 2px; transform: translateX(-50%); }
-  .ui-icon-alert::after { left: 48%; bottom: 18%; width: 5px; height: 5px; background: currentColor; border-radius: 50%; transform: translateX(-50%); }
-  .ui-icon-clock::before { inset: 12%; border: 2px solid currentColor; border-radius: 50%; }
-  .ui-icon-clock::after { left: 50%; top: 26%; width: 22%; height: 32%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
-  .ui-icon-lab::before { left: 32%; top: 12%; width: 36%; height: 54%; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 12px 12px; }
-  .ui-icon-lab::after { left: 26%; bottom: 18%; width: 48%; height: 20%; background: currentColor; opacity: .22; border-radius: 0 0 10px 10px; }
-  .ui-icon-plus::before { left: 18%; top: 47%; width: 64%; border-top: 2px solid currentColor; }
-  .ui-icon-plus::after { left: 47%; top: 18%; height: 64%; border-left: 2px solid currentColor; }
-  .ui-icon-search::before { left: 14%; top: 12%; width: 52%; height: 52%; border: 2px solid currentColor; border-radius: 50%; }
-  .ui-icon-search::after { right: 13%; bottom: 16%; width: 32%; border-top: 2px solid currentColor; transform: rotate(45deg); transform-origin: left center; }
-  .ui-icon-shield::before { left: 18%; top: 10%; width: 64%; height: 78%; border: 2px solid currentColor; border-radius: 40% 40% 50% 50%; }
-  .ui-icon-star::before { inset: 12%; background: currentColor; clip-path: polygon(50% 0,61% 35%,98% 35%,68% 56%,79% 91%,50% 70%,21% 91%,32% 56%,2% 35%,39% 35%); }
-  .ui-icon-info::before { inset: 12%; border: 2px solid currentColor; border-radius: 50%; }
-  .ui-icon-info::after { left: 48%; top: 30%; width: 4px; height: 42%; background: currentColor; border-radius: 2px; box-shadow: 0 -7px 0 currentColor; }
-  .ui-icon-check::before { left: 22%; top: 48%; width: 24%; height: 42%; border-right: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: rotate(45deg); }
-  .ui-icon-x::before, .ui-icon-x::after { left: 20%; top: 48%; width: 60%; border-top: 2px solid currentColor; }
-  .ui-icon-x::before { transform: rotate(45deg); } .ui-icon-x::after { transform: rotate(-45deg); }
-  .ui-icon-mic::before { left: 33%; top: 10%; width: 34%; height: 52%; border: 2px solid currentColor; border-radius: 12px; }
-  .ui-icon-mic::after { left: 24%; top: 52%; width: 52%; height: 28%; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 14px 14px; }
-  .ui-icon-chart::before { left: 16%; bottom: 18%; width: 68%; height: 58%; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
-  .ui-icon-chart::after { left: 28%; bottom: 30%; width: 46%; height: 32%; border-left: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: skew(-28deg); }
-  .ui-icon-med::before { left: 46%; top: 14%; width: 8%; height: 72%; background: currentColor; border-radius: 3px; }
-  .ui-icon-med::after { left: 14%; top: 46%; width: 72%; height: 8%; background: currentColor; border-radius: 3px; }
-  .ui-icon-hospital::before { left: 18%; top: 18%; width: 64%; height: 68%; border: 2px solid currentColor; border-radius: 3px; }
-  .ui-icon-hospital::after { left: 43%; top: 30%; width: 14%; height: 34%; background: currentColor; box-shadow: -10px 13px 0 -3px currentColor, 10px 13px 0 -3px currentColor; }
-  .ui-icon-beer::before { left: 20%; top: 14%; width: 42%; height: 68%; border: 2px solid currentColor; border-radius: 3px 3px 8px 8px; }
-  .ui-icon-beer::after { right: 13%; top: 30%; width: 18%; height: 28%; border: 2px solid currentColor; border-left: 0; border-radius: 0 8px 8px 0; }
-  .ui-icon-bone::before { left: 16%; top: 42%; width: 68%; height: 16%; background: currentColor; border-radius: 9px; transform: rotate(-20deg); }
-  .ui-icon-bone::after { left: 10%; top: 28%; width: 18%; height: 18%; background: currentColor; border-radius: 50%; box-shadow: 4px 13px 0 currentColor, 45px -16px 0 currentColor, 49px -3px 0 currentColor; }
-  .ui-icon-qr::before { inset: 12%; background: currentColor; clip-path: polygon(0 0,35% 0,35% 35%,0 35%,0 0,65% 0,100% 0,100% 35%,65% 35%,65% 0,0 65%,35% 65%,35% 100%,0 100%,0 65%,65% 65%,80% 65%,80% 80%,65% 80%,65% 65%,85% 85%,100% 85%,100% 100%,85% 100%,85% 85%); }
-  .ui-icon-family::before { left: 38%; top: 10%; width: 24%; height: 24%; border: 2px solid currentColor; border-radius: 50%; box-shadow: -14px 8px 0 -4px currentColor, 14px 8px 0 -4px currentColor; }
-  .ui-icon-family::after { left: 12%; bottom: 12%; width: 76%; height: 34%; border: 2px solid currentColor; border-radius: 50% 50% 28% 28%; }
 
   .phone-status-icons { display: inline-flex; align-items: center; gap: 4px; }
   .phone-status-icons span:first-child { width: 14px; height: 10px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
@@ -692,7 +737,44 @@
 <body>
   <div class="stage">
     <div class="phone">
-      <section class="screen active" id="workbench">
+      <section class="screen active login-screen" id="login">
+        <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
+        <div class="login-hero">
+          <div class="login-logo"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
+          <div class="login-title">痛风专病医生端</div>
+          <div class="login-sub">医生登录后进入今日工作站，查看待接诊患者、AI 诊疗辅助待办和复诊触达任务。</div>
+        </div>
+        <div class="body" style="padding-top:18px">
+          <div class="login-card">
+            <div class="task-kicker">医生身份登录</div>
+            <div class="login-field">
+              <div class="login-label">执业机构</div>
+              <div class="login-input"><strong>温岭市第一人民医院</strong><span>可切换</span></div>
+            </div>
+            <div class="login-field">
+              <div class="login-label">科室与医生</div>
+              <div class="login-input"><strong>风湿免疫科 · 王文龙医生</strong><span>已认证</span></div>
+            </div>
+            <div class="login-field">
+              <div class="login-label">手机号</div>
+              <div class="login-input"><strong>138****3920</strong><span>医生账号</span></div>
+            </div>
+            <div class="login-field">
+              <div class="login-label">验证码</div>
+              <div class="login-row">
+                <div class="login-input"><strong>6 位短信验证码</strong><span></span></div>
+                <button class="verify-btn" onclick="showToast('验证码已发送')">获取验证码</button>
+              </div>
+            </div>
+            <div class="login-safe"><span class="ui-icon ui-icon-shield" aria-hidden="true"></span><span>登录后仅展示当前医生权限内的痛风专病患者、接诊任务和随访待办。</span></div>
+            <div class="actions">
+              <button class="btn-primary" onclick="showScreen('workbench')">登录并进入今日工作站</button>
+            </div>
+          </div>
+          <div class="login-footer">支持医生手机号验证码登录；机构、科室和医生身份通过后台认证后展示。</div>
+        </div>
+      </section>
+      <section class="screen" id="workbench">
         <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
         <div class="body">
           <div class="doctor-head">
@@ -710,20 +792,20 @@
           </div>
 
           <div class="section-head">
-            <div class="section-title">当前主任务</div>
+            <div class="section-title">今日主任务</div>
             <div class="section-link" onclick="showScreen('patients')">患者队列</div>
           </div>
           <div class="main-task">
-            <div class="task-kicker">待接诊患者</div>
+            <div class="task-kicker">AI 诊疗辅助待启动</div>
             <div class="task-title">张明 · 等待接诊</div>
-            <div class="task-sub">诊前资料已到位。接诊时可进入诊间采集，结束后再确认字段写入档案。</div>
+            <div class="task-sub">诊前资料和外院报告已到位。接诊时可直接进入 AI 个性化诊疗辅助，先看依据和风险提醒，再由医生确认处理方案。</div>
             <div class="task-points">
-              <div class="task-point"><div class="point-value">诊前</div><div class="point-label">病史已补充</div></div>
-              <div class="task-point"><div class="point-value">诊间</div><div class="point-label">采集缺失字段</div></div>
-              <div class="task-point"><div class="point-value">结束后</div><div class="point-label">确认写入档案</div></div>
+              <div class="task-point"><div class="point-value">诊前</div><div class="point-label">病史和报告已到位</div></div>
+              <div class="task-point"><div class="point-value">接诊中</div><div class="point-label">AI 生成辅助方案</div></div>
+              <div class="task-point"><div class="point-value">诊后</div><div class="point-label">沉淀档案和随访</div></div>
             </div>
             <div class="actions">
-              <button class="btn-primary" onclick="showScreen('encounter')">接诊患者</button>
+              <button class="btn-primary" onclick="showScreen('encounter')">进入 AI 诊疗辅助</button>
               <button class="btn-secondary" onclick="showScreen('previsit')">看诊前资料</button>
             </div>
           </div>
@@ -735,7 +817,7 @@
           <div class="todo-list">
             <div class="todo" onclick="showScreen('encounter')">
               <div class="todo-mark warn"><span class="ui-icon ui-icon-med" aria-hidden="true"></span></div>
-              <div class="todo-main"><div class="todo-title">接诊张明</div><div class="todo-desc">诊前资料已提交，进入诊间采集</div></div>
+              <div class="todo-main"><div class="todo-title">接诊张明</div><div class="todo-desc">诊前资料已提交，进入 AI 诊疗辅助</div></div>
               <div class="todo-state">接诊</div>
             </div>
             <div class="todo" onclick="showToast('已标记陈建国为需人工联系')">
@@ -751,9 +833,9 @@
           </div>
         </div>
         <nav class="bottom-nav">
-          <div class="nav-item active" onclick="showScreen('workbench')"><div class="nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div>工作台</div>
+          <div class="nav-item active" onclick="showScreen('workbench')"><div class="nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div>工作站</div>
           <div class="nav-item" onclick="showScreen('patients')"><div class="nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div>患者</div>
-          <div class="nav-item" onclick="showToast('咨询待办已在工作台汇总')"><div class="nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>咨询</div>
+          <div class="nav-item" onclick="showToast('咨询待办已在工作站汇总')"><div class="nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>咨询</div>
           <div class="nav-item" onclick="showScreen('qr')"><div class="nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div>我的</div>
         </nav>
       </section>
@@ -771,7 +853,7 @@
           <div class="todo-list">
             <div class="todo" onclick="showScreen('detail')">
               <div class="todo-mark warn"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div>
-              <div class="todo-main"><div class="todo-title">张明 · 待接诊</div><div class="todo-desc">诊前资料已提交，待诊间采集</div></div>
+              <div class="todo-main"><div class="todo-title">张明 · 待接诊</div><div class="todo-desc">诊前资料已提交，待医生接诊</div></div>
               <div class="todo-state">待接诊</div>
             </div>
             <div class="todo" onclick="showToast('已发送病史补充提醒')">
@@ -792,9 +874,9 @@
           </div>
         </div>
         <nav class="bottom-nav">
-          <div class="nav-item" onclick="showScreen('workbench')"><div class="nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div>工作台</div>
+          <div class="nav-item" onclick="showScreen('workbench')"><div class="nav-icon"><span class="ui-icon ui-icon-home" aria-hidden="true"></span></div>工作站</div>
           <div class="nav-item active" onclick="showScreen('patients')"><div class="nav-icon"><span class="ui-icon ui-icon-users" aria-hidden="true"></span></div>患者</div>
-          <div class="nav-item" onclick="showToast('咨询待办已在工作台汇总')"><div class="nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>咨询</div>
+          <div class="nav-item" onclick="showToast('咨询待办已在工作站汇总')"><div class="nav-icon"><span class="ui-icon ui-icon-chat" aria-hidden="true"></span></div>咨询</div>
           <div class="nav-item" onclick="showScreen('qr')"><div class="nav-icon"><span class="ui-icon ui-icon-user" aria-hidden="true"></span></div>我的</div>
         </nav>
       </section>
@@ -813,11 +895,11 @@
             </div>
             <div class="status-chip">建档中 · 待接诊</div>
             <div class="actions">
-              <button class="btn-primary" onclick="showScreen('encounter')">接诊患者</button>
+              <button class="btn-primary" onclick="showScreen('encounter')">进入 AI 诊疗辅助</button>
             </div>
           </div>
 
-          <div class="section-head"><div class="section-title">主线进度</div><div class="section-link" onclick="showScreen('previsit')">看诊前资料</div></div>
+          <div class="section-head"><div class="section-title">建档与就诊进度</div><div class="section-link" onclick="showScreen('previsit')">看诊前资料</div></div>
           <div class="progress-list">
             <div class="progress-card" onclick="showScreen('previsit')">
               <div class="progress-icon"><span class="ui-icon ui-icon-folder" aria-hidden="true"></span></div>
@@ -859,7 +941,7 @@
             </div>
             <div class="status-chip">建档中 · 待接诊</div>
             <div class="actions">
-              <button class="btn-primary" onclick="showScreen('encounter')">接诊患者</button>
+              <button class="btn-primary" onclick="showScreen('encounter')">进入 AI 诊疗辅助</button>
             </div>
           </div>
 
@@ -911,7 +993,7 @@
 
       <section class="screen" id="encounter">
         <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
-        <div class="topbar"><div class="back" onclick="showScreen('detail')">‹</div><div class="topbar-title">诊间采集</div></div>
+        <div class="topbar"><div class="back" onclick="showScreen('detail')">‹</div><div class="topbar-title">AI 诊疗辅助</div></div>
         <div class="body">
           <div class="patient-head">
             <div class="patient-top">
@@ -921,60 +1003,60 @@
                 <div class="patient-meta">男 · 42 岁 · 痛风专病建档中</div>
               </div>
             </div>
-            <div class="status-chip">接诊中 · 正在整理字段</div>
+            <div class="status-chip">接诊中 · AI 辅助判断</div>
           </div>
 
-          <div class="section-head"><div class="section-title">采集状态</div></div>
+          <div class="section-head"><div class="section-title">AI 个性化诊疗方案辅助</div></div>
           <div class="encounter-card">
-            <div class="task-kicker">诊间采集</div>
-            <div class="task-title">痛风病史正在整理</div>
-            <div class="task-sub">医生正常问诊即可。系统会把问诊内容整理成结构化字段，结束接诊后由医生确认写入档案。</div>
+            <div class="task-kicker">接诊中辅助</div>
+            <div class="task-title">AI 已生成本次处理建议</div>
+            <div class="task-sub">结合病史、血尿酸、既往用药和合并症风险，给出本次诊疗辅助建议；医生可查看依据后采纳、修改或忽略。</div>
             <div class="encounter-status">
-              <div class="encounter-live"><span class="pulse"></span><span>采集中</span></div>
+              <div class="encounter-live"><span class="pulse"></span><span>依据更新中</span></div>
               <div class="encounter-time">06:18</div>
             </div>
             <div class="capture-grid">
-              <div class="capture-item"><div class="capture-label">已识别</div><div class="capture-value">首次发作时间</div></div>
-              <div class="capture-item"><div class="capture-label">已识别</div><div class="capture-value">主要发作部位</div></div>
-              <div class="capture-item"><div class="capture-label">待追问</div><div class="capture-value">用药依从性</div></div>
-              <div class="capture-item"><div class="capture-label">待核对</div><div class="capture-value">外院化验单</div></div>
+              <div class="capture-item"><div class="capture-label">阶段判断</div><div class="capture-value">间歇期管理，近期控制不稳</div></div>
+              <div class="capture-item"><div class="capture-label">风险提醒</div><div class="capture-value">降尿酸药未规律服用</div></div>
+              <div class="capture-item"><div class="capture-label">建议重点</div><div class="capture-value">先核对肝肾功能和用药耐受</div></div>
+              <div class="capture-item"><div class="capture-label">待医生确认</div><div class="capture-value">是否调整复查和随访计划</div></div>
             </div>
           </div>
 
-          <div class="section-head"><div class="section-title">接诊流程</div></div>
+          <div class="section-head"><div class="section-title">诊疗辅助步骤</div></div>
           <div class="main-task">
             <div class="step-strip">
-              <div class="step done">诊前资料</div>
-              <div class="step active">诊间采集</div>
-              <div class="step">字段确认</div>
-              <div class="step">写入档案</div>
+              <div class="step done">资料</div>
+              <div class="step active">辅助</div>
+              <div class="step">确认</div>
+              <div class="step">沉淀</div>
             </div>
-            <div class="task-sub" style="margin-top:12px">录音只作为病史采集和 AI 依据材料，不在医生端外层作为独立模块展示。</div>
+            <div class="task-sub" style="margin-top:12px">本次建议仅作为诊疗辅助，医生确认后形成接诊记录、专病档案和随访计划。</div>
           </div>
 
           <div class="actions">
-            <button class="btn-primary" onclick="showScreen('fieldConfirm')">结束接诊，确认字段</button>
+            <button class="btn-primary" onclick="showScreen('fieldConfirm')">确认方案并沉淀资料</button>
           </div>
         </div>
       </section>
 
       <section class="screen" id="fieldConfirm">
         <div class="statusbar"><span>9:41</span><span>5G 100%</span></div>
-        <div class="topbar"><div class="back" onclick="showScreen('encounter')">‹</div><div class="topbar-title">字段确认</div></div>
+        <div class="topbar"><div class="back" onclick="showScreen('encounter')">‹</div><div class="topbar-title">医生确认</div></div>
         <div class="body">
           <div class="archive-overview">
-            <div class="status-chip">待确认回填</div>
-            <div class="overview-title">AI 已整理 8 项病史字段</div>
-            <div class="overview-sub">请逐项确认或修改。确认后的内容才会写入痛风专病档案。</div>
+            <div class="status-chip">待医生确认</div>
+            <div class="overview-title">AI 已生成诊疗辅助与档案草稿</div>
+            <div class="overview-sub">医生确认处理方向、依据和关键字段后，内容才会沉淀到痛风专病档案。</div>
             <div class="step-strip">
               <div class="step done">诊前资料</div>
-              <div class="step done">诊间采集</div>
-              <div class="step active">字段确认</div>
-              <div class="step">写入档案</div>
+              <div class="step done">AI 辅助</div>
+              <div class="step active">医生确认</div>
+              <div class="step">诊后沉淀</div>
             </div>
           </div>
 
-          <div class="section-head"><div class="section-title">待写入字段</div><div class="section-link" onclick="showScreen('archive')">全部确认</div></div>
+          <div class="section-head"><div class="section-title">待确认内容</div><div class="section-link" onclick="showScreen('archive')">全部确认</div></div>
           <div class="group open">
             <div class="group-head" onclick="toggleGroup(this)">
               <div><div class="group-title">痛风病史</div><div class="group-count">8 项草稿 · 2 项需核对</div></div>
@@ -982,19 +1064,19 @@
             </div>
             <div class="field-list">
               <div class="field" onclick="toggleField(this)">
-                <div class="field-top"><div class="field-label">首次发作时间</div><div class="source">诊间采集</div></div>
+                <div class="field-top"><div class="field-label">首次发作时间</div><div class="source">诊间资料采集</div></div>
                 <div class="field-value">约 3 年前</div>
                 <div class="field-meta"><span>建议采用</span><span>查看依据</span></div>
                 <div class="evidence">问诊片段：患者表示“第一次大概三年前，右脚大脚趾突然红肿疼”。</div>
               </div>
               <div class="field" onclick="toggleField(this)">
-                <div class="field-top"><div class="field-label">近一年发作次数</div><div class="source">诊前填写 + 诊间采集</div></div>
+                <div class="field-top"><div class="field-label">近一年发作次数</div><div class="source">诊前填写 + 诊间资料采集</div></div>
                 <div class="field-value">约 3 次</div>
                 <div class="field-meta"><span>建议采用</span><span>查看依据</span></div>
                 <div class="evidence">诊前填写为 3 次；诊间回答为“今年疼过三次左右”，两处一致。</div>
               </div>
               <div class="field" onclick="toggleField(this)">
-                <div class="field-top"><div class="field-label">用药依从性</div><div class="source">诊间采集</div></div>
+                <div class="field-top"><div class="field-label">用药依从性</div><div class="source">诊间资料采集</div></div>
                 <div class="field-value">降尿酸药未规律服用</div>
                 <div class="field-meta"><span>需医生核对</span><span>查看依据</span></div>
                 <div class="evidence">问诊片段：患者表示“疼的时候吃，平时有时候会忘”。</div>
@@ -1011,7 +1093,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn-primary" onclick="showScreen('archive')">确认写入档案</button>
+            <button class="btn-primary" onclick="showScreen('archive')">确认并写入档案</button>
           </div>
         </div>
       </section>
@@ -1023,7 +1105,7 @@
           <div class="archive-overview">
             <div class="status-chip">已写入档案</div>
             <div class="overview-title">张明 · 痛风专病档案</div>
-            <div class="overview-sub">诊间采集字段已由医生确认写入。下一步可生成复诊与随访计划。</div>
+            <div class="overview-sub">本次 AI 诊疗辅助、医生确认内容和关键依据已沉淀。下一步可生成复诊与随访计划。</div>
             <div class="overview-grid">
               <div class="overview-item"><div class="overview-value">486</div><div class="overview-label">血尿酸 μmol/L</div></div>
               <div class="overview-item"><div class="overview-value">3 次</div><div class="overview-label">近一年发作</div></div>
@@ -1130,7 +1212,7 @@
             <div class="timeline-row"><div class="timeline-time">逾期</div><div class="timeline-text">未复诊自动进入医生端失访预警</div></div>
           </div>
           <div class="actions">
-            <button class="btn-primary" onclick="showScreen('workbench')">确认并同步患者端</button>
+            <button class="btn-primary" onclick="showScreen('workbench')">确认并回到今日工作站</button>
           </div>
         </div>
       </section>
@@ -1146,21 +1228,22 @@
             <div style="width:238px;height:238px;margin:22px auto 14px;border:1px solid var(--line);background:#fff;padding:6px">
               <img src="assets/doctor-qr.png" alt="医生建档二维码" style="width:100%;height:100%;object-fit:contain" />
             </div>
-            <div class="patient-meta">患者扫码后填写姓名、性别和手机号，进入待接诊队列。</div>
+            <div class="patient-meta">患者扫码后填写姓名、性别和手机号，关联到你的痛风专病档案。</div>
           </div>
         </div>
       </section>
     </div>
 
     <aside class="control">
-      <div class="control-title">医生端工作流</div>
+      <div class="control-title">医生端 AI 诊疗辅助工作流</div>
       <div class="control-buttons">
-        <button class="active" data-target="workbench" onclick="showScreen('workbench')">今日工作台</button>
+        <button class="active" data-target="login" onclick="showScreen('login')">登录页</button>
+        <button data-target="workbench" onclick="showScreen('workbench')">今日工作站</button>
         <button data-target="patients" onclick="showScreen('patients')">患者队列</button>
         <button data-target="detail" onclick="showScreen('detail')">张明详情</button>
         <button data-target="previsit" onclick="showScreen('previsit')">看诊前资料</button>
-        <button data-target="encounter" onclick="showScreen('encounter')">诊间采集</button>
-        <button data-target="fieldConfirm" onclick="showScreen('fieldConfirm')">字段确认</button>
+        <button data-target="encounter" onclick="showScreen('encounter')">AI 诊疗辅助</button>
+        <button data-target="fieldConfirm" onclick="showScreen('fieldConfirm')">医生确认</button>
         <button data-target="archive" onclick="showScreen('archive')">专病档案</button>
         <button data-target="plan" onclick="showScreen('plan')">随访计划</button>
         <button data-target="qr" onclick="showScreen('qr')">建档码</button>

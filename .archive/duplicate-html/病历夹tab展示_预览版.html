@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>痛风患者端 · 2026年7月3号会议后修订版</title>
+<title>病历夹tab展示页面</title>
+<link rel="icon" href="data:,">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { background: #1a1a2e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; padding: 24px; overflow-x: auto; }
@@ -489,6 +490,31 @@
   .lab-method-btn svg { width: 20px; height: 20px; color: #0785B6; }
   .lab-query-row { margin-top: 12px; min-height: 58px; border-radius: 20px; background: #F7F8FF; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 16px; color: #1E2A4A; font-size: 15px; font-weight: 900; cursor: pointer; }
   .lab-query-row span { color: #8A96AA; font-size: 12px; font-weight: 800; margin-left: 4px; }
+  .lab-status-card { margin-top: 16px; border-radius: 22px; background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 14px 28px rgba(15,23,42,0.06); padding: 15px; }
+  .lab-status-card.uploading { border-color: rgba(14,165,233,0.22); background: linear-gradient(180deg,#FFFFFF 0%,#F0FDFA 100%); }
+  .lab-status-card.success, .lab-status-card.approved { border-color: rgba(22,163,74,0.20); background: linear-gradient(180deg,#FFFFFF 0%,#ECFDF5 100%); }
+  .lab-status-card.reviewing { border-color: rgba(37,99,235,0.18); background: linear-gradient(180deg,#FFFFFF 0%,#EFF6FF 100%); }
+  .lab-status-card.duplicate { border-color: rgba(245,158,11,0.24); background: linear-gradient(180deg,#FFFFFF 0%,#FFFBEB 100%); }
+  .lab-status-card.failed, .lab-status-card.review_failed { border-color: rgba(239,68,68,0.20); background: linear-gradient(180deg,#FFFFFF 0%,#FEF2F2 100%); }
+  .lab-status-card.reupload { border-color: rgba(14,165,233,0.20); background: linear-gradient(180deg,#FFFFFF 0%,#F0F9FF 100%); }
+  .lab-status-top { display: flex; align-items: flex-start; gap: 12px; }
+  .lab-status-icon { width: 42px; height: 42px; border-radius: 16px; background: #ECFDF5; color: #16A34A; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .lab-status-card.uploading .lab-status-icon { background: #E0F2FE; color: #0EA5E9; }
+  .lab-status-card.reviewing .lab-status-icon { background: #EFF6FF; color: #2563EB; }
+  .lab-status-card.duplicate .lab-status-icon { background: #FEF3C7; color: #F59E0B; }
+  .lab-status-card.failed .lab-status-icon, .lab-status-card.review_failed .lab-status-icon { background: #FEF2F2; color: #EF4444; }
+  .lab-status-card.reupload .lab-status-icon { background: #F0F9FF; color: #0EA5E9; }
+  .lab-status-icon svg { width: 22px; height: 22px; display: block; }
+  .lab-status-copy { flex: 1; min-width: 0; }
+  .lab-status-title { color: #0F172A; font-size: 17px; line-height: 1.28; font-weight: 950; }
+  .lab-status-desc { margin-top: 5px; color: #64748B; font-size: 12px; line-height: 1.55; font-weight: 700; }
+  .lab-status-meta { margin-top: 10px; border-radius: 14px; background: rgba(248,250,252,0.88); color: #475569; padding: 9px 10px; font-size: 12px; line-height: 1.45; font-weight: 800; }
+  .lab-status-progress { margin-top: 12px; }
+  .lab-status-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .lab-status-btn { min-height: 40px; border: 0; border-radius: 20px; padding: 8px 10px; font-size: 13px; line-height: 1.2; font-weight: 950; font-family: inherit; cursor: pointer; }
+  .lab-status-btn.primary { background: linear-gradient(90deg,#0EA5E9,#14B8A6); color: #fff; box-shadow: 0 10px 18px rgba(14,165,233,0.14); }
+  .lab-status-btn.secondary { background: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; }
+  .lab-status-btn:disabled { cursor: default; opacity: .78; box-shadow: none; }
   .lab-suggestion-chips { display: grid; gap: 10px; margin-top: 14px; }
   .lab-suggestion-chip { border: 0; border-radius: 20px; background: #fff; color: #1E2A4A; text-align: left; padding: 12px 16px; font-size: 14px; font-weight: 800; box-shadow: 0 8px 18px rgba(1,161,255,0.06); cursor: pointer; }
   .lab-camera-screen { background:#111827; flex-direction:column; color:#fff; }
@@ -916,8 +942,8 @@
   .previsit-step-icon { width: 18px; height: 18px; border-radius: 7px; background: rgba(1,161,255,0.08); color: inherit; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 950; flex-shrink: 0; }
   .previsit-step-icon svg { width: 12px; height: 12px; display: block; }
   .previsit-step-title { font-size: 11px; color: inherit; font-weight: 950; white-space: nowrap; }
-  .previsit-step-desc,
-  .previsit-step-status { display: none; }
+  .previsit-step-desc { display: none; }
+  .previsit-step-status { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 6px; background: rgba(255,255,255,0.74); color: inherit; font-size: 10px; line-height: 1.2; font-weight: 950; white-space: nowrap; }
   .previsit-scan-link { width: fit-content; max-width: 100%; min-height: 34px; justify-self: center; border: 1px solid rgba(3,212,159,0.16); border-radius: 17px; background: rgba(255,255,255,0.78); display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; cursor: pointer; color: #047A65; box-shadow: 0 5px 14px rgba(3,212,159,0.05); }
   .previsit-scan-link:active { transform: scale(0.99); }
   .previsit-scan-link.ready { border-color: rgba(3,212,159,0.20); background: rgba(242,255,248,0.88); color: #047A65; }
@@ -957,10 +983,17 @@
   .confirmed-status-card { cursor: default; }
   .confirmed-status-card .archive-completeness-title { max-width: 190px; }
   .confirmed-record-chip { flex-shrink:0; }
-  .confirmed-status-desc { display:none; }
   .confirmed-status-bar { margin:12px 0 10px; }
-  .confirmed-status-tags { margin-top:0; }
-  .confirmed-status-visual { display:none; }
+  .confirmed-status-info { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+  .confirmed-status-info-row { display:flex; align-items:center; gap:6px; font-size:12px; line-height:1.4; }
+  .confirmed-status-info-label { color:#98A2B3; font-weight:700; flex-shrink:0; }
+  .confirmed-status-info-value { color:#1E2A4A; font-weight:800; }
+  .confirmed-status-tag-wrap { display:flex; align-items:center; justify-content:space-between; }
+  .confirmed-status-pill { border-radius:999px; padding:4px 10px; background:#FFF3E8; color:#ED7B2F; font-size:11px; font-weight:900; }
+  .confirmed-status-pill.blue { background:rgba(1,161,255,0.09); color:#0785B6; }
+  .confirmed-status-pill.green { background:rgba(3,212,159,0.12); color:#047A65; }
+  .confirmed-status-pill.red { background:rgba(237,123,47,0.10); color:#C75C1A; }
+  .confirmed-status-meta { color:#98A2B3; font-size:11px; font-weight:700; }
   .home-ai-panel { margin-left:36px; border-radius:22px; background:rgba(255,255,255,0.90); border:1px solid rgba(3,212,159,0.12); padding:14px; box-shadow:0 10px 24px rgba(1,161,255,0.06); }
   .home-ai-title { display:flex; align-items:center; gap:8px; color:#1E2A4A; font-size:18px; font-weight:900; margin-bottom:12px; }
   .home-ai-title::before { content:""; width:5px; height:21px; border-radius:999px; background:linear-gradient(180deg,#03D49F,#01A1FF); }
@@ -1035,6 +1068,8 @@
   .record-timeline-type { border-radius: 999px; padding: 3px 7px; background: rgba(1,161,255,0.10); color: #0184CF; font-size: 11px; font-weight: 900; white-space: nowrap; }
   .record-timeline-title { margin-top: 6px; font-size: 14px; color: #344054; font-weight: 900; line-height: 1.4; }
   .record-timeline-desc { margin-top: 3px; font-size: 12px; color: #667085; line-height: 1.55; }
+  .record-report-btn { margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; border: 0; border-radius: 9px; background: rgba(3,169,138,0.10); color: #03A98A; font-size: 12px; font-weight: 900; font-family: inherit; padding: 6px 11px; cursor: pointer; }
+  .record-report-btn:active { background: rgba(3,169,138,0.18); }
   .record-tab-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
   .record-tab-btn { height: 36px; border: 0; border-radius: 18px; background: #F2F4F7; color: #667085; font-size: 13px; font-weight: 900; font-family: inherit; cursor: pointer; }
   .record-tab-btn.active { background: var(--p-grad); color: #fff; box-shadow: 0 8px 16px rgba(1,161,255,0.14); }
@@ -1060,6 +1095,21 @@
   .med-history-date { color: #98A2B3; font-size: 11px; font-weight: 900; }
   .med-history-title { margin-top: 4px; color: #344054; font-size: 13px; line-height: 1.35; font-weight: 900; }
   .med-history-desc { margin-top: 3px; color: #667085; font-size: 12px; line-height: 1.45; }
+  .med-group-head { display: flex; align-items: center; gap: 6px; margin: 4px 2px 8px; }
+  .med-group-title { color: #1E2A4A; font-size: 13px; font-weight: 950; }
+  .med-group-count { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: rgba(3,212,159,0.14); color: #047A65; font-size: 11px; font-weight: 950; display: inline-flex; align-items: center; justify-content: center; }
+  .med-status-acute { background: rgba(237,123,47,0.12); color: #C2410C; }
+  .med-adjust-block { margin-top: 10px; border-top: 1px dashed #E4EAF2; padding-top: 9px; }
+  .med-adjust-title { color: #667085; font-size: 12px; font-weight: 950; margin-bottom: 7px; }
+  .record-anchor-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .record-anchor { height: 30px; padding: 0 12px; border: 0; border-radius: 15px; background: #F2F4F7; color: #667085; font-size: 12px; font-weight: 900; font-family: inherit; cursor: pointer; }
+  .record-anchor.active { background: #EAF4FF; color: #0184CF; }
+  .record-year-sep { font-size: 12px; font-weight: 950; color: #98A2B3; margin: 4px 0 10px 2px; position: relative; padding-left: 28px; }
+  .record-year-sep::before { content: ""; position: absolute; left: 12px; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: #CBD6E4; transform: translateY(-50%); }
+  .record-load-more { text-align: center; color: #98A2B3; font-size: 12px; font-weight: 800; padding: 12px 0 4px; cursor: pointer; }
+  .record-load-more.loading { color: #0184CF; }
+  .record-load-more.done { color: #B7C8D4; cursor: default; }
+  .record-end-hint { text-align: center; color: #B7C8D4; font-size: 12px; font-weight: 800; padding: 14px 0 2px; }
   .record-detail-list { display: flex; flex-direction: column; gap: 10px; }
   .record-detail-row { border-radius: 14px; padding: 12px; background: #F8FAFC; }
   .record-detail-label { font-size: 12px; color: #98A2B3; font-weight: 800; }
@@ -1313,7 +1363,7 @@
       <!-- ══════════════════════════════
            P1: PATIENT HOME
       ══════════════════════════════ -->
-      <div class="screen active afu-home" id="screen-patient-home">
+      <div class="screen afu-home" id="screen-patient-home">
         <div class="afu-top">
           <div class="afu-brand">
             <div class="afu-name">健康助手</div>
@@ -1340,7 +1390,7 @@
           <div class="chat-card dynamic home-dialog-card" id="homeInlineChat">
             <div class="chat-row">
               <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="4"/><path d="M12 3v4"/><path d="M8.5 13h.01"/><path d="M15.5 13h.01"/><path d="M9 17h6"/></svg></div>
-              <div class="chat-bubble">可以先问我健康问题；如果要进入医生的专病管理，先扫码关联医生。</div>
+              <div class="chat-bubble">你好，我是你的健康助手。你可以先问我一些痛风相关的问题，也可以扫描医生的建档码，进入专病管理。</div>
             </div>
             <div class="home-scan-card" onclick="goPatient('screen-patient-scanning')">
               <div class="home-scan-pill">医生二维码</div>
@@ -1360,7 +1410,7 @@
                   <circle cx="63" cy="93" r="3" fill="#03D49F"/>
                   <text x="70" y="96" fill="#0184CF" font-size="9" font-weight="900">医生码</text>
                 </svg>
-                <img class="home-scan-demo-qr" src="assets/doctor-qr.png" alt="医生二维码缩略图" />
+                <img class="home-scan-demo-qr" src="../../assets/doctor-qr.png" alt="医生二维码缩略图" />
               </div>
             </div>
             <div class="home-ai-panel">
@@ -1418,7 +1468,7 @@
             <div class="scan-frame" onclick="goPatient('screen-patient-scan')">
               <span class="scan-frame-corners"></span>
               <div class="scan-camera-card">
-                <img src="assets/doctor-qr.png" alt="王文龙医生建档二维码" />
+                <img src="../../assets/doctor-qr.png" alt="王文龙医生建档二维码" />
               </div>
               <div class="scan-line"></div>
             </div>
@@ -1538,8 +1588,8 @@
           <div class="afu-hero">
             <div class="afu-hello">
               <div class="afu-hello-small">你好，张明~</div>
-              <div class="afu-hello-title">已完成基本信息建档</div>
-              <div style="font-size:12px;color:#777;margin-top:4px;font-weight:600">王文龙医生 · 档案待确认</div>
+              <div class="afu-hello-title">基本信息已提交</div>
+              <div style="font-size:12px;color:#777;margin-top:4px;font-weight:600">已关联王文龙医生 · 痛风专病</div>
             </div>
             <div class="afu-mascot" aria-hidden="true">
               <div class="afu-mascot-hand"></div>
@@ -1885,24 +1935,25 @@
                 <div class="lab-upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
                 <div class="lab-upload-title">报告上传</div>
               </div>
-              <div class="lab-upload-count">待医生确认<span>确认后归档</span></div>
+              <div class="lab-upload-count" id="labUploadTopStatus">可补充<span>就诊前可跳过</span></div>
             </div>
             <div class="lab-demo-card">
               <div class="lab-demo-list">
-                <div>◎ 数据整理</div>
-                <div>△ 风险提示</div>
-                <div><span class="ui-icon ui-icon-qr" aria-hidden="true"></span> 医生确认</div>
+                <div>清晰拍照</div>
+                <div>整理指标</div>
+                <div><span class="ui-icon ui-icon-qr" aria-hidden="true"></span> 扫码就诊</div>
               </div>
               <div class="lab-demo-report">
                 <div style="font-size:18px">我的报告</div>
                 <div style="font-size:11px;color:#8A96AA;margin-top:10px">血尿酸 · 肝功能 · 肾功能</div>
               </div>
             </div>
+            <div id="labUploadStatusCard" class="lab-status-card"></div>
             <div class="lab-upload-section-title">选择上传方式</div>
             <div class="lab-upload-methods">
-              <button class="lab-method-btn" onclick="goPatient('screen-patient-lab-camera')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>拍照</button>
-              <button class="lab-method-btn" onclick="showLabRecognized()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>相册</button>
-              <button class="lab-method-btn" onclick="showLabRecognized()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>文件</button>
+              <button class="lab-method-btn" onclick="prepareLabPhotoUpload()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>拍照</button>
+              <button class="lab-method-btn" onclick="startLabUploadFlow('album')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>相册</button>
+              <button class="lab-method-btn" onclick="startLabUploadFlow('file')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>文件</button>
             </div>
             <div class="lab-query-row" onclick="goPatient('screen-patient-waiting');setTimeout(showUricAcidValueEntry,0)">
               <div>只记得尿酸数值 <span>回到底部输入框输入</span></div>
@@ -1926,7 +1977,7 @@
             <button class="btn-primary" onclick="saveLabUpload()" style="margin-top:12px">保存并继续扫码就诊</button>
           </div>
           <div class="lab-suggestion-chips">
-            <button class="lab-suggestion-chip" onclick="openPatientSimple('化验单怎么看','可以先上传报告，我会整理报告时间、血尿酸、肌酐、ALT 等关键指标。','screen-patient-lab-upload')">我只有纸质化验单，可以拍照吗？</button>
+            <button class="lab-suggestion-chip" onclick="prepareLabPhotoUpload()">我只有纸质化验单，可以拍照吗？</button>
             <button class="lab-suggestion-chip" onclick="goPatient('screen-patient-waiting');setTimeout(showUricAcidValueEntry,0)">我只记得尿酸数值</button>
           </div>
         </div>
@@ -1947,9 +1998,9 @@
         <div class="lab-camera-panel">
           <div class="lab-camera-tabs"><span>药盒</span><span>舌苔</span><span class="active">报告</span><span>拍一下</span><span>皮肤</span></div>
           <div class="lab-camera-actions">
-            <button class="lab-camera-side" onclick="showLabRecognized();goPatient('screen-patient-lab-upload')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>相册</button>
-            <button class="lab-shutter" onclick="showLabRecognized();goPatient('screen-patient-lab-upload')" aria-label="拍摄报告"></button>
-            <button class="lab-camera-side" onclick="showLabRecognized();goPatient('screen-patient-lab-upload')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>文件</button>
+            <button class="lab-camera-side" onclick="goPatient('screen-patient-lab-upload');startLabUploadFlow('album')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>相册</button>
+            <button class="lab-shutter" onclick="goPatient('screen-patient-lab-upload');startLabUploadFlow('camera')" aria-label="拍摄报告"></button>
+            <button class="lab-camera-side" onclick="goPatient('screen-patient-lab-upload');startLabUploadFlow('file')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>文件</button>
           </div>
         </div>
       </div>
@@ -1970,7 +2021,7 @@
           </div>
           <div class="p-card">
             <div class="p-card-title"><div class="p-card-title-dot"></div>复查结果</div>
-            <div class="upload-panel" onclick="showLabRecognized()">
+            <div class="upload-panel" onclick="openHomeUploadReportDialog()">
               <div class="upload-icon"><span class="ui-icon ui-icon-doc" aria-hidden="true"></span></div>
               <div class="upload-title">上传或查看复查结果</div>
               <div class="upload-desc">血尿酸、肝功能、肾功能等化验单</div>
@@ -2091,9 +2142,8 @@
         <div class="afu-main">
           <div class="afu-hero">
             <div class="afu-hello">
-              <div class="afu-hello-small">你好，张明~</div>
+              <div class="afu-hello-small">你好，张明</div>
               <div class="afu-hello-title" id="confirmedFollowupHeroTitle">已纳入痛风管理</div>
-              <div id="confirmedFollowupHeroMeta" style="font-size:12px;color:#777;margin-top:4px;font-weight:600">王文龙医生 · 痛风专病</div>
             </div>
             <div class="afu-mascot" aria-hidden="true">
               <div class="afu-mascot-hand"></div>
@@ -2110,7 +2160,7 @@
               <div class="archive-completeness-top">
                 <div>
                   <div class="archive-completeness-title" id="confirmedFollowupPromptTitle">已纳入痛风专病管理</div>
-                  <div class="archive-completeness-meta" id="confirmedFollowupCardTitle">王文龙医生 · 痛风专病</div>
+                  <div class="archive-completeness-meta" id="confirmedFollowupCardMeta">已关联王文龙医生 · 痛风专病</div>
                 </div>
                 <button class="afu-card-filter afu-record-chip confirmed-record-chip" id="confirmedFollowupStatusTag" onclick="openPatientRecord('screen-patient-confirmed')">
                   <span class="afu-record-chip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></span>
@@ -2118,10 +2168,11 @@
                 </button>
               </div>
               <div class="archive-completeness-bar confirmed-status-bar"><span id="confirmedFollowupProgress" style="width:100%"></span></div>
-              <div class="archive-completeness-tags confirmed-status-tags" id="confirmedFollowupTags">
-                <span class="archive-completeness-tag">病历夹已建立</span>
-                <span class="archive-completeness-tag">复诊计划已生成</span>
-                <span class="archive-completeness-tag status">医生已确认</span>
+              <div class="confirmed-status-info" id="confirmedFollowupInfo">
+                <!-- JS 动态填充数据行 -->
+              </div>
+              <div class="confirmed-status-tag-wrap" id="confirmedFollowupTagWrap">
+                <span class="confirmed-status-pill" id="confirmedFollowupPill">待复诊</span>
               </div>
               <div class="post-visit-home-task" id="postVisitHomeTask" onclick="focusPostVisitFollowupForm()">
                 <span class="post-visit-home-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 10h18"/><path d="m9 16 2 2 4-5"/></svg></span>
@@ -2289,7 +2340,7 @@
             <div class="scan-frame" onclick="patientReceptionArrived()">
               <span class="scan-frame-corners"></span>
               <div class="scan-camera-card">
-                <img src="assets/doctor-qr.png" alt="王文龙医生动态接诊码" />
+                <img src="../../assets/doctor-qr.png" alt="王文龙医生动态接诊码" />
               </div>
               <div class="scan-line"></div>
             </div>
@@ -2362,7 +2413,7 @@
             <div class="scan-frame" onclick="patientFollowupArrived()">
               <span class="scan-frame-corners"></span>
               <div class="scan-camera-card">
-                <img src="assets/doctor-qr.png" alt="王文龙医生动态接诊码" />
+                <img src="../../assets/doctor-qr.png" alt="王文龙医生动态接诊码" />
               </div>
               <div class="scan-line"></div>
             </div>
@@ -2542,7 +2593,7 @@
       <!-- ══════════════════════════════
            P10A: PATIENT MY RECORD
       ══════════════════════════════ -->
-      <div class="screen" id="screen-patient-myrecord" style="background:#f5f7fb;flex-direction:column">
+      <div class="screen active" id="screen-patient-myrecord" style="background:#f5f7fb;flex-direction:column">
         <div class="form-topbar">
           <div class="btn-back" id="patientRecordBack" onclick="goPatient('screen-patient-confirmed')">‹</div>
           <div class="form-title">我的病历夹</div>
@@ -2627,11 +2678,95 @@
           <div class="p-card">
             <div class="p-card-title"><div class="p-card-title-dot"></div>记录时间轴</div>
             <div class="record-tab-row">
-              <button class="record-tab-btn active" id="recordVisitTab" onclick="switchRecordTab('visit')">门诊记录</button>
-              <button class="record-tab-btn" id="recordMedTab" onclick="switchRecordTab('med')">用药记录</button>
+              <button class="record-tab-btn active" id="recordMedTab" onclick="switchRecordTab('med')">用药记录</button>
+              <button class="record-tab-btn" id="recordVisitTab" onclick="switchRecordTab('visit')">门诊记录</button>
             </div>
-            <div class="record-tab-panel active" id="recordVisitPanel">
+            <div class="record-tab-panel active" id="recordMedPanel">
+              <div class="med-group-head">
+                <span class="med-group-title">长期控制用药</span>
+                <span class="med-group-count">2</span>
+              </div>
+              <div class="med-summary-list">
+                <div class="med-summary-card" onclick="toggleMedicationPanel('medDetailBenz', null)">
+                  <div class="med-summary-top">
+                    <div>
+                      <div class="med-summary-title">苯溴马隆 · 每日一次</div>
+                      <div class="med-summary-meta">长期降尿酸 · 口服 · 每日一次 · 1片/50mg</div>
+                    </div>
+                    <div class="med-status-tag">正在使用</div>
+                  </div>
+                  <div class="med-expand-panel" id="medDetailBenz" style="margin-top:9px">
+                    <div class="med-detail-grid">
+                      <div class="med-detail-item"><div class="med-detail-label">药名</div><div class="med-detail-value">苯溴马隆</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">频次</div><div class="med-detail-value">每日一次</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">每次用量</div><div class="med-detail-value">1片 / 50mg</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">开始时间</div><div class="med-detail-value">2025-10</div></div>
+                    </div>
+                    <div class="med-adjust-block">
+                      <div class="med-adjust-title">调整记录</div>
+                      <div class="med-history-list">
+                        <div class="med-history-item">
+                          <div class="med-history-date">2026-06-28</div>
+                          <div class="med-history-title">继续规律用药</div>
+                          <div class="med-history-desc">复诊后继续当前方案，等待下次血尿酸复查。</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="med-summary-card" onclick="toggleMedicationPanel('medDetailFebu', null)">
+                  <div class="med-summary-top">
+                    <div>
+                      <div class="med-summary-title">非布司他 · 每日一次</div>
+                      <div class="med-summary-meta">长期降尿酸 · 口服 · 每日一次 · 1片/40mg</div>
+                    </div>
+                    <div class="med-status-tag">正在使用</div>
+                  </div>
+                  <div class="med-expand-panel" id="medDetailFebu" style="margin-top:9px">
+                    <div class="med-detail-grid">
+                      <div class="med-detail-item"><div class="med-detail-label">药名</div><div class="med-detail-value">非布司他</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">频次</div><div class="med-detail-value">每日一次</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">每次用量</div><div class="med-detail-value">1片 / 40mg</div></div>
+                      <div class="med-detail-item"><div class="med-detail-label">开始时间</div><div class="med-detail-value">2026-03</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="med-expand-btn med-collapse-trigger" data-open-text="收起发作期用药" data-closed-text="发作期用药" onclick="toggleMedicationPanel('medAcutePanel', this)">发作期用药</button>
+              <div class="med-expand-panel" id="medAcutePanel">
+                <div class="med-group-head" style="margin-top:2px">
+                  <span class="med-group-title">发作期对症药</span>
+                  <span class="med-group-count">1</span>
+                </div>
+                <div class="med-summary-list">
+                  <div class="med-summary-card" onclick="toggleMedicationPanel('medDetailAcute', null)">
+                    <div class="med-summary-top">
+                      <div>
+                        <div class="med-summary-title">依托考昔 · 发作时按需</div>
+                        <div class="med-summary-meta">急性期对症 · 口服 · 发作时一次</div>
+                      </div>
+                      <div class="med-status-tag med-status-acute">按需</div>
+                    </div>
+                    <div class="med-expand-panel" id="medDetailAcute" style="margin-top:9px">
+                      <div class="med-detail-grid">
+                        <div class="med-detail-item"><div class="med-detail-label">药名</div><div class="med-detail-value">依托考昔</div></div>
+                        <div class="med-detail-item"><div class="med-detail-label">频次</div><div class="med-detail-value">发作时按需</div></div>
+                        <div class="med-detail-item"><div class="med-detail-label">每次用量</div><div class="med-detail-value">1片 / 60mg</div></div>
+                        <div class="med-detail-item"><div class="med-detail-label">最近使用</div><div class="med-detail-value">2026-06-12</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="record-end-hint">已经到底了</div>
+            </div>
+            <div class="record-tab-panel" id="recordVisitPanel">
+              <div class="record-anchor-row" id="recordAnchorRow">
+                <button class="record-anchor active" data-year="2026" onclick="jumpRecordYear('2026')">2026</button>
+                <button class="record-anchor" data-year="2025" onclick="jumpRecordYear('2025')">2025</button>
+              </div>
               <div class="record-timeline">
+                <div class="record-year-sep" id="year-2026">2026 年</div>
                 <div class="record-timeline-item">
                   <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
                   <div class="record-timeline-body">
@@ -2645,60 +2780,57 @@
                   <div class="record-timeline-body">
                     <div class="record-timeline-top"><div class="record-timeline-date">2026-06-18</div><div class="record-timeline-type">检查检验</div></div>
                     <div class="record-timeline-title">血尿酸 <span class="record-danger-mark">486 μmol/L</span></div>
-                    <div class="record-timeline-desc">报告已归入病历夹，复诊时医生会结合用药和症状一起判断。</div>
+                    <div class="record-timeline-desc">温岭市第一人民医院 · 生化检验报告单。肌酐 82 μmol/L，ALT 31 U/L。</div>
+                    <button class="record-report-btn" onclick="showToast('已打开报告原图')">查看报告原图</button>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div class="record-tab-panel" id="recordMedPanel">
-              <div class="med-summary-list">
-                <div class="med-summary-card">
-                  <div class="med-summary-top">
-                    <div>
-                      <div class="med-summary-title">苯溴马隆 · 每日一次</div>
-                      <div class="med-summary-meta">当前长期降尿酸药 · 医生同步</div>
+                <div class="record-timeline-item">
+                  <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+                  <div class="record-timeline-body">
+                    <div class="record-timeline-top"><div class="record-timeline-date">2026-03-15</div><div class="record-timeline-type">门诊记录</div></div>
+                    <div class="record-timeline-title">调整用药方案：加用非布司他</div>
+                    <div class="record-timeline-desc">苯溴马隆单药尿酸控制不佳，加用非布司他 40mg 每日一次，嘱多饮水、低嘌呤饮食。</div>
+                  </div>
+                </div>
+                <div class="record-timeline-item">
+                  <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v6L5 19a2 2 0 0 0 1.9 3h10.2a2 2 0 0 0 1.9-3L14 8V2"/><path d="M8 2h8"/><path d="M7 16h10"/></svg></div>
+                  <div class="record-timeline-body">
+                    <div class="record-timeline-top"><div class="record-timeline-date">2026-01-20</div><div class="record-timeline-type">检查检验</div></div>
+                    <div class="record-timeline-title">血尿酸 <span class="record-danger-mark">542 μmol/L</span></div>
+                    <div class="record-timeline-desc">年度体检 · 生化报告。较去年明显升高，建议风湿免疫科就诊评估降尿酸治疗。</div>
+                    <button class="record-report-btn" onclick="showToast('已打开报告原图')">查看报告原图</button>
+                  </div>
+                </div>
+                <div class="record-history-block" id="recordHistory2025" style="display:none">
+                  <div class="record-year-sep" id="year-2025">2025 年</div>
+                  <div class="record-timeline-item">
+                    <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+                    <div class="record-timeline-body">
+                      <div class="record-timeline-top"><div class="record-timeline-date">2025-11-08</div><div class="record-timeline-type">门诊记录</div></div>
+                      <div class="record-timeline-title">首次确诊痛风，开始降尿酸治疗</div>
+                      <div class="record-timeline-desc">第一跖趾关节急性发作就诊，确诊痛风。开始苯溴马隆 50mg 每日一次，嘱定期复查肝肾功能。</div>
                     </div>
-                    <div class="med-status-tag">正在使用</div>
                   </div>
-                  <div class="med-note-row">
-                    <div class="med-note">最近调整：06月28日复诊后继续规律用药。</div>
-                    <div class="med-note">注意：不要自行停药，复诊时带上近期用药照片。</div>
-                  </div>
-                </div>
-                <div class="med-summary-card">
-                  <div class="med-summary-top">
-                    <div>
-                      <div class="med-summary-title">止痛药 · 发作时按医嘱</div>
-                      <div class="med-summary-meta">临时处理 · 近 2 周未使用</div>
+                  <div class="record-timeline-item">
+                    <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v6L5 19a2 2 0 0 0 1.9 3h10.2a2 2 0 0 0 1.9-3L14 8V2"/><path d="M8 2h8"/><path d="M7 16h10"/></svg></div>
+                    <div class="record-timeline-body">
+                      <div class="record-timeline-top"><div class="record-timeline-date">2025-11-05</div><div class="record-timeline-type">检查检验</div></div>
+                      <div class="record-timeline-title">血尿酸 <span class="record-danger-mark">598 μmol/L</span></div>
+                      <div class="record-timeline-desc">外院急诊化验 · 发作期首次检测。肌酐 78 μmol/L，未见肾损伤。</div>
+                      <button class="record-report-btn" onclick="showToast('已打开报告原图')">查看报告原图</button>
                     </div>
-                    <div class="med-status-tag">按需</div>
                   </div>
-                </div>
-                <button class="med-expand-btn" data-open-text="收起详细用法" data-closed-text="查看详细用法" onclick="toggleMedicationPanel('medUsagePanel', this)">查看详细用法</button>
-                <div class="med-expand-panel" id="medUsagePanel">
-                  <div class="med-detail-grid">
-                    <div class="med-detail-item"><div class="med-detail-label">药名</div><div class="med-detail-value">苯溴马隆</div></div>
-                    <div class="med-detail-item"><div class="med-detail-label">频次</div><div class="med-detail-value">每日一次</div></div>
-                    <div class="med-detail-item"><div class="med-detail-label">开始时间</div><div class="med-detail-value">约 8 个月前</div></div>
-                    <div class="med-detail-item"><div class="med-detail-label">来源</div><div class="med-detail-value">医生端同步</div></div>
-                  </div>
-                </div>
-                <button class="med-expand-btn" data-open-text="收起历史调整" data-closed-text="历史调整" onclick="toggleMedicationPanel('medHistoryPanel', this)">历史调整</button>
-                <div class="med-expand-panel" id="medHistoryPanel">
-                  <div class="med-history-list">
-                    <div class="med-history-item">
-                      <div class="med-history-date">2026-06-28</div>
-                      <div class="med-history-title">继续苯溴马隆规律用药</div>
-                      <div class="med-history-desc">王文龙医生复诊后确认，等待下次血尿酸复查。</div>
-                    </div>
-                    <div class="med-history-item">
-                      <div class="med-history-date">2026-06-12</div>
-                      <div class="med-history-title">疼痛期短期使用止痛药</div>
-                      <div class="med-history-desc">发作缓解后停用，具体药名待医生确认。</div>
+                  <div class="record-timeline-item">
+                    <div class="record-timeline-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+                    <div class="record-timeline-body">
+                      <div class="record-timeline-top"><div class="record-timeline-date">2025-08-22</div><div class="record-timeline-type">门诊记录</div></div>
+                      <div class="record-timeline-title">右踝关节肿痛，对症处理</div>
+                      <div class="record-timeline-desc">运动后出现踝关节疼痛，考虑痛风性关节炎发作，依托考昔对症，嘱减少高嘌呤饮食。</div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div class="record-load-more" id="recordLoadMore" onclick="loadMoreRecords(this)">上滑加载更多</div>
             </div>
           </div>
         </div>
@@ -4406,7 +4538,7 @@
               </div>
             </div>
             <div class="doctor-qr-box">
-              <img class="doctor-qr-img" src="assets/doctor-qr.png" alt="王文龙医生痛风专病建档二维码" />
+              <img class="doctor-qr-img" src="../../assets/doctor-qr.png" alt="王文龙医生痛风专病建档二维码" />
             </div>
             <div class="doctor-qr-tip">患者扫码，填写基本信息后进入待确认档案。</div>
             <div class="doctor-qr-toolbar">
@@ -4482,45 +4614,20 @@
 
   <!-- ───────────── CONTROL / LEGEND ───────────── -->
   <div class="demo-control">
-    <div class="demo-control-title">患者端交互迁移</div>
-    <div class="demo-control-sub">扫码绑定医生 + AI 对话入口 + 专病任务流</div>
+    <div class="demo-control-title">患者端首页状态</div>
+    <div class="demo-control-sub">7 类状态切换 · 对齐状态表</div>
     <div class="control-panel">
       <button class="control-panel-title nav-toggle" onclick="togglePageNav('patientNavToggle','patientPageNav')" id="patientNavToggle">
-        <span>患者端主线</span><span class="nav-count">工作流导航</span><span class="nav-chevron">⌄</span>
+        <span>首页状态</span><span class="nav-count">按优先级排列</span><span class="nav-chevron">⌄</span>
       </button>
       <div class="workflow-nav" id="patientPageNav">
-        <div class="workflow-card">
-          <div class="workflow-head"><div class="workflow-title">1. 扫码建档</div><div class="workflow-meta">患者进入</div></div>
-          <div class="workflow-steps">
-            <button class="workflow-btn primary" onclick="goPatient('screen-patient-home')"><span class="workflow-dot">首</span><span><span class="workflow-label">未建档首页</span><span class="workflow-note">四个固定胶囊 + 扫码建档主卡</span></span></button>
-            <button class="workflow-btn" onclick="goPatient('screen-patient-scanning')"><span class="workflow-dot">扫</span><span><span class="workflow-label">扫码识别医生</span><span class="workflow-note">识别王文龙医生建档码</span></span></button>
-            <button class="workflow-btn" onclick="goPatient('screen-patient-scan')"><span class="workflow-dot">填</span><span><span class="workflow-label">快速建档</span><span class="workflow-note">手机号、姓名、性别</span></span></button>
-          </div>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-head"><div class="workflow-title">2. 建档中首页</div><div class="workflow-meta">对话内完成</div></div>
-          <div class="workflow-steps">
-            <button class="workflow-btn primary" onclick="openWaitingHomeFromNav()"><span class="workflow-dot">AI</span><span><span class="workflow-label">建档中首页</span><span class="workflow-note">AI 逐题追问痛风病史，可跳过</span></span></button>
-            <button class="workflow-btn" onclick="openReceptionWaitingFromNav()"><span class="workflow-dot">诊</span><span><span class="workflow-label">接诊后等待页</span><span class="workflow-note">已到诊，等待医生接诊</span></span></button>
-          </div>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-head"><div class="workflow-title">3. 医生确认后</div><div class="workflow-meta">已纳管</div></div>
-          <div class="workflow-steps">
-            <button class="workflow-btn primary" onclick="confirmPlan()"><span class="workflow-dot">管</span><span><span class="workflow-label">已纳管首页</span><span class="workflow-note">复诊、用药、饮食、打卡都回到首页</span></span></button>
-            <button class="workflow-btn" onclick="completeInitialReception()"><span class="workflow-dot">诊</span><span><span class="workflow-label">接诊完成后提醒</span><span class="workflow-note">提示填写下次复诊时间</span></span></button>
-            <button class="workflow-btn" onclick="openContactDoctor('screen-patient-confirmed')"><span class="workflow-dot">医</span><span><span class="workflow-label">联系医生</span><span class="workflow-note">微信式留言 + 发送病历夹</span></span></button>
-            <button class="workflow-btn" onclick="openPatientRecord('screen-patient-confirmed')"><span class="workflow-dot">夹</span><span><span class="workflow-label">病历夹总览</span><span class="workflow-note">一屏查看病情摘要</span></span></button>
-          </div>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-head"><div class="workflow-title">4. 复诊闭环</div><div class="workflow-meta">首页状态</div></div>
-          <div class="workflow-steps">
-            <button class="workflow-btn" onclick="setConfirmedFollowupState('pending')"><span class="workflow-dot">复</span><span><span class="workflow-label">未到期首页</span><span class="workflow-note">纳管首页内显示倒计时</span></span></button>
-            <button class="workflow-btn" onclick="setConfirmedFollowupState('today')"><span class="workflow-dot">今</span><span><span class="workflow-label">今日复诊首页</span><span class="workflow-note">纳管首页内提示扫码</span></span></button>
-            <button class="workflow-btn warn" onclick="setConfirmedFollowupState('missed')"><span class="workflow-dot">逾</span><span><span class="workflow-label">逾期未复诊首页</span><span class="workflow-note">联系医生更改日期</span></span></button>
-          </div>
-        </div>
+        <button class="workflow-btn warn" onclick="setConfirmedFollowupState('missed')"><span class="workflow-dot">逾</span><span><span class="workflow-label">S5 逾期未复诊</span><span class="workflow-note">已超过复诊时间，尽快联系医生改期</span></span></button>
+        <button class="workflow-btn primary" onclick="setConfirmedFollowupState('today')"><span class="workflow-dot">今</span><span><span class="workflow-label">S4 复诊当天</span><span class="workflow-note">今天是建议复诊日，到院扫码就诊</span></span></button>
+        <button class="workflow-btn primary" onclick="openWaitingHomeFromNav()"><span class="workflow-dot">建</span><span><span class="workflow-label">S2 建档中</span><span class="workflow-note">基本信息已提交，诊前资料补充中</span></span></button>
+        <button class="workflow-btn primary" onclick="setConfirmedFollowupState('pending')"><span class="workflow-dot">待</span><span><span class="workflow-label">S3 待复诊</span><span class="workflow-note">已纳管，距复诊还有一段时间</span></span></button>
+        <button class="workflow-btn" onclick="setConfirmedFollowupState('noNeed')"><span class="workflow-dot">无</span><span><span class="workflow-label">S6-A 确认无复诊需求</span><span class="workflow-note">医生判断无需复诊，日常管理</span></span></button>
+        <button class="workflow-btn" onclick="setConfirmedFollowupState('noPlan')"><span class="workflow-dot">空</span><span><span class="workflow-label">S6-B 未提复诊需求</span><span class="workflow-note">已纳管但系统无复诊记录</span></span></button>
+        <button class="workflow-btn primary" onclick="goPatient('screen-patient-home')"><span class="workflow-dot">首</span><span><span class="workflow-label">S1 未建档</span><span class="workflow-note">通用健康助手，扫码关联医生</span></span></button>
       </div>
       <div class="demo-reset-wrap">
         <button class="demo-reset-btn" onclick="resetDemo()">
@@ -4631,8 +4738,8 @@
   function openGlobalContactDoctor() {
     const activeId = getActivePatientScreenId();
     if (activeId === 'screen-patient-home') {
-      appendPatientDialog('homeInlineChat', '联系医生', '请先扫码关联医生。关联后就可以给医生留言、发送报告或补充患处照片。', [
-        { label: '去扫码', onclick: "goPatient('screen-patient-scanning')", primary: true }
+      appendPatientDialog('homeInlineChat', '联系医生', '先扫码关联医生，关联后就可以给医生留言了。', [
+        { label: '去扫码关联医生', onclick: "goPatient('screen-patient-scanning')", primary: true }
       ]);
       return;
     }
@@ -4707,6 +4814,7 @@
   }
 
   function openAttachmentSheet(type) {
+    window._currentAttachmentType = type;
     const mask = document.getElementById('attachmentMask');
     const title = document.getElementById('attachmentSheetTitle');
     const grid = document.getElementById('attachmentGrid');
@@ -4759,6 +4867,10 @@
 
   function selectAttachmentSource(type, label) {
     closeAttachmentSheet();
+    if (window._currentAttachmentType === 'report') {
+      startReportUploadFlow(type);
+      return;
+    }
     const fileLabel = label || '上传附件';
     const question = '<span>' + fileLabel + '</span><div class="attachment-card"><span class="attachment-card-icon">' + attachmentIcon(type) + '</span><span>' + fileLabel + ' · 1 个附件</span></div>';
     appendPatientDialog(activeChatId(), question, '已收到附件。我会先识别内容，并把关键信息整理出来。');
@@ -5013,114 +5125,128 @@
 
   function setConfirmedFollowupState(state) {
     const copy = {
+      // S3 待复诊 — 对齐状态表：已纳管、有复诊计划、未到期
       pending: {
-        heroTitle: '复诊还有 19 天',
-        heroMeta: '07月18日 · 请提前完成挂号',
-        cardTitle: '我的痛风管理',
-        promptTitle: '下次复诊还未到期',
-        aiBubble: '下次复诊还未到期。请提前完成挂号；复查报告出来后可以直接上传。',
+        heroTitle: '待复诊',
+        cardTitle: '待复诊',
+        cardMeta: '已关联王文龙医生 · 痛风专病',
+        aiBubble: '可以提前准备近期用药记录和发作情况，复诊时带给医生参考。',
         progress: '72%',
-        tags: ['复诊还有 19 天', '请提前挂号', '复查：血尿酸'],
+        infoRows: [
+          { label: '下次复诊', value: '07月18日' },
+          { label: '倒计时', value: '还有 19 天' },
+          { label: '复查项目', value: '血尿酸、肝肾功能' }
+        ],
+        statusPill: { text: '待复诊', style: 'blue' },
         actions: [
-          ['补充复诊资料', "openHomeUploadReportDialog()", true]
+          ['补充复诊资料', "openHomeUploadReportDialog()", true],
+          ['给医生留言', "openContactDoctor('screen-patient-confirmed')"]
         ],
         scanMode: 'link',
         scanTitle: '提前到院也可扫码就诊'
       },
-      managed: {
-        heroTitle: '已纳入痛风管理',
-        heroMeta: '下次复诊 07月18日 · 请提前完成挂号',
-        cardTitle: '我的痛风管理',
-        promptTitle: '已纳入痛风专病管理',
-        aiBubble: '你的专病档案已建立。下次复诊时间会在这里提醒，请记得提前挂号。',
-        progress: '100%',
-        tags: ['病历夹已建立', '下次复诊 07月18日', '请提前挂号'],
-        actions: [
-          ['上传报告', "openHomeUploadReportDialog()", true],
-          ['健康打卡', "openHomeCheckinDialog()"],
-          ['饮食问答', "openHomeDietDialog()"]
-        ],
-        scanMode: 'link',
-        scanTitle: '提前到院也可扫码就诊'
-      },
-      postVisit: {
-        heroTitle: '本次接诊已完成',
-        heroMeta: '请记录下次复诊时间',
-        cardTitle: '我的痛风管理',
-        promptTitle: '记录下次复诊',
-        aiBubble: '本次接诊已完成。请记录下次复诊时间。',
-        progress: '100%',
-        tags: ['已纳入管理', '待填复诊时间', '请提前挂号'],
-        actions: [],
-        scanMode: '',
-        followupForm: true
-      },
+      // S4 复诊当天 — 对齐状态表：已纳管、当前日期=复诊日期
       today: {
         heroTitle: '今天需要复诊',
-        heroMeta: '07月18日 · 请确认已完成挂号',
-        cardTitle: '今日复诊',
-        promptTitle: '今日复诊',
-        aiBubble: '今天需要复诊。请确认已完成挂号，带好复查结果、近期用药和发作情况。',
+        cardTitle: '复诊当天',
+        cardMeta: '已关联王文龙医生 · 痛风专病',
+        aiBubble: '记得提前完成挂号，到院后扫描医生的接诊码完成就诊。',
         progress: '86%',
-        tags: ['今日复诊', '请提前挂号', '带近期用药'],
+        infoRows: [
+          { label: '建议复诊日期', value: '07月10日' },
+          { label: '复查项目', value: '血尿酸、肝肾功能' }
+        ],
+        statusPill: { text: '复诊当天', style: 'green' },
         actions: [],
-        scanMode: 'link',
+        scanMode: 'card',
         scanTitle: '我已到院，扫码就诊',
+        scanDesc: '到院后扫描医生的接诊码完成就诊'
       },
+      // S5 逾期未复诊 — 对齐状态表：已纳管、复诊日期已过
       missed: {
         heroTitle: '已超过复诊时间',
-        heroMeta: '原计划 07月18日 · 联系医生改期',
-        cardTitle: '逾期未复诊',
-        promptTitle: '逾期未复诊',
-        aiBubble: '本次复诊已经逾期。请先和医生确认新的复诊日期，并重新完成挂号。',
+        cardTitle: '已逾期',
+        cardMeta: '已关联王文龙医生 · 痛风专病',
+        aiBubble: '建议尽快联系医生安排新的复诊时间，如果已到院可以直接扫码就诊。',
         progress: '58%',
-        tags: ['原计划 07月18日', '待改期', '请重新挂号'],
+        infoRows: [
+          { label: '原复诊日期', value: '07月01日' },
+          { label: '已逾期', value: '9 天' }
+        ],
+        statusPill: { text: '已逾期', style: 'red' },
         actions: [
-          ['联系医生改期', "requestFollowupChange()", true]
+          ['联系医生改复诊日期', "openContactDoctor('screen-patient-confirmed')", true]
         ],
         scanMode: 'link',
-        scanTitle: '已到院可扫码就诊'
+        scanTitle: '已到院？扫码就诊'
       },
-      waiting: {
-        heroTitle: '已完成扫码就诊',
-        heroMeta: '今天 09:30 · 等待医生记录',
-        cardTitle: '正在就诊',
-        promptTitle: '等待医生记录',
-        aiBubble: '你已完成扫码就诊。医生记录保存后，本次复诊摘要会同步到我的病历夹。',
-        progress: '92%',
-        tags: ['已就诊', '等待医生记录', '本次复诊'],
+      // S6-A 确认无复诊需求 — 对齐状态表：已纳管、医生标记无需复诊
+      noNeed: {
+        heroTitle: '档案已建立',
+        cardTitle: '档案已建立',
+        cardMeta: '已关联王文龙医生 · 痛风专病',
+        aiBubble: '有什么问题随时可以问我，也可以查看病历夹了解自己的病情。',
+        progress: '100%',
+        infoRows: [
+          { label: '复诊结论', value: '医生判断：当前无需复诊' },
+          { label: '最近更新', value: '07月05日' }
+        ],
+        statusPill: { text: '无需复诊', style: 'blue' },
         actions: [
-          ['等待医生记录', "showToast('医生记录完成后会同步更新')", true]
+          ['给医生留言', "openContactDoctor('screen-patient-confirmed')", true]
         ],
         scanMode: ''
       },
-      complete: {
-        heroTitle: '本次复诊已完成',
-        heroMeta: '今天 09:36 · 已更新病历夹',
-        cardTitle: '复诊完成',
-        promptTitle: '本次复诊已完成',
-        aiBubble: '本次复诊记录已更新。继续按医嘱记录用药、饮食和日常变化。',
-        progress: '100%',
-        tags: ['医生已记录', '第 2 次复诊', '病历夹已更新'],
+      // S6-B 未提复诊需求 — 对齐状态表：已纳管、followup_status 为空
+      noPlan: {
+        heroTitle: '档案已建立',
+        cardTitle: '档案已建立',
+        cardMeta: '已关联王文龙医生 · 痛风专病',
+        aiBubble: '可以联系医生确认后续是否需要复诊，上传的报告医生确认后会更新到病历夹。',
+        progress: '80%',
+        infoRows: [
+          { label: '复诊安排', value: '暂无复诊安排' },
+          { label: '最近更新', value: '07月05日' }
+        ],
+        statusPill: { text: '待确认', style: 'blue' },
         actions: [
-          ['健康打卡', "openHomeCheckinDialog()", true],
-          ['饮食问答', "openHomeDietDialog()"]
+          ['联系医生确认复诊', "openContactDoctor('screen-patient-confirmed')", true]
         ],
         scanMode: ''
       }
     }[state || 'pending'];
 
     setText('confirmedFollowupHeroTitle', copy.heroTitle);
-    setText('confirmedFollowupHeroMeta', copy.heroMeta);
+    const heroMeta = document.getElementById('confirmedFollowupHeroMeta');
+    if (heroMeta) heroMeta.style.display = 'none';
     setText('confirmedFollowupCardTitle', copy.cardTitle);
-    setText('confirmedFollowupPromptTitle', copy.promptTitle);
+    // 卡片副标题（关联信息）通过 confirmedFollowupCardMeta 元素设置
+    const cardMeta = document.getElementById('confirmedFollowupCardMeta');
+    if (cardMeta) cardMeta.textContent = copy.cardMeta;
+    setText('confirmedFollowupPromptTitle', copy.cardTitle);
     setText('confirmedFollowupAIBubble', copy.aiBubble);
     const progress = document.getElementById('confirmedFollowupProgress');
     if (progress) progress.style.width = copy.progress;
-    const tagWrap = document.getElementById('confirmedFollowupTags');
-    if (tagWrap) tagWrap.innerHTML = copy.tags.map((tag, index) => '<span class="archive-completeness-tag' + (index === copy.tags.length - 1 ? ' status' : '') + '">' + tag + '</span>').join('');
+    // 渲染数据行
+    const infoWrap = document.getElementById('confirmedFollowupInfo');
+    if (infoWrap) {
+      infoWrap.innerHTML = (copy.infoRows || []).map(row =>
+        '<div class="confirmed-status-info-row"><span class="confirmed-status-info-label">' + row.label + '</span><span class="confirmed-status-info-value">' + row.value + '</span></div>'
+      ).join('');
+    }
+    // 渲染状态标签 pill
+    const pillWrap = document.getElementById('confirmedFollowupTagWrap');
+    const pill = document.getElementById('confirmedFollowupPill');
+    if (pill && copy.statusPill) {
+      pill.textContent = copy.statusPill.text;
+      pill.className = 'confirmed-status-pill ' + (copy.statusPill.style || 'blue');
+    }
+    if (pillWrap) {
+      const metaText = copy.statusPill && copy.statusPill.meta ? '<span class="confirmed-status-meta">' + copy.statusPill.meta + '</span>' : '';
+      pillWrap.innerHTML = metaText + (pill ? pill.outerHTML : '');
+    }
     const postVisitTask = document.getElementById('postVisitHomeTask');
-    if (postVisitTask) postVisitTask.classList.toggle('show', !!copy.followupForm);
+    if (postVisitTask) postVisitTask.classList.remove('show');
     const actions = document.getElementById('confirmedFollowupActions');
     if (actions) {
       actions.className = 'chat-actions';
@@ -5128,11 +5254,14 @@
       if (copy.scanMode === 'link') {
         actions.innerHTML += '<div class="visit-scan-link" onclick="goPatient(&quot;screen-patient-followup-scan&quot;)"><span class="visit-scan-link-icon"><span class="scan-corners"><span></span></span></span><span>' + copy.scanTitle + '</span><span>›</span></div>';
       }
-      if (copy.followupForm) {
-        actions.innerHTML += '<div class="post-visit-followup-form" id="postVisitFollowupForm" onclick="openPostVisitFollowupSheet()"><div class="post-visit-followup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 10h18"/></svg></div><div class="post-visit-followup-copy"><div class="post-visit-followup-title">填写下次复诊</div><div class="post-visit-followup-desc">记录医生安排的复诊时间</div></div><div class="post-visit-followup-arrow">›</div></div>';
+      if (copy.scanMode === 'card') {
+        actions.innerHTML += '<div class="followup-scan-card" onclick="goPatient(&quot;screen-patient-followup-scan&quot;)"><span class="followup-scan-icon"><span class="scan-corners scan-corners-lg"><span></span></span></span><span style="flex:1"><span style="font-size:15px;font-weight:800;color:#1E2A4A;display:block">' + copy.scanTitle + '</span><span style="font-size:12px;color:#667085;margin-top:2px;display:block">' + (copy.scanDesc || '') + '</span></span><span style="font-size:20px;color:#01A1FF">›</span></div>';
       }
       actions.style.display = '';
     }
+    // 移除 postVisitHomeTask（就诊后填写复诊时间的卡片，S3-S6 不展示）
+    const postVisitCard = document.getElementById('postVisitHomeTask');
+    if (postVisitCard) postVisitCard.style.display = 'none';
     goPatient('screen-patient-confirmed');
   }
 
@@ -5443,6 +5572,36 @@
     medPanel.classList.toggle('active', !isVisit);
   }
 
+  function jumpRecordYear(year) {
+    const target = document.getElementById('year-' + year);
+    if (target) {
+      try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+      // 若历史块尚未展开，先展开再跳转
+      var history = document.getElementById('recordHistory2025');
+      if (history && history.style.display === 'none') {
+        history.style.display = 'block';
+        var lm = document.getElementById('recordLoadMore');
+        if (lm && !lm.classList.contains('done')) { lm.classList.add('done'); lm.textContent = '已经到底了'; }
+      }
+    }
+    document.querySelectorAll('.record-anchor').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.year === year);
+    });
+  }
+
+  function loadMoreRecords(el) {
+    if (!el || el.classList.contains('done')) return;
+    el.classList.add('loading');
+    el.textContent = '加载中...';
+    setTimeout(function () {
+      var history = document.getElementById('recordHistory2025');
+      if (history) history.style.display = 'block';
+      el.classList.remove('loading');
+      el.classList.add('done');
+      el.textContent = '已经到底了';
+    }, 600);
+  }
+
   function toggleMedicationPanel(id, trigger) {
     const panel = document.getElementById(id);
     if (!panel) return;
@@ -5634,6 +5793,16 @@
     hidePhoneAuth();
     markPatientSubmitted();
     goPatient('screen-patient-waiting');
+    // 对齐状态表 S2「建档成功后首次展示」消息文案
+    setTimeout(function() {
+      const chat = document.getElementById('waitingIntakeChat');
+      if (chat && !chat.querySelector('.chat-row:not(.user)')) {
+        appendPatientDialog('waitingIntakeChat', '', '张明，基本信息已提交。接下来可以补充痛风病史和化验报告，医生接诊时会看到这些内容。', [
+          { label: '补充痛风病史', onclick: 'startInlineGoutHistory()', primary: true },
+          { label: '暂时跳过', onclick: "appendPatientDialog('waitingIntakeChat','暂时跳过','好的，需要时随时可以补充。到院后可以扫描医生的接诊码完成就诊。',[{label:'扫码就诊',onclick:'openPatientReceptionScan()',primary:true}])" }
+        ]);
+      }
+    }, 100);
   }
 
   function openReceptionWaitingFromNav() {
@@ -5655,7 +5824,7 @@
     const listStatus = document.getElementById('zhangListStatus');
     if (listStatus) listStatus.className = 'd-tag d-tag-success';
     setText('zhangListTime', '今天 09:36 接诊完成');
-    setConfirmedFollowupState('postVisit');
+    setConfirmedFollowupState('pending');
     showToast('已进入接诊后提醒');
   }
 
@@ -5679,7 +5848,7 @@
   function resetDemo() {
     inlineGoutStep = 0;
     restoreInitialDynamicChats();
-    setConfirmedFollowupState('managed');
+    setConfirmedFollowupState('pending');
     document.querySelectorAll('.p-ai-block').forEach(block => {
       block.style.display = 'none';
     });
@@ -5747,7 +5916,7 @@
     setDisplay('doctorDetailHint', 'none');
     setDisplay('followupArrivedHint', 'flex');
     setDisplay('btnStartFollowupRecording', 'block');
-    setConfirmedFollowupState('waiting');
+    setConfirmedFollowupState('today');
     goDoctor('screen-doctor-workbench');
     showToast('医生端已收到扫码就诊');
   }
@@ -5774,7 +5943,7 @@
     setDisplay('followupArrivedHint', 'none');
     setDisplay('btnStartFollowupRecording', 'none');
     goDoctor('screen-doctor-patient-detail');
-    setConfirmedFollowupState('complete');
+    setConfirmedFollowupState('pending');
     showToast('第 2 次复诊记录已保存');
   }
 
@@ -5910,7 +6079,7 @@
     }
     setDisplay('doctorDetailHint', 'none');
     setTimeout(() => {
-      setConfirmedFollowupState('managed');
+      setConfirmedFollowupState('pending');
       goDoctor('screen-doctor-patient-detail');
     }, 1200);
   }
@@ -5979,6 +6148,251 @@
     t.classList.add('show');
     clearTimeout(t._timer);
     t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  // ─── Patient report upload state machine ───
+  let _labUploadTimer = null;
+
+  function _clearLabUploadTimer() {
+    if (_labUploadTimer) { clearTimeout(_labUploadTimer); _labUploadTimer = null; }
+  }
+
+  const _labUploadIcons = {
+    idle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    uploading: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    reviewing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>',
+    approved: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    duplicate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>',
+    failed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12" y2="16"/></svg>',
+    review_failed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="12" y1="12" x2="12" y2="15"/><line x1="12" y1="18" x2="12" y2="18"/></svg>',
+    reupload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+  };
+
+  function _labUploadStateClass(state) {
+    return ({
+      idle: '', uploading: 'uploading', success: 'success', reviewing: 'reviewing',
+      approved: 'approved', duplicate: 'duplicate', failed: 'failed',
+      review_failed: 'review_failed', reupload: 'reupload'
+    })[state] || '';
+  }
+
+  function renderLabUploadState(state, opts) {
+    opts = opts || {};
+    const card = document.getElementById('labUploadStatusCard');
+    if (!card) return;
+    const cls = _labUploadStateClass(state);
+    card.className = 'lab-status-card' + (cls ? ' ' + cls : '');
+    const icon = _labUploadIcons[state] || _labUploadIcons.idle;
+    let html = '<div class="lab-status-top"><div class="lab-status-icon">' + icon + '</div><div class="lab-status-copy"><div class="lab-status-title">' + (opts.title || '') + '</div><div class="lab-status-desc">' + (opts.desc || '') + '</div></div></div>';
+    if (opts.progress) {
+      html += '<div class="lab-status-progress"><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + opts.progress + '%"></div></div></div>';
+    }
+    if (opts.meta) {
+      html += '<div class="lab-status-meta">' + opts.meta + '</div>';
+    }
+    html += '<div class="lab-status-actions">';
+    html += '<button class="lab-status-btn primary' + (opts.primaryDisabled ? '" disabled' : '"') + ' onclick="' + (opts.primaryOnclick || 'void 0') + '">' + (opts.primaryLabel || '继续') + '</button>';
+    html += '<button class="lab-status-btn secondary" onclick="' + (opts.secondaryOnclick || 'void 0') + '">' + (opts.secondaryLabel || '返回') + '</button>';
+    html += '</div>';
+    card.innerHTML = html;
+    card.style.display = 'block';
+  }
+
+  function setLabUploadTop(text, sub) {
+    const el = document.getElementById('labUploadTopStatus');
+    if (!el) return;
+    el.innerHTML = text + (sub ? '<span>' + sub + '</span>' : '');
+  }
+
+  function setReportStepStatusDisplay(text) {
+    const step = document.getElementById('previsitStepReport');
+    if (!step) return;
+    const status = step.querySelector('.previsit-step-status');
+    if (status) status.textContent = text;
+  }
+
+  function labUploadIdle() {
+    _clearLabUploadTimer();
+    setLabUploadTop('可补充', '就诊前可跳过');
+    setReportStepStatusDisplay('可跳过');
+    renderLabUploadState('idle', {
+      title: '上传化验报告',
+      desc: '可拍照或从相册选择，报告会用于补充本次就诊资料。',
+      primaryLabel: '拍照上传',
+      primaryOnclick: "prepareLabPhotoUpload()",
+      secondaryLabel: '暂时跳过',
+      secondaryOnclick: "goPatient('screen-patient-waiting')"
+    });
+  }
+
+  function labUploadCancel() {
+    _clearLabUploadTimer();
+    labUploadIdle();
+  }
+
+  function viewLabResults() {
+    const block = document.getElementById('labRecognizedBlock');
+    if (block) {
+      block.style.display = 'block';
+      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function prepareLabPhotoUpload() {
+    startReportUploadFlow('camera');
+  }
+
+  function startLabUploadFlow(source) {
+    startReportUploadFlow(source || 'file');
+  }
+
+  function startReportUploadFlow(source) {
+    _clearLabUploadTimer();
+    goPatient('screen-patient-lab-upload');
+    labUploadIdle();
+    _labUploadTimer = setTimeout(function () {
+      driveReportUpload(source, 'first');
+    }, 450);
+  }
+
+  function driveReportUpload(source, mode) {
+    _clearLabUploadTimer();
+    mode = mode || 'first';
+    if (mode === 'first' || mode === 'reupload') {
+      const isRetry = mode === 'reupload';
+      renderLabUploadState('uploading', {
+        title: isRetry ? '重新上传报告' : '正在上传报告',
+        desc: '请保持页面打开，上传完成后会自动继续识别。',
+        progress: 45,
+        primaryLabel: isRetry ? '重新上传 45%' : '上传中 45%',
+        primaryDisabled: true,
+        primaryOnclick: 'void 0',
+        secondaryLabel: '取消上传',
+        secondaryOnclick: "labUploadCancel()"
+      });
+      setLabUploadTop('上传中', '正在上传报告');
+      setReportStepStatusDisplay('上传中');
+      _labUploadTimer = setTimeout(function () {
+        renderLabUploadState('success', {
+          title: '报告已上传',
+          desc: '已收到报告，正在为医生整理关键指标。',
+          primaryLabel: '继续补充资料',
+          primaryOnclick: "goPatient('screen-patient-waiting')",
+          secondaryLabel: '再上传一张',
+          secondaryOnclick: "driveReportUpload('" + source + "','duplicate')"
+        });
+        setLabUploadTop('已上传', '正在整理关键指标');
+        setReportStepStatusDisplay('已上传');
+        _labUploadTimer = setTimeout(function () {
+          renderLabUploadState('reviewing', {
+            title: '报告审核中',
+            desc: '医生接诊前可看到报告状态，如需补充会提醒你。',
+            primaryLabel: '继续就诊准备',
+            primaryOnclick: "goPatient('screen-patient-waiting')",
+            secondaryLabel: '再上传资料',
+            secondaryOnclick: "driveReportUpload('" + source + "','reviewFail')"
+          });
+          setLabUploadTop('审核中', '正在整理关键指标');
+          setReportStepStatusDisplay('审核中');
+          _labUploadTimer = setTimeout(function () {
+            renderLabUploadState('approved', {
+              title: '报告已整理完成',
+              desc: '已识别 6 项指标，最近报告时间为 2026 年 7 月。',
+              meta: '血尿酸 486 μmol/L · 肌酐 82 μmol/L · ALT 31 U/L',
+              primaryLabel: '查看已整理结果',
+              primaryOnclick: "viewLabResults()",
+              secondaryLabel: '继续上传',
+              secondaryOnclick: "driveReportUpload('" + source + "','duplicate')"
+            });
+            setLabUploadTop('已整理', '已识别 6 项指标');
+            setReportStepStatusDisplay('已整理');
+          }, 2000);
+        }, 1500);
+      }, 1300);
+    } else if (mode === 'duplicate') {
+      renderLabUploadState('uploading', {
+        title: '正在上传报告',
+        desc: '请保持页面打开，上传完成后会自动继续识别。',
+        progress: 45,
+        primaryLabel: '上传中 45%',
+        primaryDisabled: true,
+        primaryOnclick: 'void 0',
+        secondaryLabel: '取消上传',
+        secondaryOnclick: "labUploadCancel()"
+      });
+      setLabUploadTop('上传中', '正在上传报告');
+      _labUploadTimer = setTimeout(function () {
+        renderLabUploadState('duplicate', {
+          title: '这张报告可能已上传',
+          desc: '系统发现与已提交报告相似，可继续保留或重新选择。',
+          primaryLabel: '保留这份',
+          primaryOnclick: "driveReportUpload('" + source + "','keep')",
+          secondaryLabel: '重新选择',
+          secondaryOnclick: "driveReportUpload('" + source + "','fail')"
+        });
+        setLabUploadTop('可能重复', '可保留或重新选择');
+        setReportStepStatusDisplay('可能重复');
+      }, 1300);
+    } else if (mode === 'fail') {
+      renderLabUploadState('uploading', {
+        title: '正在上传报告',
+        desc: '请保持页面打开，上传完成后会自动继续识别。',
+        progress: 45,
+        primaryLabel: '上传中 45%',
+        primaryDisabled: true,
+        primaryOnclick: 'void 0',
+        secondaryLabel: '取消上传',
+        secondaryOnclick: "labUploadCancel()"
+      });
+      setLabUploadTop('上传中', '正在上传报告');
+      _labUploadTimer = setTimeout(function () {
+        renderLabUploadState('failed', {
+          title: '上传失败',
+          desc: '可能是网络不稳定、照片不清晰或格式暂不支持，请重新选择清晰图片。',
+          primaryLabel: '重新上传',
+          primaryOnclick: "driveReportUpload('" + source + "','reupload')",
+          secondaryLabel: '稍后再传',
+          secondaryOnclick: "labUploadIdle()"
+        });
+        setLabUploadTop('需重传', '照片不清晰或信息不完整');
+        setReportStepStatusDisplay('需重传');
+      }, 1300);
+    } else if (mode === 'keep') {
+      renderLabUploadState('approved', {
+        title: '报告已整理完成',
+        desc: '已识别 6 项指标，最近报告时间为 2026 年 7 月。',
+        meta: '血尿酸 486 μmol/L · 肌酐 82 μmol/L · ALT 31 U/L',
+        primaryLabel: '查看已整理结果',
+        primaryOnclick: "viewLabResults()",
+        secondaryLabel: '继续上传',
+        secondaryOnclick: "driveReportUpload('" + source + "','duplicate')"
+      });
+      setLabUploadTop('已整理', '已识别 6 项指标');
+      setReportStepStatusDisplay('已整理');
+    } else if (mode === 'reviewFail') {
+      renderLabUploadState('reviewing', {
+        title: '报告审核中',
+        desc: '医生接诊前可看到报告状态，如需补充会提醒你。',
+        primaryLabel: '继续就诊准备',
+        primaryOnclick: "goPatient('screen-patient-waiting')",
+        secondaryLabel: '再上传资料',
+        secondaryOnclick: "driveReportUpload('" + source + "','duplicate')"
+      });
+      setLabUploadTop('审核中', '正在整理关键指标');
+      _labUploadTimer = setTimeout(function () {
+        renderLabUploadState('review_failed', {
+          title: '报告暂未识别成功',
+          desc: '可能是照片不清晰、缺少报告页或信息不完整。',
+          primaryLabel: '重新上传',
+          primaryOnclick: "driveReportUpload('" + source + "','reupload')",
+          secondaryLabel: '手动补充关键指标',
+          secondaryOnclick: "labUploadIdle()"
+        });
+        setLabUploadTop('需重传', '照片不清晰或信息不完整');
+        setReportStepStatusDisplay('需重传');
+      }, 1800);
+    }
   }
 
   captureInitialDynamicChats();

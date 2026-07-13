@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+  痛风智能体 · 医生端空白业务页骨架
+  用途：新做医生端页面时复制本文件，只改文案/状态，不另起样式。
+  引用：../components.css（组件库，已有 ds-doctor-head / ds-stat-* / ds-todo-* / ds-main-task / ds-field-card 等）。
+  视口：390 x 844 工作台。蓝色主色、白卡片、低密度高信息密度、任务优先。
+  规则源：docs/03-原型与规范/痛风智能体Demo设计规范_AI执行版.md §五
+  注意：医生端外层不把「问诊录音」作显眼模块；录音只作字段来源/AI 依据/证据出现。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>痛风智能体 · 医生端空白骨架</title>
+  <link rel="stylesheet" href="../components.css" />
+  <style>
+    body { margin: 0; background: #e9eef5; font-family: -apple-system, "PingFang SC", sans-serif; }
+    .phone { max-width: 390px; margin: 0 auto; min-height: 844px; background: #f3f6fb; display: flex; flex-direction: column; }
+    .screen { flex: 1; padding: 14px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <!-- ① 工作台头部：医生信息 + 建档码入口 -->
+      <header class="ds-doctor-head">
+        <div class="ds-doctor-name">王文龙 医生</div>
+        <div class="ds-doctor-meta">风湿免疫科 · 痛风专病</div>
+        <button class="ds-qr-entry" aria-label="我的二维码">我的二维码</button>
+      </header>
+
+      <!-- ② 三个关键数字 -->
+      <div class="ds-stat-grid">
+        <div class="ds-stat"><div class="ds-stat-value">12</div><div class="ds-stat-label">待接诊</div></div>
+        <div class="ds-stat"><div class="ds-stat-value">5</div><div class="ds-stat-label">复查逾期</div></div>
+        <div class="ds-stat"><div class="ds-stat-value">3</div><div class="ds-stat-label">待回复</div></div>
+      </div>
+
+      <!-- ③ 当前主任务 -->
+      <section class="ds-main-task">
+        <div class="ds-task-title">张明 · 待确认档案</div>
+        <div class="ds-task-desc">病史已自填，化验单 OCR 待归档</div>
+        <button class="ds-task-action">接诊患者</button>
+      </section>
+
+      <!-- ④ 待办列表 -->
+      <ul class="ds-todo-list">
+        <li class="ds-todo">
+          <span class="ds-todo-mark ds-todo-mark-danger"></span>
+          <div><div class="ds-todo-title">李华 复查逾期 8 天</div><div class="ds-todo-desc">AI 已提醒，未响应</div></div>
+        </li>
+        <li class="ds-todo">
+          <span class="ds-todo-mark ds-todo-mark-warn"></span>
+          <div><div class="ds-todo-title">王芳 化验单待确认</div><div class="ds-todo-desc">外院 OCR 结果</div></div>
+        </li>
+      </ul>
+
+      <!-- ⑤ 字段确认卡（结构化、带来源标签，不只展示总答案） -->
+      <section class="ds-field-card">
+        <div class="ds-field-head">首次发作部位 <span class="ds-source-badge">患者自填</span></div>
+        <div class="ds-field-value">第一跖趾关节（大脚趾根部）</div>
+        <div class="ds-evidence">依据：患者对话 2026-07-10</div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

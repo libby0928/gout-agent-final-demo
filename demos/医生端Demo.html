@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<!-- 医生端 Demo 原型 · 基于《医生端Demo设计系统确认书 v2（青绿蓝靠拢版）》+ 医生端Demo设计令牌_v1.0
+     设计系统：design-system/tokens.css（复用 --patient-* / --doctor-*）
+     外壳：复用 templates/iphone-showcase-patient.html 四层外壳
+     主色：青绿蓝渐变 --patient-gradient (#03d49f→#01a1ff)，大圆角，宽松行高
+     状态铁律：橙=待确认 / 绿=已确认 / 红=异常
+     AI 卡必标「诊疗辅助建议」；图标全部内联 SVG outline -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>痛风智能体 · 医生端 Demo</title>
+<style>
+/* ============ 共享变量（来自 tokens.css，内联以保证单文件运行） ============ */
+:root{
+  --gout-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --patient-primary:#03d49f; --patient-primary-2:#01a1ff; --patient-primary-dark:#0785b6;
+  --patient-gradient:linear-gradient(234deg,#03d49f 0%,#01a1ff 100%);
+  --patient-bg:linear-gradient(180deg,#e8f4ff 0%,#f0fff9 52%,#f5f7fb 100%);
+  --patient-card:#ffffff; --patient-soft-blue:rgba(1,161,255,0.08); --patient-soft-green:rgba(3,212,159,0.10);
+  --doctor-panel:#ffffff; --doctor-line:#e5eaf2;
+  --doctor-text:#1d2530; --doctor-sub:#566579; --doctor-hint:#8a94a6;
+  --doctor-blue-soft:#eaf2ff;
+  --doctor-orange:#ed7b2f; --doctor-orange-soft:#fff4e8;
+  --doctor-green:#2ba471; --doctor-green-soft:#eaf8f2;
+  --doctor-red:#d54941; --doctor-red-soft:#fff0ee;
+  --radius-xs:7px; --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:22px; --radius-2xl:26px; --radius-pill:999px;
+  --shadow-doctor:0 16px 44px rgba(31,42,68,0.16);
+  --shadow-showcase-device:0 42px 88px rgba(15,23,42,0.38),0 16px 34px rgba(15,23,42,0.22),0 0 0 1px rgba(255,255,255,0.16) inset;
+  --showcase-bg-top:#edf3f8; --showcase-bg-bottom:#cbd6e2; --showcase-device-frame:#111827; --showcase-device-island:#070b12;
+  --showcase-screen-bg:#f3f7fb; --showcase-screen-bg-2:#f7fbff; --showcase-glass-highlight:rgba(255,255,255,0.52);
+  --text-xxs:10px; --text-xs:11px; --text-sm:12px; --text-md:13px; --text-base:14px; --text-lg:16px; --text-xl:18px; --text-2xl:22px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px;
+  --showcase-device-width:430px; --showcase-device-radius:48px; --showcase-screen-radius:40px; --showcase-device-padding:10px;
+}
+
+/* ============ 外壳四层（复用患者端模板结构） ============ */
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow-x:auto;}
+.ds-showcase-stage{position:relative;width:100%;min-height:760px;display:flex;align-items:flex-start;justify-content:center;gap:24px;overflow:hidden;padding:72px 24px 40px;font-family:var(--gout-font-family);
+  background:radial-gradient(circle at 50% 18%,rgba(255,255,255,0.90),rgba(231,238,245,0.62) 28%,transparent 52%),linear-gradient(180deg,var(--showcase-bg-top) 0%,#dce5ee 54%,var(--showcase-bg-bottom) 100%);}
+.ds-showcase-shadow{position:absolute;left:215px;bottom:6%;width:min(520px,82%);height:80px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(26,43,69,0.24),transparent 68%);filter:blur(18px);pointer-events:none;}
+.ds-showcase-device{position:relative;width:min(var(--showcase-device-width),84vw);min-width:330px;aspect-ratio:390/844;border-radius:var(--showcase-device-radius);background:var(--showcase-device-frame);padding:var(--showcase-device-padding);box-shadow:var(--shadow-showcase-device);z-index:2;flex-shrink:0;}
+.ds-showcase-device::before{content:"";position:absolute;left:50%;top:17px;width:118px;height:34px;transform:translateX(-50%);border-radius:22px;background:var(--showcase-device-island);z-index:5;}
+.ds-showcase-device::after{content:"";position:absolute;right:-4px;top:150px;width:4px;height:86px;border-radius:0 4px 4px 0;background:var(--showcase-device-frame);}
+.ds-showcase-screen{position:relative;width:100%;height:100%;border-radius:var(--showcase-screen-radius);overflow:hidden;background:var(--showcase-screen-bg);}
+.ds-showcase-reflection{position:absolute;inset:0;background:linear-gradient(110deg,transparent 0 28%,rgba(255,255,255,0.42) 38%,transparent 48%),radial-gradient(circle at 15% 6%,var(--showcase-glass-highlight),transparent 18%);pointer-events:none;mix-blend-mode:screen;opacity:0.52;z-index:60;}
+.ds-simulator-bar{position:absolute;left:50%;top:-48px;transform:translateX(-50%);width:min(430px,90vw);height:46px;border-radius:24px;background:#0b1018;color:#fff;display:flex;align-items:center;gap:13px;padding:0 17px;box-shadow:0 18px 38px rgba(0,0,0,0.26);z-index:8;}
+.ds-simulator-lights{display:flex;gap:8px;}
+.ds-simulator-lights span{width:13px;height:13px;border-radius:50%;display:block;}
+.ds-simulator-lights span:nth-child(1){background:#ff5f57;}
+.ds-simulator-lights span:nth-child(2){background:#febc2e;}
+.ds-simulator-lights span:nth-child(3){background:#28c840;}
+.ds-simulator-name{font-size:var(--text-md);line-height:1.05;font-weight:850;}
+.ds-simulator-name small{display:block;color:rgba(255,255,255,0.55);font-size:var(--text-xs);margin-top:2px;}
+.ds-simulator-actions{margin-left:auto;display:flex;gap:16px;color:rgba(255,255,255,0.86);font-size:20px;}
+
+/* ============ 工作流导航（右侧，六组 + 重置） ============ */
+.ds-nav{position:relative;width:248px;flex-shrink:0;align-self:flex-start;max-height:844px;display:flex;flex-direction:column;gap:10px;z-index:3;}
+.ds-nav-title{font-size:var(--text-sm);font-weight:850;color:#cdd6e2;letter-spacing:1px;padding:0 4px;}
+.ds-nav-group{background:rgba(255,255,255,0.62);border:1px solid rgba(255,255,255,0.5);border-radius:18px;padding:10px;backdrop-filter:blur(6px);}
+.ds-nav-group h4{margin:0 0 8px;font-size:var(--text-xs);font-weight:850;color:var(--doctor-sub);letter-spacing:.5px;padding:0 4px;}
+.ds-nav-item{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:12px;cursor:pointer;color:var(--doctor-text);font-size:var(--text-base);font-weight:800;font-family:inherit;transition:background .15s,color .15s;}
+.ds-nav-item:hover{background:rgba(1,161,255,0.10);}
+.ds-nav-item.active{background:var(--patient-gradient);color:#fff;box-shadow:0 8px 18px rgba(1,161,255,0.28);}
+.ds-nav-item.active .ds-nav-ico{color:#fff;}
+.ds-nav-ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--patient-primary-2);flex-shrink:0;}
+.ds-nav-num{margin-left:auto;font-size:var(--text-xxs);font-weight:850;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.18);min-width:18px;height:18px;border-radius:9px;display:none;align-items:center;justify-content:center;padding:0 5px;}
+.ds-nav-item.active .ds-nav-num{display:inline-flex;}
+.ds-nav-reset{margin-top:2px;position:sticky;bottom:0;border:0;cursor:pointer;border-radius:16px;padding:13px;font-size:var(--text-base);font-weight:850;font-family:inherit;color:#fff;background:linear-gradient(234deg,#ff8a4c,#ed7b2f);box-shadow:0 10px 22px rgba(237,123,47,0.34);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;}
+.ds-nav-reset:hover{transform:translateY(-1px);}
+.ds-nav-reset:active{transform:translateY(1px);}
+
+/* ============ 内屏容器 ============ */
+.ds-doctor-screen{position:absolute;inset:0;background:var(--patient-bg);display:none;flex-direction:column;overflow:hidden;font-family:var(--gout-font-family);}
+.ds-doctor-screen.active{display:flex;}
+.ds-statusbar{height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:var(--text-md);font-weight:850;color:var(--doctor-text);}
+.ds-statusbar .sb-right{display:flex;gap:6px;align-items:center;}
+.ds-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 var(--space-4) var(--space-5);}
+.ds-body::-webkit-scrollbar{display:none;}
+.ds-body{padding-top:4px;}
+
+/* ============ 顶部栏（渐变） ============ */
+.ds-topbar{background:var(--patient-gradient);color:#fff;border-radius:0 0 var(--radius-2xl) var(--radius-2xl);padding:17px 18px 16px;display:flex;flex-direction:column;align-items:stretch;gap:14px;flex-shrink:0;box-shadow:0 10px 24px rgba(1,161,255,.18);}
+.ds-topbar .doc-name{font-size:20px;font-weight:900;letter-spacing:-.3px;}
+.ds-topbar .doc-meta{margin-top:4px;color:rgba(255,255,255,.84);font-size:var(--text-sm);font-weight:700;}
+.ds-topbar-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ds-ghost-btn{height:36px;border:0;border-radius:12px;background:rgba(255,255,255,0.18);color:#fff;padding:0 12px;font-size:var(--text-sm);font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:background .15s;white-space:nowrap;}
+.ds-ghost-btn:hover{background:rgba(255,255,255,0.30);}
+
+/* ============ 导航栏（白底返回） ============ */
+.ds-navbar{height:50px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 12px;background:rgba(255,255,255,0.78);border-radius:var(--radius-lg);margin-bottom:6px;}
+.ds-navbar .nav-title{font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);flex:1;text-align:center;}
+.ds-back{border:0;background:rgba(1,161,255,0.08);width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--patient-primary-2);}
+.ds-navbar .nav-ico-right{color:var(--patient-primary-2);display:flex;align-items:center;cursor:pointer;}
+
+/* ============ 卡片基类 ============ */
+.ds-card{background:var(--doctor-panel);border:1px solid var(--doctor-line);border-radius:var(--radius-xl);padding:14px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-card.grad-border{border:1px solid rgba(1,161,255,0.20);box-shadow:0 6px 18px rgba(1,161,255,0.07);}
+.ds-section-title{font-size:var(--text-xl);font-weight:850;color:var(--doctor-text);margin:18px 4px 14px;}
+.ds-card-title{font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);}
+
+/* ============ 智能诊疗入口大卡片 ============ */
+.ds-ai-entry{display:flex;align-items:center;gap:13px;margin-top:12px;padding:16px 17px;border-radius:var(--radius-2xl);background:var(--patient-gradient);color:#fff;cursor:pointer;box-shadow:0 14px 32px rgba(1,161,255,0.30);transition:transform .12s,box-shadow .15s;}
+.ds-ai-entry:active{transform:translateY(1px);}
+.ds-ai-ico{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,0.20);display:flex;align-items:center;justify-content:center;font-size:var(--text-xl);font-weight:950;flex-shrink:0;letter-spacing:.5px;}
+.ds-ai-text{flex:1;min-width:0;}
+.ds-ai-title{font-size:var(--text-lg);font-weight:850;line-height:1.3;}
+.ds-ai-sub{margin-top:3px;font-size:var(--text-sm);font-weight:700;color:rgba(255,255,255,0.85);line-height:1.45;}
+.ds-ai-arrow{font-size:26px;font-weight:300;color:rgba(255,255,255,0.92);flex-shrink:0;}
+
+/* ============ 内嵌看诊前资料摘要 ============ */
+.ds-material-inline{margin-top:12px;border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);padding:14px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-material-inline h5{margin:0 0 8px;font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;justify-content:space-between;}
+.ds-mat-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6fa;}
+.ds-mat-item:last-child{border-bottom:0;}
+.ds-mat-name{font-size:var(--text-md);font-weight:800;color:var(--doctor-text);}
+.ds-mat-name small{display:block;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;margin-top:2px;}
+
+/* ============ IM 消息流 ============ */
+.ds-im-list{background:#fff;border:1px solid var(--doctor-line);border-radius:var(--radius-xl);overflow:hidden;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-im{display:flex;gap:11px;padding:13px 14px;border-bottom:1px solid #f1f4f8;cursor:pointer;transition:background .14s;align-items:flex-start;}
+.ds-im:last-child{border-bottom:0;}
+.ds-im:hover{background:rgba(1,161,255,0.04);}
+.ds-im-avatar{width:38px;height:38px;border-radius:13px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-lg);font-weight:900;flex-shrink:0;}
+.ds-im-body{flex:1;min-width:0;}
+.ds-im-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ds-im-name{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);}
+.ds-im-time{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:800;flex-shrink:0;}
+.ds-im-text{margin-top:3px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ds-im-route{display:inline-flex;margin-top:5px;font-size:var(--text-xxs);font-weight:850;color:var(--patient-primary-2);}
+.ds-im-route.needs-doctor{color:var(--doctor-orange);}
+.ds-im-unread{min-width:18px;height:18px;border-radius:9px;padding:0 5px;background:var(--doctor-red);color:#fff;font-size:10px;font-weight:850;display:inline-flex;align-items:center;justify-content:center;}
+.ds-im-more{width:100%;height:42px;border:0;border-top:1px solid var(--doctor-line);background:#fff;color:var(--patient-primary-2);font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-chat-body{padding:8px 14px 84px;background:linear-gradient(180deg,#eef7fb,#f5f7fb);}
+.ds-chat-date{text-align:center;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;margin:8px 0 14px;}
+.ds-chat-row{display:flex;gap:8px;align-items:flex-end;margin:12px 0;}
+.ds-chat-row.mine{justify-content:flex-end;}
+.ds-chat-avatar{width:32px;height:32px;border-radius:11px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:850;flex-shrink:0;}
+.ds-chat-bubble{max-width:76%;padding:10px 12px;border-radius:16px 16px 16px 5px;background:#fff;color:var(--doctor-text);font-size:var(--text-md);font-weight:700;line-height:1.55;box-shadow:0 3px 10px rgba(31,42,68,.06);}
+.ds-chat-row.mine .ds-chat-bubble{border-radius:16px 16px 5px 16px;background:linear-gradient(135deg,#dff9f2,#dff2ff);}
+.ds-chat-row.ai .ds-chat-bubble{border:1px solid rgba(1,161,255,.18);}
+.ds-chat-label{display:block;margin-bottom:5px;color:var(--patient-primary-2);font-size:var(--text-xs);font-weight:850;}
+.ds-chat-alert{margin:10px 0;padding:10px 12px;border-radius:14px;background:var(--doctor-orange-soft);color:var(--doctor-orange);font-size:var(--text-sm);font-weight:800;line-height:1.45;}
+.ds-chat-route{margin:10px 0;padding:11px 12px;border-radius:14px;background:#fff;border:1px solid var(--doctor-line);font-size:var(--text-sm);font-weight:800;color:var(--doctor-sub);line-height:1.5;}
+.ds-chat-route strong{color:var(--doctor-text);}
+.ds-chat-rule-btn{margin-top:7px;border:0;background:transparent;color:var(--patient-primary-2);font:850 var(--text-xs) var(--gout-font-family);padding:0;cursor:pointer;}
+.ds-chat-rule-detail{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--doctor-line);color:var(--doctor-hint);font-weight:700;}
+.ds-chat-rule-detail.show{display:block;}
+.ds-chat-compose{position:absolute;left:0;right:0;bottom:0;min-height:68px;padding:10px 12px;background:rgba(255,255,255,.96);border-top:1px solid var(--doctor-line);display:flex;align-items:center;gap:8px;z-index:30;}
+.ds-chat-compose input{flex:1;height:42px;border:1px solid var(--doctor-line);border-radius:21px;padding:0 14px;outline:0;font:700 var(--text-base) var(--gout-font-family);}
+.ds-chat-send{height:40px;border:0;border-radius:20px;padding:0 16px;background:var(--patient-gradient);color:#fff;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-sub{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.5;}
+
+/* ============ 指标卡 grid（视觉重做：大圆角 + 渐变描边 + 渐变数字） ============ */
+.ds-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px;}
+.ds-stat{position:relative;min-height:78px;border-radius:18px;background:#fff;border:1px solid #e8eff4;padding:13px 14px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 5px 14px rgba(31,42,68,.04);overflow:hidden;}
+.ds-stat.is-clickable{width:100%;text-align:left;font-family:inherit;cursor:pointer;transition:transform .14s,box-shadow .16s,border-color .16s;}
+.ds-stat.is-clickable:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(31,42,68,0.10);border-color:rgba(1,161,255,0.28);}
+.ds-stat.is-clickable:active{transform:translateY(0);}
+.ds-stat.is-clickable:focus-visible{outline:3px solid rgba(1,161,255,0.22);outline-offset:2px;}
+.ds-stat::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--patient-gradient);opacity:.8;}
+.ds-stat .v{font-size:25px;font-weight:900;line-height:1;color:var(--doctor-text);}
+.ds-stat .v.accent{background:var(--patient-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.ds-stat .l{margin-top:8px;color:var(--doctor-hint);font-size:var(--text-sm);font-weight:700;}
+.ds-followup-card{width:100%;margin-top:10px;padding:13px 14px;border:1px solid rgba(226,73,73,.14);border-radius:18px;background:#fff;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;box-shadow:0 5px 14px rgba(31,42,68,.04);}
+.ds-followup-icon{width:42px;height:42px;border-radius:14px;background:var(--doctor-red-soft);color:var(--doctor-red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ds-followup-main{flex:1;min-width:0;}
+.ds-followup-title{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);}
+.ds-followup-desc{margin-top:3px;font-size:var(--text-sm);font-weight:700;color:var(--doctor-hint);}
+.ds-followup-count{font-size:24px;font-weight:900;color:var(--doctor-red);}
+.ds-followup-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr;gap:8px;padding-top:11px;border-top:1px solid var(--doctor-line);}
+.ds-followup-link,.ds-followup-remind{height:38px;border-radius:var(--radius-pill);font-family:inherit;font-size:var(--text-sm);font-weight:850;cursor:pointer;}
+.ds-followup-link{border:1px solid var(--doctor-line);background:#fff;color:var(--doctor-sub);}
+.ds-followup-remind{border:0;background:var(--patient-gradient);color:#fff;box-shadow:0 7px 16px rgba(1,161,255,0.20);}
+.ds-followup-remind.is-sent{background:var(--doctor-green);box-shadow:none;}
+
+/* ============ 复诊跟进 ============ */
+.ds-overdue-toolbar{display:flex;gap:8px;margin-top:12px;}
+.ds-overdue-toolbar .ds-btn-secondary,.ds-overdue-toolbar .ds-btn-primary{height:40px;font-size:var(--text-sm);padding:0 12px;white-space:nowrap;}
+.ds-overdue-toolbar .ds-btn-secondary{flex:0 0 auto;}
+.ds-overdue-summary{display:inline-flex;align-items:center;margin-top:12px;padding:7px 11px;border-radius:var(--radius-pill);background:var(--doctor-red-soft);color:var(--doctor-red);font-size:var(--text-sm);font-weight:850;}
+.ds-overdue-meta{margin-top:7px;display:flex;gap:8px;flex-wrap:wrap;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:800;}
+.ds-reminder-status{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ds-reminder-status small{color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;}
+.ds-reminder-options{display:grid;gap:9px;margin-top:15px;}
+.ds-reminder-option{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--doctor-line);border-radius:14px;padding:12px;background:#fff;color:var(--doctor-text);font-family:inherit;text-align:left;cursor:pointer;}
+.ds-reminder-option.active{border-color:var(--patient-primary-2);background:var(--patient-soft-blue);}
+.ds-reminder-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--doctor-line);margin-top:1px;flex-shrink:0;}
+.ds-reminder-option.active .ds-reminder-radio{border-color:var(--patient-primary-2);box-shadow:inset 0 0 0 4px #fff;background:var(--patient-primary-2);}
+.ds-reminder-option strong{display:block;font-size:var(--text-base);font-weight:850;}
+.ds-reminder-option span{display:block;color:var(--doctor-sub);font-size:var(--text-xs);font-weight:700;line-height:1.45;}
+.ds-reminder-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ds-reminder-head h3{margin:0;}
+.ds-reminder-filter-btn{height:34px;border:1px solid rgba(1,161,255,.22);border-radius:17px;background:var(--patient-soft-blue);color:var(--patient-primary-2);padding:0 12px;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-reminder-filter-panel{display:none;margin-top:12px;padding:10px;border-radius:14px;background:#f6f8fb;gap:7px;flex-wrap:wrap;}
+.ds-reminder-filter-panel.show{display:flex;}
+.ds-reminder-filter-chip{min-height:32px;border:1px solid var(--doctor-line);border-radius:16px;background:#fff;color:var(--doctor-sub);padding:0 11px;font:800 var(--text-xs) var(--gout-font-family);cursor:pointer;}
+.ds-reminder-filter-chip.active{border-color:transparent;background:var(--patient-gradient);color:#fff;}
+
+/* ============ 主任务卡（视觉重做：左侧渐变竖条 + 更克制内边距） ============ */
+.ds-maintask{position:relative;margin-top:18px;border-radius:22px;background:linear-gradient(135deg,#fff 0%,#f4fcfb 100%);border:1px solid rgba(3,212,159,.22);box-shadow:0 10px 24px rgba(21,110,108,.08);padding:17px 17px 16px 19px;overflow:hidden;}
+.ds-maintask::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--patient-gradient);}
+.ds-kicker{display:inline-flex;align-items:center;min-height:24px;border-radius:var(--radius-pill);padding:4px 11px;background:var(--patient-soft-blue);color:var(--patient-primary-dark);font-size:var(--text-sm);font-weight:850;}
+.ds-maintask .mt-title{margin-top:9px;font-size:20px;font-weight:900;color:var(--doctor-text);line-height:1.25;letter-spacing:-.2px;}
+.ds-maintask .mt-desc{margin-top:6px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;}
+.ds-actions{display:flex;gap:8px;margin-top:14px;}
+
+/* ============ 按钮 ============ */
+.ds-btn-primary{height:42px;border:0;border-radius:var(--radius-pill);background:var(--patient-gradient);color:#fff;font-size:var(--text-base);font-weight:850;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;box-shadow:0 8px 18px rgba(1,161,255,0.24);transition:transform .12s,box-shadow .15s;flex:1;}
+.ds-btn-primary:hover{transform:translateY(-1px);}
+.ds-btn-primary:active{transform:translateY(1px);}
+.ds-btn-secondary{height:42px;border:1px solid var(--doctor-line);border-radius:var(--radius-pill);background:#fff;color:var(--patient-primary-2);font-size:var(--text-base);font-weight:850;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;transition:background .15s;}
+.ds-btn-secondary:hover{background:var(--patient-soft-blue);}
+.ds-btn-danger{height:42px;border:1px solid var(--doctor-red);border-radius:var(--radius-pill);background:#fff;color:var(--doctor-red);font-size:var(--text-base);font-weight:850;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;}
+.ds-link{background:transparent;border:0;color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:850;cursor:pointer;font-family:inherit;}
+
+/* ============ 待办列表 ============ */
+.ds-todo-list{border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);overflow:hidden;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-todo{display:flex;gap:11px;padding:13px;align-items:flex-start;border-bottom:1px solid #f1f4f8;cursor:pointer;}
+.ds-todo:last-child{border-bottom:0;}
+.ds-todo:hover{background:rgba(1,161,255,0.04);}
+.ds-todo-ico{width:36px;height:36px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ico-blue{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.ico-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.ico-green{background:var(--doctor-green-soft);color:var(--doctor-green);}
+.ico-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.ds-todo-body{flex:1;min-width:0;}
+.ds-todo-title{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);}
+.ds-todo-desc{margin-top:3px;font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;}
+
+/* ============ 患者列表行 ============ */
+.ds-patient-list{background:#fff;border:1px solid var(--doctor-line);border-radius:var(--radius-xl);overflow:hidden;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-prow{position:relative;display:flex;align-items:center;gap:10px;padding:12px 13px 12px 16px;border-bottom:1px solid #eef2f6;cursor:pointer;background:#fff;transition:background .14s;}
+.ds-prow::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:transparent;}
+.ds-prow-pending::before{background:var(--doctor-orange);}
+.ds-prow-overdue::before{background:var(--doctor-red);}
+.ds-prow:hover{background:#f9fcff;}
+.ds-empty{padding:30px;text-align:center;color:var(--doctor-hint);font-size:var(--text-sm);}
+/* 患者队列分段 tab */
+.ds-patient-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:12px;}
+.ds-patient-toolbar .ds-search{margin-top:0;}
+.ds-add-patient{height:42px;border:0;border-radius:21px;background:var(--patient-gradient);color:#fff;padding:0 15px;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;white-space:nowrap;}
+.ds-patient-list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 3px 0;}
+.ds-patient-list-title{font-size:var(--text-xl);font-weight:900;color:var(--doctor-text);}
+.ds-patient-switch{min-height:32px;border:1px solid rgba(1,161,255,.18);border-radius:16px;background:var(--patient-soft-blue);color:var(--patient-primary-2);padding:0 11px;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-filter-btn{min-height:32px;border:1px solid rgba(1,161,255,.18);border-radius:16px;background:#fff;color:var(--doctor-sub);padding:0 11px;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-filter-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ds-filter-chip{border:0;border-radius:12px;background:var(--doctor-blue-soft);color:var(--patient-primary-2);padding:5px 9px;font:850 var(--text-xs) var(--gout-font-family);cursor:pointer;}
+.ds-filter-options{display:grid;gap:8px;margin:14px 0;}
+.ds-filter-option{display:flex;align-items:center;gap:9px;padding:11px 12px;border:1px solid var(--doctor-line);border-radius:13px;color:var(--doctor-text);font-size:var(--text-sm);font-weight:800;cursor:pointer;}
+.ds-filter-option input{width:17px;height:17px;accent-color:var(--patient-primary-2);}
+.ds-seg{display:none;}
+.ds-seg-item{flex:1;padding:9px 0;border-radius:var(--radius-lg);border:1px solid var(--doctor-line);background:#fff;font-size:var(--text-sm);font-weight:800;color:var(--doctor-hint);cursor:pointer;transition:.15s;align-items:center;justify-content:center;gap:6px;}
+.ds-seg-item.active{background:var(--patient-gradient);color:#fff;border-color:transparent;}
+.ds-seg-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:rgba(255,255,255,0.25);font-size:11px;font-weight:850;}
+.ds-seg-item:not(.active) .ds-seg-count{background:var(--doctor-orange-soft,#FFF1E6);color:var(--doctor-orange,#ED7B2F);}
+/* 常驻出示就诊码入口 */
+.ds-qr-fab{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:12px;border-radius:var(--radius-lg);background:var(--patient-gradient);color:#fff;font-size:var(--text-sm);font-weight:850;cursor:pointer;border:0;box-shadow:0 6px 16px rgba(3,212,159,0.25);}
+.ds-qr-fab:active{transform:scale(.98);}
+/* 患者接诊流程入口排 */
+.ds-flow-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px;}
+.ds-flow-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border-radius:var(--radius-lg);background:#fff;border:1px solid var(--doctor-line);font-size:var(--text-sm);font-weight:800;color:var(--doctor-text);cursor:pointer;transition:.15s;}
+.ds-flow-btn:active{transform:scale(.97);}
+.ds-flow-btn.primary{background:var(--patient-gradient);color:#fff;border-color:transparent;}
+/* 就诊码浮层 */
+.ds-modal.qr-modal{text-align:center;max-width:300px;}
+.ds-modal.qr-modal .qr-box{display:flex;justify-content:center;margin:6px 0;}
+.ds-modal.qr-modal .qr-box svg{border-radius:12px;}
+
+.ds-prow:last-child{border-bottom:0;}
+.ds-prow:hover{background:rgba(1,161,255,0.05);}
+.ds-avatar{width:34px;height:34px;border-radius:11px;background:var(--doctor-blue-soft);color:var(--patient-primary-2);display:flex;align-items:center;justify-content:center;font-size:var(--text-base);font-weight:900;flex-shrink:0;}
+.ds-pinfo{flex:1;min-width:0;}
+.ds-pname{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;gap:7px;line-height:1.35;}
+.ds-pbrief{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ds-pright{padding-top:1px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ds-ptime{font-size:var(--text-xxs);color:var(--doctor-hint);font-weight:800;}
+.ds-patient-index{position:absolute;right:3px;top:112px;bottom:18px;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;user-select:none;touch-action:none;}
+.ds-index-key{width:22px;height:17px;border:0;border-radius:8px;background:transparent;color:var(--patient-primary-2);font:850 10px/17px var(--gout-font-family);padding:0;cursor:pointer;}
+.ds-index-key.is-empty{color:#c8d0da;pointer-events:none;}
+.ds-index-key.active{background:var(--patient-primary-2);color:#fff;}
+.ds-index-toast{position:absolute;right:38px;top:50%;width:54px;height:54px;transform:translateY(-50%);border-radius:17px;background:rgba(29,37,48,.88);color:#fff;display:none;align-items:center;justify-content:center;font-size:24px;font-weight:900;box-shadow:0 10px 24px rgba(15,23,42,.20);pointer-events:none;}
+.ds-index-toast.show{display:flex;}
+
+/* ============ 状态 chip & 来源 badge ============ */
+.ds-chip{display:inline-flex;align-items:center;min-height:25px;border-radius:var(--radius-xs);padding:0 9px;font-size:var(--text-xs);font-weight:850;white-space:nowrap;}
+.chip-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.chip-green{background:var(--doctor-green-soft);color:var(--doctor-green);}
+.chip-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.chip-blue{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.ds-source{display:inline-flex;align-items:center;min-height:22px;border-radius:var(--radius-xs);padding:0 7px;font-size:var(--text-xs);font-weight:850;}
+.src-self{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-upload{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-voice{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-ai{background:var(--doctor-blue-soft);color:var(--patient-primary-2);}
+.src-doctor{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.src-confirm{background:var(--doctor-green-soft);color:var(--doctor-green);}
+
+/* ============ 角标 ============ */
+.ds-badge-count{min-width:18px;height:18px;padding:0 5px;border-radius:var(--radius-pill);background:var(--doctor-orange);color:#fff;font-size:var(--text-xxs);font-weight:850;display:inline-flex;align-items:center;justify-content:center;}
+
+/* ============ 搜索框 ============ */
+.ds-search{display:flex;align-items:center;gap:8px;height:42px;border-radius:var(--radius-pill);background:#fff;border:1px solid var(--doctor-line);padding:0 14px;margin-top:12px;color:var(--doctor-hint);}
+.ds-search input{border:0;outline:0;font-family:inherit;font-size:var(--text-base);font-weight:700;color:var(--doctor-text);flex:1;background:transparent;}
+
+/* ============ 档案字段块 ============ */
+.ds-field-block{border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);padding:14px;margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-field-block h5{margin:0 0 4px;font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;justify-content:space-between;}
+.ds-frow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6fa;}
+.ds-frow.is-clickable{cursor:pointer;border-radius:10px;padding-left:6px;padding-right:6px;}
+.ds-frow.is-clickable:hover{background:var(--patient-soft-blue);}
+.ds-detail-link{display:block;margin-top:4px;color:var(--patient-primary-2);font-size:var(--text-xxs);font-weight:850;}
+.ds-frow:last-child{border-bottom:0;}
+.ds-fname{font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;flex-shrink:0;max-width:46%;}
+.ds-fval{font-size:var(--text-md);color:var(--doctor-text);font-weight:850;text-align:right;display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+.ds-profile-summary{margin-top:12px;padding:15px;border-radius:var(--radius-xl);background:linear-gradient(135deg,#fff,#f4fbff);border:1px solid rgba(1,161,255,.16);box-shadow:0 8px 20px rgba(31,42,68,.06);}
+.ds-profile-summary-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ds-profile-summary-title{font-size:var(--text-lg);font-weight:900;color:var(--doctor-text);}
+.ds-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px;}
+.ds-summary-item{padding:10px;border-radius:13px;background:#fff;border:1px solid var(--doctor-line);}
+.ds-summary-label{font-size:var(--text-xs);font-weight:700;color:var(--doctor-hint);}
+.ds-summary-value{margin-top:4px;font-size:var(--text-md);font-weight:850;color:var(--doctor-text);line-height:1.4;}
+.ds-summary-value.risk{color:var(--doctor-red);}
+.ds-ai-brief{margin-top:12px;padding:14px;border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,.18);box-shadow:0 8px 20px rgba(31,42,68,.06);}
+.ds-ai-brief-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ds-ai-brief-title{display:flex;align-items:center;gap:8px;font-size:var(--text-lg);font-weight:900;color:var(--doctor-text);}
+.ds-ai-brief-mark{width:28px;height:28px;border-radius:10px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:900;}
+.ds-ai-problem{margin-top:11px;padding:10px 11px;border-radius:13px;background:var(--doctor-orange-soft);}
+.ds-ai-problem .label,.ds-ai-line .label{display:block;font-size:var(--text-xs);font-weight:800;color:var(--doctor-hint);margin-bottom:3px;}
+.ds-ai-problem strong{font-size:var(--text-base);color:var(--doctor-text);line-height:1.45;}
+.ds-ai-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;}
+.ds-ai-metric{padding:9px 10px;border-radius:12px;background:#f7fafc;font-size:var(--text-xs);font-weight:750;color:var(--doctor-hint);}
+.ds-ai-metric strong{display:block;margin-top:3px;font-size:var(--text-md);font-weight:900;color:var(--doctor-text);}
+.ds-ai-metric strong.risk{color:var(--doctor-red);}
+.ds-ai-line{margin-top:9px;padding-top:9px;border-top:1px solid var(--doctor-line);font-size:var(--text-sm);font-weight:800;color:var(--doctor-text);line-height:1.5;}
+.ds-ai-alerts{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;}
+.ds-ai-alert{padding:5px 8px;border-radius:9px;background:var(--doctor-red-soft);color:var(--doctor-red);font-size:var(--text-xs);font-weight:850;}
+.ds-ai-brief-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.ds-full-archive-toggle{width:100%;height:40px;margin-top:10px;border:1px solid var(--doctor-line);border-radius:14px;background:#fff;color:var(--patient-primary-2);font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-archive-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px;}
+.ds-archive-tab{height:38px;border:1px solid var(--doctor-line);border-radius:13px;background:#fff;color:var(--doctor-hint);font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-archive-tab.active{border-color:transparent;background:var(--patient-gradient);color:#fff;}
+.ds-archive-section{margin-top:12px;border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);overflow:hidden;box-shadow:0 6px 18px rgba(31,42,68,.05);}
+.ds-archive-section summary{list-style:none;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:var(--text-base);font-weight:850;color:var(--doctor-text);}
+.ds-archive-section summary::-webkit-details-marker{display:none;}
+.ds-archive-section summary::after{content:'⌄';color:var(--doctor-hint);}
+.ds-archive-title{display:flex;align-items:center;gap:8px;}
+.ds-section-upload{height:28px;border:1px solid rgba(1,161,255,.24);border-radius:14px;background:var(--patient-soft-blue);color:var(--patient-primary-2);padding:0 10px;font:850 var(--text-xs) var(--gout-font-family);cursor:pointer;}
+.ds-archive-content{padding:0 14px 8px;border-top:1px solid var(--doctor-line);}
+.ds-tab-upload{width:100%;height:38px;margin-top:10px;border:1px dashed rgba(1,161,255,.38);border-radius:14px;background:#fff;color:var(--patient-primary-2);font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-upload-drop{margin-top:12px;padding:22px 14px;border:1.5px dashed rgba(1,161,255,.42);border-radius:18px;background:#f8fcff;text-align:center;cursor:pointer;color:var(--patient-primary-2);}
+.ds-upload-drop strong{display:block;font-size:var(--text-base);}
+.ds-upload-drop small{display:block;margin-top:5px;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;}
+.ds-upload-selected{display:none;margin-top:10px;padding:10px 12px;border-radius:13px;background:var(--doctor-blue-soft);color:var(--doctor-text);font-size:var(--text-sm);font-weight:800;line-height:1.5;}
+.ds-record-card{margin-top:10px;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--doctor-line);}
+.ds-record-card.is-clickable{cursor:pointer;}
+.ds-record-card.is-clickable:hover{border-color:rgba(1,161,255,.35);background:#fbfdff;}
+.ds-record-head{display:flex;justify-content:space-between;gap:8px;font-size:var(--text-sm);font-weight:850;color:var(--doctor-text);}
+.ds-record-desc{margin-top:5px;font-size:var(--text-sm);font-weight:700;color:var(--doctor-sub);line-height:1.5;}
+.ds-new-data{margin-top:12px;padding:10px 12px;border-radius:13px;background:var(--doctor-orange-soft);color:var(--doctor-orange);font-size:var(--text-sm);font-weight:800;line-height:1.5;}
+.ds-overview-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.ds-overview-card{margin-top:10px;padding:13px 14px;border-radius:16px;background:#fff;border:1px solid var(--doctor-line);box-shadow:0 5px 14px rgba(31,42,68,.04);cursor:pointer;}
+.ds-overview-card:hover{border-color:rgba(1,161,255,.30);}
+.ds-overview-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:var(--text-base);font-weight:900;color:var(--doctor-text);}
+.ds-overview-desc{margin-top:6px;color:var(--doctor-sub);font-size:var(--text-sm);font-weight:700;line-height:1.5;}
+.ds-overview-go{color:var(--patient-primary-2);font-size:var(--text-xs);font-weight:850;white-space:nowrap;}
+.ds-edit-section{margin-top:12px;padding:14px;border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);}
+.ds-edit-section h5{margin:0 0 10px;font-size:var(--text-lg);color:var(--doctor-text);}
+.ds-edit-field{margin-top:12px;}
+.ds-edit-field label{display:block;margin-bottom:6px;color:var(--doctor-sub);font-size:var(--text-sm);font-weight:800;}
+.ds-edit-field input,.ds-edit-field select{width:100%;height:42px;border:1px solid var(--doctor-line);border-radius:13px;background:#fff;padding:0 12px;outline:0;color:var(--doctor-text);font:750 var(--text-base) var(--gout-font-family);}
+.ds-list-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;}
+.ds-list-header h4{margin:0;font-size:var(--text-xl);color:var(--doctor-text);}
+.ds-add-record{height:36px;border:0;border-radius:18px;padding:0 13px;background:var(--patient-gradient);color:#fff;font:850 var(--text-sm) var(--gout-font-family);cursor:pointer;}
+.ds-attack-card{margin-top:10px;padding:13px 14px;border-radius:16px;background:#fff;border:1px solid var(--doctor-line);cursor:pointer;box-shadow:0 5px 14px rgba(31,42,68,.04);}
+.ds-attack-card:hover{border-color:rgba(1,161,255,.30);}
+.ds-attack-date{font-size:var(--text-xs);font-weight:850;color:var(--patient-primary-2);}
+.ds-attack-main{margin-top:5px;font-size:var(--text-base);font-weight:900;color:var(--doctor-text);}
+.ds-attack-meta{margin-top:5px;font-size:var(--text-sm);font-weight:700;color:var(--doctor-sub);line-height:1.5;}
+
+/* ============ AI 辅助卡 ============ */
+.ds-ai-card{border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,0.22);box-shadow:0 8px 22px rgba(1,161,255,0.08);padding:15px;margin-top:12px;}
+.ds-ai-head{display:flex;align-items:center;gap:9px;}
+.ds-ai-badge{width:30px;height:30px;border-radius:12px;background:var(--patient-gradient);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ds-ai-title{font-size:var(--text-base);font-weight:850;color:var(--doctor-text);flex:1;}
+.ds-ai-conf{font-size:var(--text-xs);font-weight:850;color:var(--patient-primary-2);background:var(--doctor-blue-soft);padding:3px 9px;border-radius:var(--radius-xs);}
+.ds-ai-seg{margin-top:12px;border-radius:12px;padding:10px 11px;font-size:var(--text-sm);font-weight:700;line-height:1.5;border-left:3px solid;}
+.seg-basis{background:#f5f9ff;border-color:var(--patient-primary-2);color:var(--doctor-sub);}
+.seg-risk{background:var(--doctor-red-soft);border-color:var(--doctor-red);color:var(--doctor-red);}
+.seg-advice{background:var(--doctor-green-soft);border-color:var(--doctor-green);color:var(--doctor-green);}
+.ds-ai-seg .seg-label{font-weight:850;display:block;margin-bottom:3px;font-size:var(--text-xs);}
+
+/* ============ 底部操作条 ============ */
+.ds-actionbar{position:absolute;left:0;right:0;bottom:0;min-height:64px;background:rgba(255,255,255,0.94);border-top:1px solid var(--doctor-line);display:flex;align-items:center;gap:10px;padding:10px 16px;box-shadow:0 -4px 16px rgba(31,42,68,0.06);z-index:30;backdrop-filter:blur(8px);}
+.ds-actionbar .ds-link{flex-shrink:0;}
+
+/* ============ 二维码区 ============ */
+.ds-qr-area{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;border-radius:var(--radius-xl);background:#fff;border:1px solid var(--doctor-line);margin-top:12px;box-shadow:0 6px 18px rgba(31,42,68,0.05);}
+.ds-qr-box{width:200px;height:200px;border-radius:18px;background:#fff;border:1px solid var(--doctor-line);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.ds-qr-box img{width:100%;height:100%;object-fit:contain;}
+.ds-qr-hint{font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;text-align:center;line-height:1.5;}
+.ds-refresh-msg{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:800;display:flex;align-items:center;gap:5px;}
+
+/* ============ OCR / 语音采集卡 ============ */
+.ds-ocr-card,.ds-voice-card,.ds-visitqr,.ds-enroll-card{border-radius:var(--radius-xl);background:#fff;border:1px solid rgba(1,161,255,0.20);padding:16px;margin-top:12px;box-shadow:0 6px 18px rgba(1,161,255,0.07);}
+.ds-ocr-status{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-sm);font-weight:850;color:var(--patient-primary);}
+.ds-ocr-status.is-done{color:var(--doctor-green);}
+.ds-wave{height:46px;border-radius:var(--radius-pill);background:var(--patient-soft-blue);display:flex;align-items:center;justify-content:center;gap:4px;color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:850;margin:10px 0;overflow:hidden;padding:0 14px;}
+.ds-wave .bar{width:4px;background:var(--patient-primary);border-radius:3px;animation:wave 1s ease-in-out infinite;opacity:.7;}
+@keyframes wave{0%,100%{height:10px;}50%{height:34px;}}
+.ds-transcript{background:#f6fbff;border-radius:14px;padding:11px 13px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;margin:8px 0;}
+.ds-transcript .who{color:var(--patient-primary-2);font-weight:850;}
+.ds-extract-row{border-bottom:1px solid #f4f6fa;padding:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.ds-extract-row:last-child{border-bottom:0;}
+.ds-extract-name{font-size:var(--text-sm);color:var(--doctor-hint);font-weight:700;}
+.ds-extract-val{font-size:var(--text-md);color:var(--doctor-text);font-weight:850;display:flex;align-items:center;gap:6px;}
+
+/* ============ 到院预警 / 回写提示 ============ */
+.ds-arrived-warn{display:inline-flex;align-items:center;gap:5px;background:var(--doctor-red-soft);color:var(--doctor-red);border-radius:var(--radius-xs);padding:7px 11px;font-size:var(--text-sm);font-weight:850;margin-top:12px;}
+.ds-synced-tip{display:flex;align-items:center;gap:7px;background:var(--doctor-green-soft);color:var(--doctor-green);border-radius:var(--radius-xs);padding:10px 12px;font-size:var(--text-sm);font-weight:850;margin-top:12px;}
+
+/* ============ 表单 ============ */
+.ds-form-field{margin-top:13px;}
+.ds-form-field label{display:block;font-size:var(--text-sm);font-weight:850;color:var(--doctor-text);margin-bottom:6px;}
+.ds-form-field input,.ds-form-field select{width:100%;height:44px;border-radius:14px;border:1px solid var(--doctor-line);background:#fff;padding:0 14px;font-family:inherit;font-size:var(--text-base);font-weight:700;color:var(--doctor-text);outline:0;}
+.ds-form-field input:focus,.ds-form-field select:focus{border-color:var(--patient-primary-2);}
+.ds-seg-group{display:flex;gap:8px;}
+.ds-seg-group .seg-opt{flex:1;height:44px;border-radius:14px;border:1px solid var(--doctor-line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-base);font-weight:800;color:var(--doctor-sub);cursor:pointer;font-family:inherit;}
+.ds-seg-group .seg-opt.sel{background:var(--patient-gradient);color:#fff;border-color:transparent;}
+
+/* ============ 登录屏 ============ */
+.ds-login-brand{display:flex;flex-direction:column;align-items:center;gap:14px;padding:36px 0 24px;}
+.ds-login-logo{width:84px;height:84px;border-radius:28px;background:var(--patient-gradient);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(1,161,255,0.30);}
+.ds-login-name{font-size:24px;font-weight:950;color:var(--doctor-text);}
+.ds-login-sub{font-size:var(--text-md);color:var(--doctor-sub);font-weight:700;margin-top:-6px;}
+.ds-login-card{background:#fff;border-radius:var(--radius-2xl);border:1px solid var(--doctor-line);padding:22px;margin-top:8px;box-shadow:0 10px 26px rgba(31,42,68,0.07);}
+.ds-login-methods{display:flex;gap:10px;margin-top:8px;}
+.ds-bind-tip{display:flex;align-items:center;gap:6px;margin-top:12px;padding:9px 12px;border-radius:12px;background:var(--doctor-blue-soft);color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:800;}
+
+/* ============ toast ============ */
+.ds-toast{position:absolute;left:50%;top:54px;transform:translateX(-50%) translateY(-12px);background:rgba(29,37,48,0.92);color:#fff;font-size:var(--text-sm);font-weight:850;padding:10px 18px;border-radius:var(--radius-pill);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;white-space:nowrap;}
+.ds-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ============ 弹层 ============ */
+.ds-modal-mask{position:absolute;inset:0;background:rgba(15,23,42,0.42);display:none;align-items:center;justify-content:center;z-index:70;padding:24px;}
+.ds-modal-mask.show{display:flex;}
+.ds-modal{background:#fff;border-radius:var(--radius-2xl);padding:22px;width:100%;max-width:320px;box-shadow:var(--shadow-doctor);}
+.ds-modal h3{margin:0 0 8px;font-size:var(--text-xl);font-weight:900;color:var(--doctor-text);}
+.ds-modal p{margin:0 0 16px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;white-space:pre-line;}
+.ds-modal .ds-actions{margin-top:0;}
+
+/* ============ 右下角患者端联动模拟入口（演示用，低侵入） ============ */
+.ds-link-panel{position:fixed;right:18px;bottom:18px;width:230px;background:rgba(255,255,255,0.96);border:1px solid rgba(1,161,255,0.25);border-radius:18px;padding:14px;box-shadow:0 16px 40px rgba(15,23,42,0.18);z-index:90;font-family:var(--gout-font-family);}
+.ds-link-panel h5{margin:0 0 4px;font-size:var(--text-sm);font-weight:850;color:var(--doctor-text);display:flex;align-items:center;gap:6px;}
+.ds-link-panel .lp-sub{font-size:var(--text-xs);color:var(--doctor-hint);font-weight:700;margin-bottom:10px;line-height:1.4;}
+.ds-link-panel .lp-btn{width:100%;border:0;border-radius:12px;padding:9px;margin-top:7px;font-family:inherit;font-size:var(--text-sm);font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;justify-content:center;}
+.lp-blue{background:var(--patient-soft-blue);color:var(--patient-primary-dark);}
+.lp-orange{background:var(--doctor-orange-soft);color:var(--doctor-orange);}
+.lp-red{background:var(--doctor-red-soft);color:var(--doctor-red);}
+.ds-link-panel .lp-close{position:absolute;top:10px;right:12px;border:0;background:transparent;color:var(--doctor-hint);cursor:pointer;font-size:16px;}
+
+/* ============ 原型逻辑注释（默认收起） ============ */
+.ds-annotation-trigger{position:fixed;right:18px;top:18px;height:40px;border:0;border-radius:20px;background:#172033;color:#fff;padding:0 14px;font:850 var(--text-sm) var(--gout-font-family);box-shadow:0 10px 26px rgba(15,23,42,.24);cursor:pointer;z-index:95;display:flex;align-items:center;gap:7px;}
+.ds-annotation-trigger.active{background:var(--patient-primary-2);}
+.ds-annotation-panel{position:fixed;right:18px;top:68px;width:286px;max-height:calc(100vh - 88px);overflow-y:auto;background:rgba(255,255,255,.98);border:1px solid rgba(1,161,255,.20);border-radius:18px;padding:15px;box-shadow:0 18px 42px rgba(15,23,42,.20);z-index:94;display:none;font-family:var(--gout-font-family);}
+.ds-annotation-panel.show{display:block;}
+.ds-annotation-panel h4{margin:0;font-size:var(--text-base);font-weight:900;color:var(--doctor-text);}
+.ds-annotation-panel .annotation-screen{margin-top:4px;color:var(--patient-primary-2);font-size:var(--text-xs);font-weight:850;}
+.ds-annotation-list{display:grid;gap:9px;margin-top:12px;}
+.ds-annotation-item{border-left:3px solid var(--patient-primary-2);padding:2px 0 2px 10px;}
+.ds-annotation-item strong{display:block;color:var(--doctor-text);font-size:var(--text-sm);font-weight:850;}
+.ds-annotation-item span{display:block;margin-top:3px;color:var(--doctor-sub);font-size:var(--text-xs);font-weight:700;line-height:1.5;}
+.ds-annotation-empty{margin-top:12px;color:var(--doctor-hint);font-size:var(--text-sm);font-weight:700;line-height:1.55;}
+
+/* ============ 响应式 ============ */
+@media (max-width:880px){
+  .ds-showcase-stage{flex-direction:column;align-items:center;padding-top:64px;}
+  .ds-nav{width:min(430px,92vw);max-height:none;flex-direction:row;flex-wrap:wrap;}
+  .ds-nav-title{width:100%;}
+  .ds-nav-group{flex:1;min-width:200px;}
+  .ds-nav-reset{width:100%;}
+  .ds-link-panel{display:none;}
+  .ds-annotation-trigger{right:12px;top:12px;}
+  .ds-annotation-panel{right:12px;top:62px;width:min(286px,calc(100vw - 24px));}
+}
+</style>
+</head>
+<body>
+
+<main class="ds-showcase-stage" aria-label="痛风智能体 医生端 Demo">
+  <div class="ds-showcase-shadow"></div>
+
+  <!-- ====== iPhone 机身 ====== -->
+  <section class="ds-showcase-device" aria-label="iPhone 预览">
+    <div class="ds-simulator-bar">
+      <div class="ds-simulator-lights"><span></span><span></span><span></span></div>
+      <div class="ds-simulator-name">痛风智能体 · 医生端<small>王文龙医生 · 痛风专病</small></div>
+      <div class="ds-simulator-actions" aria-hidden="true"><span>⌂</span><span>▣</span><span>⤴</span></div>
+    </div>
+    <div class="ds-showcase-screen">
+
+      <!-- toast 容器 -->
+      <div class="ds-toast" id="toast"></div>
+
+      <!-- ============ 屏 1：登录 ============ -->
+      <section class="ds-doctor-screen active" id="screen-login">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-body" style="display:flex;flex-direction:column;">
+          <div class="ds-login-brand">
+            <div class="ds-login-logo">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <div class="ds-login-name">痛风智能体 · 医生端</div>
+            <div class="ds-login-sub">专科工作台 · 结构化痛风档案</div>
+          </div>
+          <div class="ds-login-card">
+            <div class="ds-card-title" style="margin-bottom:4px;">医生身份登录</div>
+            <div class="ds-sub" style="margin-bottom:14px;">使用注册手机号登录工作台</div>
+            <div class="ds-form-field">
+              <label>手机号</label>
+              <input type="text" id="login-phone" value="138****0666" />
+            </div>
+            <div class="ds-bind-tip">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              已绑定：王文龙 医生 · 风湿免疫科 · 温岭市第一人民医院
+            </div>
+            <div class="ds-login-methods">
+              <button class="ds-btn-primary" onclick="loginIn()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                登录工作台
+              </button>
+            </div>
+            <div class="ds-sub" style="margin-top:14px;text-align:center;color:var(--doctor-hint);">登录即进入今日工作台，演示可直接点击登录</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 2：今日工作台 ============ -->
+      <section class="ds-doctor-screen" id="screen-workbench">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-topbar">
+          <div>
+            <div class="doc-name">王文龙 医生</div>
+            <div class="doc-meta">风湿免疫科 · 痛风专病 · 今日 07-13</div>
+          </div>
+          <div class="ds-topbar-actions">
+            <button class="ds-ghost-btn" onclick="goScreen('screen-qrcode')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+              建档码
+            </button>
+            <button class="ds-ghost-btn" onclick="showQRModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+              出示就诊码
+            </button>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-stats">
+            <button class="ds-stat is-clickable" type="button" onclick="openWorkbenchMetric('pending')" aria-label="查看待接诊患者">
+              <div class="v accent" id="stat-pending">1</div>
+              <div class="l">待接诊</div>
+            </button>
+            <button class="ds-stat is-clickable" type="button" onclick="openWorkbenchMetric('all')" aria-label="查看全部患者"><div class="v" id="stat-all">0</div><div class="l">全部患者</div></button>
+          </div>
+
+          <div class="ds-followup-card">
+            <span class="ds-followup-icon">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            <span class="ds-followup-main">
+              <span class="ds-followup-title">复诊管理</span>
+              <span class="ds-followup-desc">逾期患者待提醒与联系</span>
+            </span>
+            <span class="ds-followup-count" id="stat-overdue">1</span>
+            <span class="ds-followup-actions">
+              <button class="ds-followup-remind" type="button" onclick="openWorkbenchMetric('overdue')">进入复诊跟进</button>
+            </span>
+          </div>
+
+          <div class="ds-maintask">
+            <span class="ds-kicker">优先任务</span>
+            <div class="mt-title">张明 · 待接诊</div>
+            <div class="mt-desc">患者已到院并补充资料，可直接查看档案、记录接诊录音或使用 AI 辅助治疗。</div>
+            <div class="ds-actions">
+              <button class="ds-btn-primary" onclick="openPatientFlow('p-zhang')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                查看患者档案
+              </button>
+              <button class="ds-btn-secondary" onclick="openVoiceFlow('p-zhang')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg>
+                语音接诊
+              </button>
+            </div>
+          </div>
+
+          <div class="ds-section-title">消息</div>
+          <div class="ds-todo-list" id="workbench-todos"><!-- JS 渲染 --></div>
+        </div>
+      </section>
+
+      <section class="ds-doctor-screen" id="screen-messages">
+        <div class="ds-statusbar"><span>09:24</span><span class="sb-right">●●● 5G ▮</span></div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-workbench')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <div class="nav-title">患者消息</div><div style="width:34px"></div>
+        </div>
+        <div class="ds-body"><div class="ds-im-list" id="message-list"></div></div>
+      </section>
+
+      <section class="ds-doctor-screen" id="screen-chat">
+        <div class="ds-statusbar"><span>09:24</span><span class="sb-right">●●● 5G ▮</span></div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-messages')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <div class="nav-title" id="chat-title">患者</div>
+          <button class="ds-back" aria-label="查看患者档案" onclick="openChatPatient()"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
+        </div>
+        <div class="ds-body ds-chat-body" id="chat-body"></div>
+        <div class="ds-chat-compose"><input id="chat-input" type="text" placeholder="回复患者" onkeydown="if(event.key==='Enter')sendChatMessage()"><button class="ds-chat-send" onclick="sendChatMessage()">发送</button></div>
+      </section>
+
+      <!-- ============ 屏 3：患者队列 ============ -->
+      <section class="ds-doctor-screen" id="screen-patients">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar" style="background:var(--patient-gradient);color:#fff;">
+          <button class="ds-back" style="background:rgba(255,255,255,0.2);color:#fff;" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" style="color:#fff;">患者</div>
+          <div class="nav-ico-right" style="color:#fff;" onclick="showQRModal()" aria-label="出示就诊码">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="patients-body" style="position:relative;">
+          <div class="ds-patient-toolbar"><div class="ds-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="patient-search" placeholder="搜索姓名、手机号" oninput="renderPatients()" /></div><button class="ds-add-patient" onclick="goScreen('screen-enroll')">+ 新增患者</button></div>
+          <div class="ds-seg" id="patient-seg">
+            <button class="ds-seg-item active" onclick="setPatientTab('pending',this)">待接诊 <span class="ds-seg-count" id="seg-pending">4</span></button>
+            <button class="ds-seg-item" onclick="setPatientTab('all',this)">全部患者 <span class="ds-seg-count" id="seg-all" style="background:var(--doctor-blue-soft);color:var(--patient-primary-2);">5</span></button>
+          </div>
+          <div class="ds-patient-list-head"><div class="ds-patient-list-title" id="patient-list-title">待接诊 4</div><div style="display:flex;gap:6px"><button class="ds-filter-btn" id="patient-filter-btn" onclick="openPatientFilter()" style="display:none">筛选</button><button class="ds-patient-switch" id="patient-list-switch" onclick="togglePatientList()">全部患者 ›</button></div></div>
+          <div class="ds-filter-chips" id="patient-filter-chips"></div>
+          <div class="ds-patient-list" id="patient-list"><!-- JS 渲染 --></div>
+          <div class="ds-patient-index" id="patient-index" aria-label="患者姓氏索引"></div>
+          <div class="ds-index-toast" id="patient-index-toast" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 4：患者详情档案 ============ -->
+      <section class="ds-doctor-screen" id="screen-profile">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" id="profile-title">患者档案</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="profile-body"><!-- JS 渲染 --></div>
+      </section>
+
+      <section class="ds-doctor-screen" id="screen-history-edit">
+        <div class="ds-statusbar"><span>09:24</span><span class="sb-right">●●● 5G ▮</span></div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <div class="nav-title" id="archive-edit-title">编辑档案</div><div style="width:34px"></div>
+        </div>
+        <div class="ds-body" id="history-edit-body"></div>
+        <div class="ds-actionbar"><button class="ds-link" onclick="goScreen('screen-profile')">取消</button><button class="ds-btn-primary" id="archive-edit-save" onclick="saveArchiveGroupForm()">保存</button></div>
+      </section>
+
+      <!-- ============ 屏 5：看诊前资料（含 OCR） ============ -->
+      <section class="ds-doctor-screen" id="screen-material">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" id="material-title">补充资料</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="material-body"><!-- JS 渲染 --></div>
+        <input id="archive-file-input" type="file" accept="image/*,.pdf" multiple hidden onchange="handleArchiveFiles(this.files)" />
+      </section>
+
+      <!-- ============ 屏 6：AI 辅助 ============ -->
+      <section class="ds-doctor-screen" id="screen-aiassist">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">AI 辅助</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-confirm')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-ai-card">
+            <div class="ds-ai-head">
+              <div class="ds-ai-badge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+              </div>
+              <div class="ds-ai-title">诊疗辅助建议</div>
+              <div class="ds-ai-conf">置信度 92%</div>
+            </div>
+
+            <div class="ds-ai-seg seg-basis">
+              <span class="seg-label">依据</span>
+              张明，男，45 岁，痛风病史 10 余年，近 1 年反复发作 5 次以上；长期间断服用非布司他，近 3 月自行停药；血尿酸 542 μmol/L。
+            </div>
+            <div class="ds-ai-seg seg-risk">
+              <span class="seg-label">风险</span>
+              近 1 年发作频率上升，存在痛风石风险；当前未规律降尿酸，急性发作期不建议直接启用强效降尿酸药。
+            </div>
+            <div class="ds-ai-seg seg-advice">
+              <span class="seg-label">建议</span>
+              先以消炎止痛控制急性症状；建议低剂量秋水仙碱 + 短期 NSAID；症状缓解 2 周后重启非布司他 20mg/日，4 周后复查血尿酸。
+            </div>
+          </div>
+
+          <div class="ds-sub" style="margin-top:14px;padding:0 4px;line-height:1.55;">
+            以上为 AI 依据患者资料生成的辅助建议，仅供医生参考，不构成诊断结论。
+          </div>
+
+          <div style="height:14px;"></div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" onclick="goScreen('screen-profile')">返回档案</button>
+          <button class="ds-btn-primary" onclick="goScreen('screen-confirm')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            采纳并确认
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 7：医生确认 ============ -->
+      <section class="ds-doctor-screen" id="screen-confirm">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">确认执行</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-aiassist')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-card grad-border" style="margin-top:12px;">
+            <div class="ds-card-title">确认 AI 辅助治疗方案</div>
+            <div class="ds-sub" style="margin-top:4px;" id="confirm-patient">张明 · 男 · 45 · 138****6688</div>
+            <div id="confirm-body"><!-- JS 渲染核心字段摘要 --></div>
+          </div>
+          <div class="ds-synced-tip" id="confirm-synced" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            已确认执行并形成诊疗记录
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-btn-danger" onclick="rejectArchive()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            忽略建议
+          </button>
+          <button class="ds-btn-primary" onclick="confirmArchive()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            确认并执行
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 8：复诊逾期 ============ -->
+      <section class="ds-doctor-screen" id="screen-overdue">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar" style="background:var(--patient-gradient);color:#fff;">
+          <button class="ds-back" style="background:rgba(255,255,255,0.2);color:#fff;" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title" style="color:#fff;">复诊逾期</div>
+          <div class="nav-ico-right" style="color:#fff;" onclick="goScreen('screen-patients')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body" id="overdue-body"><!-- JS 渲染 --></div>
+      </section>
+
+      <!-- ============ 屏 9：建档码 ============ -->
+      <section class="ds-doctor-screen" id="screen-qrcode">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">建档码</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-enroll')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-qr-area">
+            <div class="ds-qr-box" id="qr-fixed"><!-- JS 载入 doctor-qr.png 或内嵌 SVG --></div>
+            <div style="font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);">王文龙医生 · 痛风专病建档码</div>
+            <div class="ds-qr-hint">患者扫码后自动带出医生与专病信息，进入快速建档。适用于候诊自助建档、诊室门口张贴。</div>
+          </div>
+          <div class="ds-card" style="margin-top:12px;">
+            <div class="ds-card-title">使用说明</div>
+            <div class="ds-sub" style="margin-top:6px;line-height:1.6;">
+              · 建档码为固定二维码，绑定当前医生与痛风专病。<br>
+              · 患者扫建档码 → 填写姓名/性别/手机号 → 进入诊前资料补充。<br>
+              · 接诊请切换至「就诊码」动态码，二者流程严格分开。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 10：语音接诊 ============ -->
+      <section class="ds-doctor-screen" id="screen-voice">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-profile')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">记录接诊录音</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-visitqr')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-voice-card" id="voice-card">
+            <div class="ds-card-title">诊间语音采集</div>
+            <div class="ds-sub" id="voice-patient" style="margin-top:4px;">当前患者</div>
+            <div class="ds-wave" id="voice-wave" style="display:none;"></div>
+            <div class="ds-ocr-status" id="voice-status">待开始录音</div>
+            <div class="ds-transcript" id="voice-transcript" style="display:none;"></div>
+            <div id="voice-extract" style="display:none;margin-top:10px;">
+              <div class="ds-card-title" style="font-size:var(--text-base);margin-bottom:4px;">AI 抽取字段</div>
+            </div>
+          </div>
+          <div class="ds-synced-tip" id="voice-synced" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            已写入档案，来源标记「录音识别」
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" id="voice-toggle-txt" onclick="toggleVoice()">结束录音</button>
+          <button class="ds-btn-primary" id="voice-confirm" onclick="writeVoice()" disabled style="opacity:.5;cursor:not-allowed;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            保存录音记录
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 屏 11：就诊码 ============ -->
+      <section class="ds-doctor-screen" id="screen-visitqr">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-confirm')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">就诊码</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-visitqr">
+            <div class="ds-qr-box" id="qr-dynamic"><!-- JS 载入 doctor-qr.png 真实图 + 时间戳 --></div>
+            <div style="font-size:var(--text-lg);font-weight:850;color:var(--doctor-text);">动态接诊码</div>
+            <div class="ds-refresh-msg">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              <span id="visit-refresh">每 15s 自动刷新 · 上次 09:24</span>
+            </div>
+            <button class="ds-btn-secondary" style="margin-top:10px;" onclick="refreshVisitQR()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              立即刷新
+            </button>
+          </div>
+          <div class="ds-arrived-warn" id="visit-arrived" style="display:none;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span id="visit-arrived-text">张明已扫码到院</span>
+          </div>
+          <div class="ds-card" style="margin-top:12px;">
+            <div class="ds-card-title">说明</div>
+            <div class="ds-sub" style="margin-top:6px;line-height:1.6;">
+              就诊码为实时刷新动态码，用于患者到院「扫码就诊」。患者扫码后医生端即时收到到院提示并生成接诊待办。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 屏 12：主动建档 ============ -->
+      <section class="ds-doctor-screen" id="screen-enroll">
+        <div class="ds-statusbar">
+          <span>09:24</span>
+          <span class="sb-right">●●● 5G ▮</span>
+        </div>
+        <div class="ds-navbar">
+          <button class="ds-back" onclick="goScreen('screen-qrcode')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="nav-title">主动建档</div>
+          <div class="nav-ico-right" onclick="goScreen('screen-workbench')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+        </div>
+        <div class="ds-body">
+          <div class="ds-enroll-card">
+            <div class="ds-card-title">医生发起建档</div>
+            <div class="ds-sub" style="margin-top:4px;">王文龙医生 · 痛风专病</div>
+            <div class="ds-form-field">
+              <label>姓名</label>
+              <input type="text" id="enroll-name" placeholder="请输入患者姓名" />
+            </div>
+            <div class="ds-form-field">
+              <label>性别</label>
+              <div class="ds-seg-group" id="enroll-sex">
+                <div class="seg-opt sel" data-v="男" onclick="segPick(this)">男</div>
+                <div class="seg-opt" data-v="女" onclick="segPick(this)">女</div>
+              </div>
+            </div>
+            <div class="ds-form-field">
+              <label>手机号（脱敏）</label>
+              <input type="text" id="enroll-phone" placeholder="1XX****XXXX" />
+            </div>
+          </div>
+        </div>
+        <div class="ds-actionbar">
+          <button class="ds-link" onclick="goScreen('screen-qrcode')">取消</button>
+          <button class="ds-btn-primary" onclick="submitEnroll()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            确认建档
+          </button>
+        </div>
+      </section>
+
+      <!-- 弹层：建档成功 / 提示 -->
+      <div class="ds-modal-mask" id="modal">
+        <div class="ds-modal">
+          <h3 id="modal-title">提示</h3>
+          <p id="modal-text">内容</p>
+          <div class="ds-actions">
+            <button class="ds-btn-secondary" onclick="closeModal()">关闭</button>
+            <button class="ds-btn-primary" onclick="closeModal()">好的</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 就诊码浮层（常驻入口弹出，不离开当前上下文） -->
+      <div class="ds-modal-mask" id="qr-modal">
+        <div class="ds-modal qr-modal">
+          <h3 id="qr-modal-title">出示就诊码</h3>
+          <p class="ds-sub" id="qr-modal-sub">请患者扫码就诊</p>
+          <div class="qr-box" id="qr-modal-box"><!-- JS 注入 --></div>
+          <div class="ds-sub" id="qr-modal-refresh" style="text-align:center;margin:8px 0 14px;">演示码 · 每次打开重新生成</div>
+          <div class="ds-actions">
+            <button class="ds-btn-secondary" onclick="closeQRModal()">关闭</button>
+            <button class="ds-btn-primary" onclick="refreshQRModal()">刷新二维码</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-modal-mask" id="patient-filter-modal">
+        <div class="ds-modal">
+          <h3>筛选患者</h3>
+          <div class="ds-sub">可选择一个或多个状态</div>
+          <div class="ds-filter-options">
+            <label class="ds-filter-option"><input type="checkbox" value="pending">待接诊</label>
+            <label class="ds-filter-option"><input type="checkbox" value="confirmed">已纳管</label>
+            <label class="ds-filter-option"><input type="checkbox" value="overdue">复诊逾期</label>
+            <label class="ds-filter-option"><input type="checkbox" value="lost">失访风险</label>
+          </div>
+          <div class="ds-actions"><button class="ds-btn-secondary" onclick="clearPatientFilters()">清除</button><button class="ds-btn-primary" onclick="applyPatientFilters()">应用筛选</button></div>
+        </div>
+      </div>
+
+      <div class="ds-modal-mask" id="reminder-modal">
+        <div class="ds-modal">
+          <div class="ds-reminder-head"><h3>批量提醒</h3><button class="ds-reminder-filter-btn" type="button" onclick="toggleReminderFilter()">筛选</button></div>
+          <div class="ds-reminder-filter-panel" id="reminder-filter-panel">
+            <button class="ds-reminder-filter-chip active" type="button" data-reminder-filter="all" onclick="setReminderFilter('all')">全部</button>
+            <button class="ds-reminder-filter-chip" type="button" data-reminder-filter="待提醒" onclick="setReminderFilter('待提醒')">待提醒</button>
+            <button class="ds-reminder-filter-chip" type="button" data-reminder-filter="消息已提醒" onclick="setReminderFilter('消息已提醒')">消息已提醒</button>
+            <button class="ds-reminder-filter-chip" type="button" data-reminder-filter="短信已提醒" onclick="setReminderFilter('短信已提醒')">短信已提醒</button>
+            <button class="ds-reminder-filter-chip" type="button" data-reminder-filter="需人工联系" onclick="setReminderFilter('需人工联系')">需人工联系</button>
+          </div>
+          <div class="ds-reminder-options">
+            <button class="ds-reminder-option active" type="button" data-channel="in" onclick="selectReminderChannel('in')">
+              <span class="ds-reminder-radio"></span>
+              <span><strong>消息提醒</strong></span>
+            </button>
+            <button class="ds-reminder-option" type="button" data-channel="sms" onclick="selectReminderChannel('sms')">
+              <span class="ds-reminder-radio"></span>
+              <span><strong>短信提醒</strong></span>
+            </button>
+          </div>
+          <div class="ds-actions" style="margin-top:16px;">
+            <button class="ds-btn-secondary" onclick="closeReminderModal()">取消</button>
+            <button class="ds-btn-primary" id="confirm-reminder-btn" onclick="confirmBulkReminder()">发送消息提醒</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-showcase-reflection"></div>
+    </div>
+  </section>
+
+  <!-- ====== 右侧工作流导航 ====== -->
+  <aside class="ds-nav">
+    <div class="ds-nav-title">工作流导航</div>
+
+    <div class="ds-nav-group">
+      <h4>登录与身份</h4>
+      <button class="ds-nav-item" data-screen="screen-login" onclick="goNav(this,'screen-login')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg></span>
+        登录 <span class="ds-nav-num">1</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-qrcode" onclick="goNav(this,'screen-qrcode')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg></span>
+        建档码 <span class="ds-nav-num">9</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-enroll" onclick="goNav(this,'screen-enroll')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>
+        主动建档 <span class="ds-nav-num">12</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>今日工作台</h4>
+      <button class="ds-nav-item" data-screen="screen-workbench" onclick="goNav(this,'screen-workbench')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+        今日工作台 <span class="ds-nav-num">2</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>患者管理</h4>
+      <button class="ds-nav-item" data-screen="screen-patients" onclick="goNav(this,'screen-patients')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+        患者队列 <span class="ds-nav-num">3</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-profile" onclick="goNav(this,'screen-profile')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
+        患者详情档案 <span class="ds-nav-num">4</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-overdue" onclick="goNav(this,'screen-overdue')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        复诊逾期 <span class="ds-nav-num">8</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>诊间采集与确认</h4>
+      <button class="ds-nav-item" data-screen="screen-material" onclick="goNav(this,'screen-material')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        看诊前资料 <span class="ds-nav-num">5</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-voice" onclick="goNav(this,'screen-voice')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg></span>
+        语音接诊 <span class="ds-nav-num">10</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-visitqr" onclick="goNav(this,'screen-visitqr')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M14 21h7"/></svg></span>
+        就诊码 <span class="ds-nav-num">11</span>
+      </button>
+      <button class="ds-nav-item" data-screen="screen-confirm" onclick="goNav(this,'screen-confirm')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        医生确认 <span class="ds-nav-num">7</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>AI 辅助</h4>
+      <button class="ds-nav-item" data-screen="screen-aiassist" onclick="goNav(this,'screen-aiassist')">
+        <span class="ds-nav-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4z"/></svg></span>
+        AI 辅助 <span class="ds-nav-num">6</span>
+      </button>
+    </div>
+
+    <div class="ds-nav-group">
+      <h4>建档与复诊</h4>
+      <div class="ds-sub" style="padding:4px 4px 2px;line-height:1.5;">建档码、主动建档、复诊逾期入口见上方分组；下方为全局演示控制。</div>
+    </div>
+
+    <button class="ds-nav-reset" onclick="resetDemo()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      重置演示
+    </button>
+  </aside>
+</main>
+
+<button class="ds-annotation-trigger" id="annotation-trigger" type="button" onclick="toggleAnnotationPanel()" aria-expanded="false">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/><path d="M8 9h8M8 13h5"/></svg>
+  逻辑注释
+</button>
+<aside class="ds-annotation-panel" id="annotation-panel" aria-label="原型逻辑注释">
+  <h4>逻辑注释</h4>
+  <div class="annotation-screen" id="annotation-screen"></div>
+  <div class="ds-annotation-list" id="annotation-list"></div>
+</aside>
+
+<script>
+/* ============ 全局状态（双向联动核心） ============ */
+const ASSET_QR = "../assets/doctor-qr.png";
+const PATIENTS_SEED = [
+  { id:"p-zhang", name:"张明", sex:"男", age:45, phone:"138****6688", brief:"痛风 10 余年，近一年反复发作", status:"pending", statusText:"待接诊", time:"建档 07-10", confirmed:false, arrived:false, sources:{} },
+  { id:"p-chen", name:"陈建国", sex:"男", age:63, phone:"139****2031", fullPhone:"13956202031", brief:"痛风 3 年，合并糖尿病", status:"overdue", statusText:"复查逾期", time:"逾期 21 天", lastVisit:"2026-06-22", overdueReason:"血尿酸及肝肾功能复查逾期", followupAction:"联系改期，并提醒携带近期血糖记录", reminderState:"待提醒", confirmed:false, arrived:false, sources:{} },
+  { id:"p-li", name:"李红", sex:"女", age:38, phone:"137****4512", brief:"痛风首次发作，双踝红肿", status:"pending", statusText:"待接诊", time:"建档 07-12", confirmed:false, arrived:false, sources:{} },
+  { id:"p-zhou", name:"周国强", sex:"男", age:51, phone:"135****3097", brief:"痛风 + 高血压，长期管理", status:"pending", statusText:"待接诊", time:"建档 07-11", confirmed:false, arrived:false, sources:{} },
+  { id:"p-wang", name:"王丽", sex:"女", age:44, phone:"136****7788", brief:"痛风石形成，双肘结节", status:"pending", statusText:"待接诊", time:"建档 07-09", confirmed:false, arrived:false, sources:{} },
+  { id:"p-zhao", name:"赵海峰", sex:"男", age:56, phone:"138****5196", brief:"痛风 8 年，规律降尿酸治疗", status:"confirmed", statusText:"已纳管", time:"纳管 06-18", confirmed:true, arrived:false, sources:{} },
+  { id:"p-sun", name:"孙秀兰", sex:"女", age:61, phone:"137****8062", brief:"痛风合并高血压，近期尿酸稳定", status:"confirmed", statusText:"已纳管", time:"纳管 06-25", confirmed:true, arrived:false, sources:{} },
+  { id:"p-luo", name:"罗建军", sex:"男", age:49, phone:"139****3471", brief:"反复足踝发作，正在长期随访", status:"confirmed", statusText:"已纳管", time:"纳管 07-02", confirmed:true, arrived:false, sources:{} }
+  ,{ id:"p-guo", name:"郭志强", sex:"男", age:58, phone:"136****4218", fullPhone:"13677424218", brief:"非布司他调整后等待复查", status:"overdue", statusText:"复查逾期", time:"逾期 7 天", lastVisit:"2026-07-06", overdueReason:"调药后肝肾功能复查未完成", followupAction:"提醒尽快完成血尿酸、肝肾功能检查", reminderState:"待提醒", confirmed:true, arrived:false, sources:{} }
+  ,{ id:"p-he", name:"何秀英", sex:"女", age:67, phone:"137****6650", fullPhone:"13729876650", brief:"近半年反复膝踝关节发作", status:"overdue", statusText:"失访风险", time:"逾期 45 天", lastVisit:"2026-05-29", overdueReason:"连续两次未按计划复诊，近期发作情况不明", followupAction:"建议医生人工联系，确认症状与当前用药", reminderState:"需人工联系", confirmed:true, arrived:false, sources:{} }
+  ,{ id:"p-wu", name:"吴建华", sex:"男", age:52, phone:"135****9086", fullPhone:"13568049086", brief:"长期降尿酸管理，尿酸未达标", status:"overdue", statusText:"复查逾期", time:"逾期 14 天", lastVisit:"2026-06-28", overdueReason:"尿酸未达标后的复查计划已逾期", followupAction:"已发送提醒，等待患者确认复诊时间", reminderState:"消息已提醒", confirmed:true, arrived:false, sources:{} }
+];
+const SCREEN_ANNOTATIONS = {
+  "screen-login":{title:"登录",items:[{name:"演示登录",text:"点击登录后进入医生工作台。"}]},
+  "screen-workbench":{title:"今日工作台",items:[{name:"指标联动",text:"待接诊、全部患者和复诊逾期均可点击进入对应名单。"},{name:"优先任务",text:"进入当前患者档案，或直接开始记录接诊录音。"}]},
+  "screen-patients":{title:"患者列表",items:[{name:"列表切换",text:"待接诊与全部患者共用一个列表入口。"},{name:"排序规则",text:"全部患者优先展示待接诊患者；同一状态内按列表录入顺序展示。"},{name:"患者筛选",text:"全部患者支持按状态组合筛选。"},{name:"主动建档",text:"新增患者进入快速建档流程。"}]},
+  "screen-messages":{title:"消息",items:[{name:"会话分流",text:"普通问题由助手回复，需医生判断的问题进入医生待处理。"}]},
+  "screen-chat":{title:"患者会话",items:[{name:"助手回复",text:"助手回复内容与触发原因对医生可见；医生可继续人工回复。"}]},
+  "screen-profile":{title:"患者档案",items:[{name:"信息层级",text:"默认展示一屏摘要，完整档案按需展开。"},{name:"档案维护",text:"病史、用药和检查记录分别进入结构化编辑。"}]},
+  "screen-history-edit":{title:"档案编辑",items:[{name:"多条记录",text:"发作记录与既往史支持新增和逐条编辑。"}]},
+  "screen-material":{title:"资料上传",items:[{name:"识别入库",text:"上传后经 OCR 提取，确认后写入对应档案分组。"}]},
+  "screen-aiassist":{title:"AI 辅助治疗",items:[{name:"辅助建议",text:"基于患者结构化档案生成，最终由医生确认。"}]},
+  "screen-confirm":{title:"医生确认",items:[{name:"确认回写",text:"确认后形成诊疗记录并更新患者管理状态。"}]},
+  "screen-overdue":{title:"复诊逾期",items:[{name:"批量提醒",text:"可按提醒状态筛选患者，再选择消息提醒或短信提醒。"},{name:"名单导出",text:"页面显示脱敏号码，导出名单包含完整演示号码。"}]},
+  "screen-qrcode":{title:"建档码",items:[{name:"快速建档",text:"建档码绑定当前医生和痛风专病。"}]},
+  "screen-enroll":{title:"主动建档",items:[{name:"快速字段",text:"只采集姓名、性别和手机号。"}]},
+  "screen-voice":{title:"接诊录音",items:[{name:"录音提取",text:"录音转写后提取结构化病史，确认后写入档案。"}]},
+  "screen-visitqr":{title:"就诊码",items:[{name:"扫码就诊",text:"患者扫描动态就诊码后，医生端同步到院状态。"}]}
+};
+
+let demoState;
+function freshState(){
+  return {
+    loggedIn:false,
+    screen:"screen-login",
+    patients: JSON.parse(JSON.stringify(PATIENTS_SEED)),
+    pendingCount:4,          // 待接诊角标（张明/李红/周国强/王丽）
+    confirmCount:3,          // 已纳管（赵海峰/孙秀兰/罗建军）
+    overdueCount:4,          // 复诊逾期与失访风险患者
+    reminderChannel:"in",   // 批量提醒的渠道：消息 IN / 短信
+    reminderFilter:"all",   // 批量提醒的目标筛选
+    treatmentExecuted:false, // 当前 AI 辅助治疗方案是否已确认执行
+    arrived:false,           // 张明是否到院
+    visitArrivedName:null,
+    voiceDone:false,
+    voiceStarted:false,
+    voiceWritten:false,
+    materialPending:2,       // 看诊前资料待确认项数（OCR 入库后递减）
+    patientSupplied:false,   // 患者是否补充过资料
+    patientTab:"pending",     // 患者队列分段：pending / all
+    patientFilters:[],        // 全部患者视图的状态多选筛选
+    activePatient:null,       // 当前打开接诊流程的患者 id
+    archiveTab:"overview",   // 患者档案视图：overview / medication / records
+    archiveExpanded:false,   // 默认先看一屏 AI 接诊摘要
+    editingArchiveGroup:"history", // 当前编辑的档案分组
+    archiveEdits:{},         // Demo 内存中的分组编辑值
+    activeAttackIndex:null,  // 当前编辑的发作记录索引；null 表示新增
+    attackRecords:{
+      "p-zhang":[
+        {date:"2026-07-10",site:"第一跖趾关节",symptom:"红肿热痛",severity:"中度",duration:"近一周",treatment:"秋水仙碱按需"},
+        {date:"2026-06-02",site:"右踝",symptom:"疼痛",severity:"轻度",duration:"2 天",treatment:"休息、冰敷"},
+        {date:"2026-04-12",site:"第一跖趾关节",symptom:"红肿热痛",severity:"重度",duration:"3 天",treatment:"居家服用依托考昔"}
+      ]
+    },
+    uploadContext:"检查检验", // 从患者档案进入上传时保留资料归属
+    activeChat:null,          // 当前打开的患者会话
+    visitQRTimer:null,        // 就诊码屏自动刷新计时器
+    qrModalTimer:null,        // 就诊码浮层自动刷新计时器
+    todos:[
+      {type:"im", name:"张明", avatar:"张", text:"王医生，我大脚趾又肿了，报告我传上去了", time:"09:12", unread:2, needsDoctor:true, triggerReason:"症状加重，并上传了新的检查资料"},
+      {type:"im", name:"李红", avatar:"李", text:"请问非布司他停药后要注意什么？", time:"08:47", unread:1, needsDoctor:false, triggerReason:"停药后的注意事项与复查准备，属于可由专病知识库回复的健康教育问题", aiReply:"非布司他是否继续或停用，需要结合您的血尿酸、肝肾功能和近期发作情况由医生判断。已停药期间请不要自行恢复或调整剂量；如出现关节红肿疼痛加重，或近期尿酸明显升高，请尽快联系医生。下次复诊时建议带上近期化验报告。"},
+      {type:"im", name:"陈建国", avatar:"陈", text:"复查时间能往后推几天吗？最近血糖不太稳", time:"昨天", unread:1, needsDoctor:true, triggerReason:"复诊改期，同时提到合并症控制不稳"},
+      {type:"im", name:"周国强", avatar:"周", text:"我这周血压还是偏高，和痛风用药冲突吗？", time:"昨天", unread:0, needsDoctor:true, triggerReason:"涉及合并用药风险"},
+      {type:"im", name:"王丽", avatar:"王", text:"胳膊肘长了硬疙瘩，是不是痛风石？有点担心", time:"07-12", unread:0, needsDoctor:true, triggerReason:"出现新的疑似痛风石症状"},
+      {type:"im", name:"赵海峰", avatar:"赵", text:"晚饭可以吃豆腐和鸡蛋吗？", time:"07-12", unread:0, needsDoctor:false, triggerReason:"饮食与生活方式常见问题"}
+    ]
+  };
+}
+
+/* ============ 工具 ============ */
+function $(id){return document.getElementById(id);}
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function broadcastDemoEvent(type,data){
+  if(window.parent!==window) window.parent.postMessage({source:"doctor-demo",type,data:data||{}},"*");
+}
+window.addEventListener("message",event=>{
+  const msg=event.data;
+  if(!msg||msg.source!=="patient-demo") return;
+  const p=demoState&&demoState.patients.find(x=>x.id==="p-zhang");
+  if(msg.type==="patient-lab-uploaded"&&p){
+    p.sources["f6"]={cls:"src-ai",txt:"AI识别"};
+    p.sources["f7"]={cls:"src-self",txt:"患者自填"};
+    demoState.patientSupplied=true;
+    if(demoState.screen==="screen-profile") renderProfile("p-zhang");
+    renderWorkbench();
+  }
+  if(msg.type==="patient-arrived"){
+    demoState.arrived=true; demoState.visitArrivedName="张明";
+    if(demoState.screen==="screen-visitqr") renderVisitQR();
+    if(demoState.screen==="screen-workbench") renderWorkbench();
+  }
+  if(msg.type==="patient-message"){
+    demoState.todos.unshift({type:"im",name:"张明",avatar:"张",text:msg.data&&msg.data.text||"患者留言",time:"刚刚",unread:1,needsDoctor:true,triggerReason:"患者主动留言"});
+    renderWorkbench();
+    if(demoState.screen==="screen-messages") renderMessageList();
+  }
+  if(msg.type==="patient-profile-submitted"){
+    demoState.todos.unshift({type:"im",name:"张明",avatar:"张",text:"已完成基本信息建档，等待接诊",time:"刚刚",unread:1,needsDoctor:true,triggerReason:"患者扫码建档"});
+    renderWorkbench();
+    if(demoState.screen==="screen-patients") renderPatients();
+  }
+});
+function renderAnnotationPanel(){
+  const note=SCREEN_ANNOTATIONS[demoState.screen]||{title:"当前页面",items:[]};
+  $("annotation-screen").textContent=note.title;
+  $("annotation-list").innerHTML=note.items.length ? note.items.map(item=>
+    '<div class="ds-annotation-item"><strong>'+item.name+'</strong><span>'+item.text+'</span></div>'
+  ).join("") : '<div class="ds-annotation-empty">暂无逻辑注释</div>';
+}
+function toggleAnnotationPanel(){
+  const panel=$("annotation-panel"), trigger=$("annotation-trigger"),isOpen=panel.classList.toggle("show");
+  trigger.classList.toggle("active",isOpen);
+  trigger.setAttribute("aria-expanded",String(isOpen));
+  if(isOpen) renderAnnotationPanel();
+}
+function goScreen(id){
+  // 离开就诊码屏 / 浮层时停止自动刷新计时器
+  if(demoState.screen==="screen-visitqr" && id!=="screen-visitqr") stopVisitQRRefresh();
+  if(id!=="screen-visitqr") stopVisitQRRefresh();
+  document.querySelectorAll(".ds-doctor-screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  demoState.screen=id;
+  renderAnnotationPanel();
+  // 同步导航高亮
+  document.querySelectorAll(".ds-nav-item").forEach(n=>{
+    n.classList.toggle("active", n.dataset.screen===id);
+  });
+  if(id==="screen-workbench") renderWorkbench();
+  if(id==="screen-patients") renderPatients();
+  if(id==="screen-messages") renderMessageList();
+  if(id==="screen-chat") renderChat();
+  if(id==="screen-profile") renderProfile(demoState.activePatient||"p-zhang");
+  if(id==="screen-history-edit") renderArchiveGroupForm();
+  if(id==="screen-material") renderMaterial();
+  if(id==="screen-overdue") renderOverdue();
+  if(id==="screen-confirm") renderConfirm();
+  if(id==="screen-qrcode") loadFixedQR();
+  if(id==="screen-visitqr") renderVisitQR();
+  // 滚到顶部
+  const b=$(id).querySelector(".ds-body"); if(b) b.scrollTop=0;
+}
+function goNav(el,id){ goScreen(id); }
+
+/* ============ 登录 ============ */
+function loginIn(){
+  demoState.loggedIn=true;
+  goScreen("screen-workbench");
+  toast("已登录工作台");
+}
+
+/* ============ 工作台 ============ */
+function renderWorkbench(){
+  $("stat-pending").textContent=demoState.pendingCount;
+  $("stat-all").textContent=demoState.patients.length;
+  $("stat-overdue").textContent=demoState.overdueCount;
+  const list=$("workbench-todos"); list.innerHTML="";
+  demoState.todos.slice(0,3).forEach(t=>{
+    const d=document.createElement("div");
+    d.className="ds-im"; d.onclick=()=>openChat(t.name);
+    d.innerHTML=
+      '<div class="ds-im-avatar">'+t.avatar+'</div>'+
+      '<div class="ds-im-body">'+
+        '<div class="ds-im-head"><span class="ds-im-name">'+t.name+'</span><span class="ds-im-time">'+t.time+'</span></div>'+
+        '<div class="ds-im-text">'+(t.needsDoctor?t.text:(t.aiReply||t.text))+'</div><span class="ds-im-route '+(t.needsDoctor?'needs-doctor':'')+'">'+(t.reply?'医生已回复':(t.needsDoctor?'待医生回复':'智能助手已回复'))+'</span>'+
+      '</div>'+(t.unread?'<span class="ds-im-unread">'+t.unread+'</span>':'');
+    list.appendChild(d);
+  });
+  const more=document.createElement("button");
+  more.className="ds-im-more"; more.textContent="查看全部消息"; more.onclick=()=>goScreen("screen-messages");
+  list.appendChild(more);
+}
+function renderMessageList(){
+  const list=$("message-list"); list.innerHTML="";
+  demoState.todos.forEach(t=>{
+    const row=document.createElement("div"); row.className="ds-im"; row.onclick=()=>openChat(t.name);
+    const preview=t.needsDoctor?t.text:(t.aiReply||t.text);
+    row.innerHTML='<div class="ds-im-avatar">'+t.avatar+'</div><div class="ds-im-body"><div class="ds-im-head"><span class="ds-im-name">'+t.name+'</span><span class="ds-im-time">'+t.time+'</span></div><div class="ds-im-text">'+preview+'</div><span class="ds-im-route '+(t.needsDoctor?'needs-doctor':'')+'">'+(t.reply?'医生已回复':(t.needsDoctor?'待医生回复':'智能助手已回复'))+'</span></div>'+(t.unread?'<span class="ds-im-unread">'+t.unread+'</span>':'');
+    list.appendChild(row);
+  });
+}
+function openChat(name){
+  demoState.activeChat=name;
+  const item=demoState.todos.find(t=>t.name===name); if(item) item.unread=0;
+  goScreen("screen-chat");
+}
+function renderChat(){
+  const item=demoState.todos.find(t=>t.name===demoState.activeChat)||demoState.todos[0];
+  demoState.activeChat=item.name; $("chat-title").textContent=item.name;
+  const aiText=item.needsDoctor?"这个问题涉及症状变化或用药，需要医生结合您的病情确认。我已为您转给王医生。":(item.aiReply||"您的问题已由智能助手回复，如仍有不适可继续留言。");
+  const routeTitle=item.reply?"医生已回复":(item.needsDoctor?"智能助手已转医生确认":"智能助手已自动回复");
+  $("chat-body").innerHTML='<div class="ds-chat-date">今天</div><div class="ds-chat-row"><div class="ds-chat-avatar">'+item.avatar+'</div><div class="ds-chat-bubble">'+item.text+'</div></div><div class="ds-chat-route"><strong>'+routeTitle+'</strong><br>'+(item.needsDoctor?'未生成医疗结论，消息已进入医生待回复列表。':'已根据痛风专病知识库回复常见问题。')+'<br><button class="ds-chat-rule-btn" onclick="toggleChatRule()">查看触发依据</button><div class="ds-chat-rule-detail" id="chat-rule-detail">命中：'+item.triggerReason+'。涉及开药、停药、调药、检查、症状加重或报告异常时必须转医生；常见饮食、生活方式和复诊准备问题可由智能助手先回复。</div></div><div class="ds-chat-row ai"><div class="ds-chat-avatar">AI</div><div class="ds-chat-bubble"><span class="ds-chat-label">智能助手</span>'+aiText+'</div></div>'+(item.needsDoctor?'<div class="ds-chat-alert">需医生确认 · AI 未提供用药调整或检查结论</div>':'')+(item.reply?'<div class="ds-chat-row mine"><div class="ds-chat-bubble">'+item.reply+'</div></div>':'');
+}
+function toggleChatRule(){
+  const detail=$("chat-rule-detail"); if(detail) detail.classList.toggle("show");
+}
+function sendChatMessage(){
+  const input=$("chat-input"),text=input.value.trim(); if(!text){toast("请输入回复内容");return;}
+  const item=demoState.todos.find(t=>t.name===demoState.activeChat); if(!item)return;
+  item.reply=text; item.text="我："+text; item.time="刚刚"; item.needsDoctor=false; input.value="";
+  renderChat(); toast("消息已发送");
+}
+function openChatPatient(){
+  const p=demoState.patients.find(x=>x.name===demoState.activeChat);
+  if(p) openPatientFlow(p.id); else toast("暂未找到患者档案");
+}
+
+/* ============ 患者队列 ============ */
+function renderPatients(){
+  const list=$("patient-list"); list.innerHTML="";
+  const tab=demoState.patientTab||"pending";
+  const segPending=$("seg-pending"); if(segPending) segPending.textContent=demoState.patients.filter(p=>p.status==="pending").length;
+  const segAll=$("seg-all"); if(segAll) segAll.textContent=demoState.patients.length;
+  const pendingTotal=demoState.patients.filter(p=>p.status==="pending").length;
+  const title=$("patient-list-title"),switchBtn=$("patient-list-switch"),filterBtn=$("patient-filter-btn"),chips=$("patient-filter-chips");
+  if(title) title.textContent=tab==="pending"?"待接诊 "+pendingTotal:"全部患者 "+demoState.patients.length;
+  if(switchBtn) switchBtn.textContent=tab==="pending"?"全部患者 ›":"‹ 只看待接诊";
+  if(filterBtn) filterBtn.style.display=tab==="all"?"inline-block":"none";
+  if(chips){chips.style.display=tab==="all"&&demoState.patientFilters.length?"flex":"none";chips.innerHTML=demoState.patientFilters.map(key=>'<button class="ds-filter-chip" onclick="removePatientFilter(\''+key+'\')">'+patientFilterLabel(key)+' ×</button>').join('');}
+  document.querySelectorAll("#patient-seg .ds-seg-item").forEach((button,index)=>{
+    const buttonTab=index===0?"pending":"all";
+    button.classList.toggle("active",buttonTab===tab);
+  });
+  let arr=demoState.patients.slice();
+  if(tab==="pending") arr=arr.filter(p=>p.status==="pending");
+  else arr.sort((a,b)=> (a.status==="pending"?-1:1)-(b.status==="pending"?-1:1));
+  if(tab==="all"&&demoState.patientFilters.length) arr=arr.filter(p=>demoState.patientFilters.includes(patientFilterKey(p)));
+  const query=((document.getElementById("patient-search")||{}).value||"").trim().toLowerCase();
+  if(query) arr=arr.filter(p=>p.name.toLowerCase().includes(query)||p.phone.replace(/\*/g,"").includes(query.replace(/\*/g,"")));
+  if(arr.length===0){
+    const emptyText=tab==="pending"?"待接诊患者":"患者";
+    list.innerHTML='<div class="ds-empty">暂无'+emptyText+'</div>';
+    return;
+  }
+  arr.forEach(p=>{
+    const chipCls = p.status==="pending"?"chip-orange":(p.status==="confirmed"?"chip-green":(p.status==="overdue"?"chip-red":"chip-blue"));
+    const row=document.createElement("div");
+    row.className="ds-prow"+(p.status==="pending"?" ds-prow-pending":(p.status==="overdue"?" ds-prow-overdue":""));
+    row.dataset.patientName=p.name;
+    row.onclick=()=>openPatientFlow(p.id);
+    row.innerHTML=
+      '<div class="ds-avatar">'+p.name.charAt(0)+'</div>'+
+      '<div class="ds-pinfo">'+
+        '<div class="ds-pname">'+p.name+'</div>'+
+        '<div class="ds-pbrief">'+p.brief+'</div>'+
+      '</div>'+
+      '<div class="ds-pright">'+
+        '<span class="ds-chip '+chipCls+'">'+p.statusText+'</span>'+
+        '<span class="ds-ptime">查看 ›</span>'+
+      '</div>';
+    list.appendChild(row);
+  });
+  renderPatientIndex(arr);
+}
+const PATIENT_INDEX_KEYS=["#","A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","W","X","Y","Z"];
+function patientInitial(name){
+  const map={"张":"Z","陈":"C","李":"L","周":"Z","王":"W","赵":"Z","孙":"S","罗":"L","郭":"G","何":"H","吴":"W"};
+  return map[name&&name.charAt(0)]||"#";
+}
+function renderPatientIndex(patients){
+  const index=$("patient-index"); if(!index) return;
+  const initials=new Set(patients.map(p=>patientInitial(p.name)));
+  index.innerHTML=PATIENT_INDEX_KEYS.map(key=>'<button class="ds-index-key '+(initials.has(key)?"":"is-empty")+'" type="button" data-index-key="'+key+'">'+key+'</button>').join("");
+  index.querySelectorAll(".ds-index-key:not(.is-empty)").forEach(button=>{
+    button.addEventListener("click",()=>jumpPatientIndex(button.dataset.indexKey));
+  });
+  index.onpointerdown=event=>{index.setPointerCapture&&index.setPointerCapture(event.pointerId);pickPatientIndex(event);};
+  index.onpointermove=event=>{if(event.buttons) pickPatientIndex(event);};
+  index.onpointerup=()=>hidePatientIndexToast();
+  index.onpointercancel=()=>hidePatientIndexToast();
+}
+function pickPatientIndex(event){
+  const node=document.elementFromPoint(event.clientX,event.clientY);
+  if(node&&node.classList.contains("ds-index-key")&&!node.classList.contains("is-empty")) jumpPatientIndex(node.dataset.indexKey);
+}
+function jumpPatientIndex(key){
+  const rows=Array.from(document.querySelectorAll("#patient-list .ds-prow"));
+  const row=rows.find(item=>patientInitial(item.dataset.patientName)===key);
+  const toast=$("patient-index-toast");
+  if(toast){toast.textContent=key;toast.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(hidePatientIndexToast,650);}
+  document.querySelectorAll(".ds-index-key").forEach(item=>item.classList.toggle("active",item.dataset.indexKey===key));
+  if(row) row.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function hidePatientIndexToast(){const toast=$("patient-index-toast");if(toast)toast.classList.remove("show");}
+function togglePatientList(){
+  demoState.patientTab=demoState.patientTab==="pending"?"all":"pending";
+  renderPatients();
+}
+function patientFilterKey(p){return p.status==="overdue"&&p.statusText==="失访风险"?"lost":p.status;}
+function patientFilterLabel(key){return {pending:"待接诊",confirmed:"已纳管",overdue:"复诊逾期",lost:"失访风险"}[key]||key;}
+function openPatientFilter(){
+  document.querySelectorAll('#patient-filter-modal input[type="checkbox"]').forEach(input=>input.checked=demoState.patientFilters.includes(input.value));
+  $("patient-filter-modal").classList.add("show");
+}
+function applyPatientFilters(){
+  demoState.patientFilters=Array.from(document.querySelectorAll('#patient-filter-modal input[type="checkbox"]:checked')).map(input=>input.value);
+  $("patient-filter-modal").classList.remove("show"); renderPatients();
+}
+function clearPatientFilters(){demoState.patientFilters=[];$("patient-filter-modal").classList.remove("show");renderPatients();}
+function removePatientFilter(key){demoState.patientFilters=demoState.patientFilters.filter(item=>item!==key);renderPatients();}
+function setPatientTab(tab,el){
+  demoState.patientTab=tab;
+  document.querySelectorAll("#patient-seg .ds-seg-item").forEach(b=>b.classList.remove("active"));
+  if(el) el.classList.add("active");
+  renderPatients();
+}
+function openWorkbenchMetric(metric){
+  if(metric==="overdue"){
+    goScreen("screen-overdue");
+    return;
+  }
+  demoState.patientTab=metric;
+  goScreen("screen-patients");
+}
+function openReminderModal(){
+  $("reminder-filter-panel").classList.remove("show");
+  setReminderFilter(demoState.reminderFilter||"all");
+  selectReminderChannel(demoState.reminderChannel||"in");
+  $("reminder-modal").classList.add("show");
+}
+function closeReminderModal(){$("reminder-modal").classList.remove("show");}
+function toggleReminderFilter(){$("reminder-filter-panel").classList.toggle("show");}
+function setReminderFilter(filter){
+  demoState.reminderFilter=filter;
+  document.querySelectorAll("[data-reminder-filter]").forEach(item=>item.classList.toggle("active",item.dataset.reminderFilter===filter));
+}
+function getReminderTargets(){
+  return demoState.patients.filter(p=>p.status==="overdue"&&(demoState.reminderFilter==="all"||p.reminderState===demoState.reminderFilter));
+}
+function selectReminderChannel(channel){
+  demoState.reminderChannel=channel;
+  document.querySelectorAll("#reminder-modal [data-channel]").forEach(item=>item.classList.toggle("active",item.dataset.channel===channel));
+  $("confirm-reminder-btn").textContent=channel==="sms"?"发送短信提醒":"发送消息提醒";
+}
+function confirmBulkReminder(){
+  const channel=demoState.reminderChannel||"in";
+  const overdue=getReminderTargets();
+  if(!overdue.length){ toast("没有符合条件的患者"); return; }
+  overdue.forEach(p=>{
+    if(channel==="in"){
+      if(p.reminderState==="待提醒"||p.reminderState==="需人工联系") p.reminderState="消息已提醒";
+    }else{
+      p.reminderState="短信已提醒";
+    }
+  });
+  closeReminderModal();
+  renderWorkbench();
+  renderOverdue();
+  broadcastDemoEvent("doctor-followup-reminder",{channel});
+  toast("已向 "+overdue.length+" 名患者发送"+(channel==="sms"?"短信":"消息")+"提醒");
+}
+function exportOverduePatients(){
+  const rows=demoState.patients.filter(p=>p.status==="overdue");
+  const escapeCSV=value=>'"'+String(value==null?"":value).replace(/"/g,'""')+'"';
+  const csv=[
+    ["姓名","手机号","逾期天数","末次就诊","逾期原因","提醒状态"],
+    ...rows.map(p=>[p.name,p.fullPhone||p.phone,(p.time||"").replace("逾期 ",""),p.lastVisit||"",p.overdueReason||"",p.reminderState||""])
+  ].map(row=>row.map(escapeCSV).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url; link.download="复诊逾期患者_"+new Date().toISOString().slice(0,10)+".csv";
+  document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+  toast("已导出 "+rows.length+" 名患者名单");
+}
+// 点开患者 → 进入该患者的接诊流程（复用详情档案屏 + 顶部操作入口排）
+function openPatientFlow(pid){
+  demoState.activePatient=pid;
+  demoState.archiveTab="overview";
+  demoState.archiveExpanded=false;
+  goScreen("screen-profile");
+}
+// 语音接诊：直接进采集界面并开始录音（不弹二次确认）
+function openVoiceFlow(pid){
+  const id = pid || demoState.activePatient || "p-zhang";
+  demoState.activePatient=id;
+  goScreen("screen-voice");
+  const p=demoState.patients.find(x=>x.id===id);
+  if(p) $("voice-patient").textContent="当前患者："+p.name+" · "+p.sex+" · "+p.age;
+  // 进屏即开始录音动画（toggleVoice 内部支持重录）
+  if(!demoState.voiceStarted){ toggleVoice(); }
+}
+
+/* ============ 患者详情档案 ============ */
+function renderProfile(pid){
+  const p=demoState.patients.find(x=>x.id===pid)||demoState.patients[0];
+  $("profile-title").textContent=p.name;
+  const body=$("profile-body");
+  const tab=demoState.archiveTab||"overview";
+  const data=getPatientDemoData(p);
+  const brief='<div class="ds-ai-brief"><div class="ds-ai-brief-head"><div class="ds-ai-brief-title"><span class="ds-ai-brief-mark">AI</span>接诊摘要</div><span class="ds-chip '+data.stageClass+'">'+data.stage+'</span></div><div class="ds-sub" style="margin-top:5px">'+p.name+' · '+p.sex+' · '+p.age+' 岁 · '+p.phone+'</div><div class="ds-ai-problem"><span class="label">当前问题</span><strong>'+data.problem+'</strong></div><div class="ds-ai-metrics"><div class="ds-ai-metric">最近血尿酸<strong class="'+data.urateClass+'">'+data.urate+'</strong></div><div class="ds-ai-metric">近一年发作<strong>'+data.attacks+'</strong></div><div class="ds-ai-metric">肾功能<strong>'+data.renal+'</strong></div><div class="ds-ai-metric">下次复诊<strong>'+data.followup+'</strong></div></div><div class="ds-ai-line"><span class="label">当前用药</span>'+data.med+'；'+data.acuteMed+'</div><div class="ds-ai-line"><span class="label">AI 提醒</span><div class="ds-ai-alerts">'+data.alerts.map(x=>'<span class="ds-ai-alert">'+x+'</span>').join('')+'</div></div><div class="ds-ai-brief-actions"><button class="ds-flow-btn primary" onclick="goScreen(\'screen-aiassist\')">AI 辅助治疗</button><button class="ds-flow-btn" onclick="openVoiceFlow(\''+p.id+'\')">记录接诊录音</button></div></div><button class="ds-full-archive-toggle" onclick="toggleFullArchive()">'+(demoState.archiveExpanded?'收起完整档案':'查看完整档案 ›')+'</button>';
+  const tabs='<div class="ds-archive-tabs"><button class="ds-archive-tab '+(tab==="overview"?'active':'')+'" onclick="setArchiveTab(\'overview\')">档案概览</button><button class="ds-archive-tab '+(tab==="medication"?'active':'')+'" onclick="setArchiveTab(\'medication\')">用药记录</button><button class="ds-archive-tab '+(tab==="records"?'active':'')+'" onclick="setArchiveTab(\'records\')">就诊记录</button></div>';
+  let content="";
+  const attackCount=getAttackRecords(p.id).length;
+  if(tab==="overview") content=(p.status==="pending"?'<div class="ds-new-data">有患者新补充资料待核对，暂未覆盖医生已确认内容。</div>':'')+'<div class="ds-overview-actions"><button class="ds-tab-upload" style="margin-top:0" onclick="openArchiveUpload(\'档案资料\')">+ 上传资料</button><button class="ds-flow-btn primary" onclick="openArchiveGroupEditor(\'history\')">编辑痛风病史</button></div>'+overviewCard("痛风病史","病程约 3 年 · 主要累及 "+data.site+" · 近一年 "+data.attacks,"history")+overviewCard("发作记录（"+attackCount+"）",attackCount?formatAttackSummary(getAttackRecords(p.id)[0]):"暂无发作记录","attack")+overviewCard("当前用药",data.med+"；"+data.acuteMed,"medication")+overviewCard("既往史与安全",data.comorbidity+" · 过敏史无 · 家族史不详","safety")+overviewCard("检查检验","血尿酸 "+data.urate+" · "+data.renal,"labs");
+  if(tab==="medication") content='<button class="ds-tab-upload" onclick="openArchiveUpload(\'用药记录\')">+ 上传药盒、处方或用药资料</button>'+medicationCard("非布司他","正在使用","口服 · 每日一次 · 20 mg","开始于 2026-03 · 当前间断服用","chip-green")+'<details class="ds-archive-section"><summary>历史用药（1）</summary><div class="ds-archive-content">'+medicationCard("苯溴马隆","已停药","口服 · 每日一次","2025-11 至 2026-03","chip-blue")+'</div></details><details class="ds-archive-section"><summary>发作期用药（1）</summary><div class="ds-archive-content">'+medicationCard("秋水仙碱","按需","口服 · 发作时按需","最近使用 2026-07-10","chip-orange")+'</div></details>';
+  if(tab==="records") content='<button class="ds-tab-upload" onclick="openArchiveUpload(\'就诊记录\')">+ 上传病历、处方或检查资料</button>'+getAttackRecords(p.id).map(r=>recordCard(r.date,"发作记录",r.site+" · "+r.symptom+" · "+r.severity+" · "+r.treatment)).join('')+recordCard("2026-07-08","检查检验","血尿酸 542 μmol/L（偏高）· 肌酐 78 · ALT 26")+recordCard("2026-06-28","门诊记录","近两周无急性发作，继续原降尿酸方案")+recordCard("2026-06-28","AI 病史小结","复诊后继续原方案，计划 6 周后复查血尿酸及肝肾功能");
+  body.innerHTML=brief+(demoState.archiveExpanded?tabs+'<div id="archive-tab-content">'+content+'</div>':'')+'<div style="height:16px"></div>';
+  function archiveGroup(title,rows,open){return '<details class="ds-archive-section" '+(open?'open':'')+'><summary><span class="ds-archive-title">'+title+'<button class="ds-section-upload" onclick="event.preventDefault();event.stopPropagation();openArchiveUpload(\''+title+'\')">+ 上传</button></span></summary><div class="ds-archive-content">'+rows.map(r=>'<div class="ds-frow is-clickable" onclick="showFieldDetail(\''+escapeDetail(title)+'\',\''+escapeDetail(r[0])+'\',\''+escapeDetail(r[1])+'\')"><div class="ds-fname">'+r[0]+'<span class="ds-detail-link">查看详情与依据</span></div><div class="ds-fval">'+r[1]+' ›</div></div>').join('')+'</div></details>';}
+  function recordCard(date,type,desc){return '<div class="ds-record-card is-clickable" onclick="showRecordDetail(\''+escapeDetail(date)+'\',\''+escapeDetail(type)+'\',\''+escapeDetail(desc)+'\')"><div class="ds-record-head"><span>'+date+'</span><span class="ds-chip chip-blue">'+type+'</span></div><div class="ds-record-desc">'+desc+'<span class="ds-detail-link">查看完整记录 ›</span></div></div>';}
+  function medicationCard(name,status,dosage,time,chip){return '<div class="ds-record-card is-clickable" onclick="showMedicationDetail(\''+escapeDetail(name)+'\',\''+escapeDetail(status)+'\',\''+escapeDetail(dosage)+'\',\''+escapeDetail(time)+'\')"><div class="ds-record-head"><span>'+name+'</span><span class="ds-chip '+chip+'">'+status+'</span></div><div class="ds-record-desc">'+dosage+'<br>'+time+'<span class="ds-detail-link">查看完整用药记录 ›</span></div></div>';}
+  function overviewCard(title,desc,key){const action=key==="attack"?"+ 新增发作记录":"查看并编辑 ›";const handler=key==="attack"?"openNewAttackFromOverview()":"openArchiveGroupEditor('"+key+"')";return '<div class="ds-overview-card" onclick="'+handler+'"><div class="ds-overview-head"><span>'+title+'</span><span class="ds-overview-go">'+action+'</span></div><div class="ds-overview-desc">'+desc+'</div></div>';}
+  function escapeDetail(value){return String(value).replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
+}
+function openArchiveGroupEditor(key){demoState.editingArchiveGroup=key;goScreen("screen-history-edit");}
+function openNewAttackFromOverview(){
+  demoState.editingArchiveGroup="attack";
+  goScreen("screen-history-edit");
+  openAttackEditor(null);
+}
+function renderArchiveGroupForm(){
+  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang"))||demoState.patients[0];
+  const data=getPatientDemoData(p),key=demoState.editingArchiveGroup||"history";
+  if(key==="attack"){renderAttackList(p);return;}
+  const map={history:["痛风病史",data.history],attack:["发作记录",data.attack],medication:["当前用药",data.currentMedication],safety:["既往史与安全",data.safety],labs:["检查检验",data.labs]};
+  const item=map[key]||map.history;
+  const saved=(demoState.archiveEdits[p.id]||{})[key];
+  const rows=saved||item[1];
+  $("archive-edit-title").textContent="编辑"+item[0];
+  $("archive-edit-save").style.display="inline-flex";
+  $("archive-edit-save").textContent="保存"+item[0];
+  $("history-edit-body").innerHTML='<div class="ds-edit-section"><h5>'+p.name+' · '+item[0]+'</h5><div class="ds-sub">按结构化字段顺序填写，保存后来源记录为“医生补录”。</div>'+rows.map((row,index)=>'<div class="ds-edit-field"><label>'+(index+1)+'. '+row[0]+'</label><input id="archive-field-'+index+'" value="'+escapeHtmlAttribute(row[1])+'" /></div>').join('')+'</div><div style="height:76px"></div>';
+}
+function escapeHtmlAttribute(value){return String(value).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function saveArchiveGroupForm(){
+  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang")); if(!p)return;
+  const data=getPatientDemoData(p),key=demoState.editingArchiveGroup||"history";
+  if(key==="attack"){saveAttackRecord();return;}
+  const map={history:["痛风病史",data.history],attack:["发作记录",data.attack],medication:["当前用药",data.currentMedication],safety:["既往史与安全",data.safety],labs:["检查检验",data.labs]};
+  const item=map[key]||map.history;
+  const rows=item[1].map((row,index)=>[row[0],($("archive-field-"+index)||{}).value||row[1]]);
+  if(!demoState.archiveEdits[p.id])demoState.archiveEdits[p.id]={};
+  demoState.archiveEdits[p.id][key]=rows;
+  demoState.archiveExpanded=true; demoState.archiveTab="overview";
+  toast(item[0]+"已保存，来源“医生补录”"); goScreen("screen-profile");
+}
+function getAttackRecords(pid){
+  if(!demoState.attackRecords[pid]) demoState.attackRecords[pid]=[];
+  return demoState.attackRecords[pid];
+}
+function formatAttackSummary(record){
+  return record.date.slice(5)+" · "+record.site+" · "+record.symptom+" · "+record.severity;
+}
+function renderAttackList(p){
+  const records=getAttackRecords(p.id).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  $("archive-edit-title").textContent="发作记录";
+  $("archive-edit-save").style.display="none";
+  $("history-edit-body").innerHTML='<div class="ds-list-header"><h4>发作记录（'+records.length+'）</h4><button class="ds-add-record" onclick="openAttackEditor(null)">+ 新增发作记录</button></div>'+(records.length?records.map(record=>{const index=getAttackRecords(p.id).indexOf(record);return '<div class="ds-attack-card" onclick="openAttackEditor('+index+')"><div class="ds-attack-date">'+record.date.slice(5)+'</div><div class="ds-attack-main">'+record.site+' · '+record.symptom+' · '+record.severity+'</div><div class="ds-attack-meta">'+record.duration+' · '+record.treatment+'<span class="ds-detail-link">查看并编辑 ›</span></div></div>';}).join(''):'<div class="ds-empty">暂无发作记录</div>')+'<div style="height:76px"></div>';
+}
+function openAttackEditor(index){
+  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang")); if(!p)return;
+  demoState.activeAttackIndex=index;
+  const record=index===null?{date:"2026-07-13",site:"",symptom:"",severity:"",duration:"",treatment:""}:getAttackRecords(p.id)[index];
+  $("archive-edit-title").textContent=index===null?"新增发作记录":"编辑发作记录";
+  $("archive-edit-save").style.display="inline-flex";
+  $("archive-edit-save").textContent=index===null?"保存新记录":"保存修改";
+  const fields=[["发作日期","date"],["发作部位","site"],["症状状态","symptom"],["疼痛程度","severity"],["持续时间","duration"],["处理方式","treatment"]];
+  $("history-edit-body").innerHTML='<div class="ds-edit-section"><h5>'+(index===null?'新增':'编辑')+'发作记录</h5><div class="ds-sub">本次保存只新增或修改这一条记录，不会覆盖其他发作记录。</div>'+fields.map((field,i)=>'<div class="ds-edit-field"><label>'+(i+1)+'. '+field[0]+'</label><input id="attack-'+field[1]+'" value="'+escapeHtmlAttribute(record[field[1]])+'" /></div>').join('')+'</div><div style="height:76px"></div>';
+}
+function saveAttackRecord(){
+  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang")); if(!p)return;
+  const record={date:$("attack-date").value.trim(),site:$("attack-site").value.trim(),symptom:$("attack-symptom").value.trim(),severity:$("attack-severity").value.trim(),duration:$("attack-duration").value.trim(),treatment:$("attack-treatment").value.trim()};
+  if(!record.date||!record.site){toast("请填写发作日期和发作部位");return;}
+  const records=getAttackRecords(p.id);
+  if(demoState.activeAttackIndex===null) records.push(record); else records[demoState.activeAttackIndex]=record;
+  records.sort((a,b)=>b.date.localeCompare(a.date));
+  demoState.activeAttackIndex=null; toast("发作记录已保存"); renderAttackList(p);
+}
+function showFieldDetail(group,name,value){
+  const source=group==="检查检验"?"患者上传 · AI 识别":(group==="当前用药"?"录音识别 · 医生可修正":"患者自填");
+  showModal(name,value+"\n\n所属分组："+group+"\n来源："+source+"\n最近更新：2026-07-13\n\n原始依据可追溯，医生修改后将记录为‘医生补录’。");
+}
+function showRecordDetail(date,type,desc){
+  showModal(type+" · "+date,desc+"\n\n关联资料：报告原图、用药记录、录音片段\n记录状态：已归档\n来源：医生补录 / AI 病史小结");
+}
+function showMedicationDetail(name,status,dosage,time){
+  showModal(name,dosage+"\n"+time+"\n当前状态："+status+"\n\n来源：录音识别 / 医生补录\n关联资料：药盒照片、处方记录\n调整记录：可追溯历次剂量与状态变化");
+}
+function getPatientDemoData(p){
+  const variants={
+    "p-zhang":{stage:"急性发作期",stageClass:"chip-orange",problem:"右足第一跖趾关节红肿热痛，持续近一周",problemClass:"risk",urate:"542 μmol/L ↑",urateClass:"risk",attacks:">5 次",renal:"肌酐 78 · 正常",followup:"08-08",site:"第一跖趾关节、踝",med:"非布司他间断服用",acuteMed:"秋水仙碱按需",alerts:["尿酸未达标","服药不规律","缺近期完整肝肾功能"],comorbidity:"高血压"},
+    "p-chen":{stage:"复诊逾期",stageClass:"chip-red",problem:"逾期 21 天，近期血糖控制不稳",problemClass:"risk",urate:"486 μmol/L ↑",urateClass:"risk",attacks:"3-5 次",renal:"肌酐待补充",followup:"已逾期",site:"踝、膝",med:"苯溴马隆规律服用",acuteMed:"近期无急性期用药",alerts:["复诊逾期","合并糖尿病","需联系改期"],comorbidity:"糖尿病"},
+    "p-li":{stage:"首次发作",stageClass:"chip-orange",problem:"双踝红肿痛，首次出现类似症状",problemClass:"risk",urate:"待补充",urateClass:"",attacks:"1 次",renal:"待补充",followup:"待安排",site:"双踝",med:"暂无长期降尿酸用药",acuteMed:"止痛药信息待补充",alerts:["尚未明确诊断","缺血尿酸","缺肝肾功能"],comorbidity:"无"},
+    "p-zhao":{stage:"长期管理期",stageClass:"chip-green",problem:"近期无明显不适，规律随访",problemClass:"",urate:"356 μmol/L",urateClass:"",attacks:"0 次",renal:"肌酐 82 · 正常",followup:"09-18",site:"第一跖趾关节",med:"非布司他规律服用",acuteMed:"无",alerts:["继续监测尿酸","按计划复诊"],comorbidity:"无"}
+  };
+  const d=variants[p.id]||{stage:p.status==="confirmed"?"长期管理期":"待接诊",stageClass:p.status==="confirmed"?"chip-green":"chip-orange",problem:p.brief,problemClass:"",urate:"待补充",urateClass:"",attacks:"待补充",renal:"待补充",followup:"待安排",site:"待补充",med:"待补充",acuteMed:"待补充",alerts:["资料待补充"],comorbidity:"待补充"};
+  d.history=[['发病时间',p.id==="p-li"?'本周':'约 3 年前'],['确诊时间',p.id==="p-li"?'未确诊':'约 2023 年'],['患者自述确诊时间',p.id==="p-li"?'不确定':'约 2023 年'],['医生确认确诊时间','待补充'],['首发部位',d.site.split('、')[0]],['主要发作部位',d.site],['痛风石',p.brief.includes('痛风石')?'有':'无'],['是否坚持降尿酸治疗超过 6 个月',d.med.includes('规律')?'是':'否'],['近一年发作次数',d.attacks],['图片或资料补充',p.status==="pending"?'有':'无']];
+  d.attack=[['当前疼痛和红肿状态',d.problem.includes('红肿')?'红肿热痛':'无症状'],['当前是否疼痛',d.problem.includes('痛')?'是':'否'],['近期发作情况',d.attacks==="0 次"?'无发作':'有发作'],['疼痛发作情况',d.problem.includes('痛')?'中度疼痛':'未发作'],['持续时间',d.problem.includes('痛')?'近一周':'-']];
+  d.currentMedication=[['长期降尿酸用药情况',d.med.includes('暂无')?'无':'有'],['当前用药',d.med],['急性期用药',d.problem.includes('痛')?'秋水仙碱 · 按需':'无']];
+  d.safety=[['其他疾病 / 合并症',d.comorbidity],['合并症治疗情况',d.comorbidity==="无"?'-':'治疗中'],['肾结石','无'],['过敏史','无'],['家族史','不详']];
+  d.labs=[['最近血尿酸',d.urate],['血肌酐','待补充'],['谷丙转氨酶 ALT','待补充']];
+  const edits=demoState.archiveEdits[p.id]||{};
+  if(edits.history)d.history=edits.history;
+  if(edits.attack)d.attack=edits.attack;
+  if(edits.medication)d.currentMedication=edits.medication;
+  if(edits.safety)d.safety=edits.safety;
+  if(edits.labs)d.labs=edits.labs;
+  return d;
+}
+function setArchiveTab(tab){demoState.archiveTab=tab;renderProfile(demoState.activePatient||"p-zhang");}
+function toggleFullArchive(){demoState.archiveExpanded=!demoState.archiveExpanded;renderProfile(demoState.activePatient||"p-zhang");}
+function openArchiveUpload(context){demoState.uploadContext=context;goScreen("screen-material");}
+
+/* ============ 看诊前资料（含 OCR 模式） ============ */
+function renderMaterial(){
+  const body=$("material-body");
+  const context=demoState.uploadContext||"检查检验";
+  $("material-title").textContent=context+" · 补充资料";
+  const isLab=context==="检查检验";
+  const recognitionTitle=isLab?"化验单 OCR 识别":(context.includes("用药")?"药盒 / 处方识别":"资料内容识别");
+  body.innerHTML=
+    '<div class="ds-upload-drop" role="button" tabindex="0" onclick="$(\'archive-file-input\').click()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){$(\'archive-file-input\').click()}"><strong>点击上传'+context+'资料</strong><small>支持拍照、相册图片或 PDF，可多选</small></div><div class="ds-upload-selected" id="upload-selected"></div>'+
+    '<div class="ds-field-block" style="margin-top:12px;">'+
+      '<h5>'+context+' · 上传资料 <span class="ds-chip chip-orange" id="material-pending-chip">'+demoState.materialPending+' 项待确认</span></h5>'+
+      '<div class="ds-frow"><div class="ds-fname">2026-07-08 化验单（OCR）</div><div class="ds-fval">待归档 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">关节红肿照片</div><div class="ds-fval">已读 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>'+
+    '</div>'+
+    '<div class="ds-section-title">OCR 识别 · 补充资料</div>'+
+    '<div class="ds-ocr-card" id="ocr-card">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<div class="ds-card-title" style="font-size:var(--text-base);">'+recognitionTitle+'</div>'+
+        '<button class="ds-btn-secondary" style="height:34px;font-size:var(--text-sm);" onclick="runOCR()">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>'+
+          '开始识别</button>'+
+      '</div>'+
+      '<div class="ds-ocr-status" id="ocr-status">待识别</div>'+
+      '<div id="ocr-extract" style="display:none;margin-top:10px;"></div>'+
+    '</div>'+
+    '<div style="height:16px;"></div>';
+}
+function handleArchiveFiles(files){
+  if(!files||!files.length)return;
+  const box=$("upload-selected");
+  box.style.display="block";
+  box.innerHTML=Array.from(files).map(file=>'已选择：'+file.name+' <span class="ds-chip chip-orange">待识别</span>').join('<br>');
+  const status=$("ocr-status"); if(status) status.textContent="文件已选择，待开始识别";
+  toast("已选择 "+files.length+" 个文件");
+}
+
+/* OCR 模拟 */
+function runOCR(){
+  const st=$("ocr-status"); const ex=$("ocr-extract");
+  st.classList.remove("is-done"); st.textContent="上传中…";
+  setTimeout(()=>{ st.textContent="识别中…"; },600);
+  setTimeout(()=>{
+    st.textContent="提取完成"; st.classList.add("is-done");
+    ex.style.display="block";
+    const context=demoState.uploadContext||"检查检验";
+    ex.innerHTML=context.includes("用药") ?
+      '<div class="ds-extract-row"><div class="ds-extract-name">药物名称</div><div class="ds-extract-val">非布司他 '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div><div class="ds-extract-row"><div class="ds-extract-name">规格 / 用法</div><div class="ds-extract-val">20 mg · 每日一次</div></div><div class="ds-actions" style="margin-top:12px;"><button class="ds-btn-secondary" style="height:38px;" onclick="toast(\'已转入人工修正\')">人工修正</button><button class="ds-btn-primary" style="height:38px;" onclick="confirmOCR()">保存到用药记录</button></div>' : context==="检查检验" ?
+      '<div class="ds-extract-row"><div class="ds-extract-name">报告时间</div><div class="ds-extract-val">2026-07-08 '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">血尿酸</div><div class="ds-extract-val">542 μmol/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">肌酐</div><div class="ds-extract-val">78 μmol/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-extract-row"><div class="ds-extract-name">肝功能 ALT</div><div class="ds-extract-val">26 U/L '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div>'+
+      '<div class="ds-actions" style="margin-top:12px;">'+
+        '<button class="ds-btn-secondary" style="height:38px;" onclick="toast(\'已转入人工修正\')">人工修正</button>'+
+        '<button class="ds-btn-primary" style="height:38px;" onclick="confirmOCR()">保存到检查检验</button>'+
+      '</div>' : '<div class="ds-extract-row"><div class="ds-extract-name">资料类型</div><div class="ds-extract-val">'+context+'</div></div><div class="ds-extract-row"><div class="ds-extract-name">识别摘要</div><div class="ds-extract-val">已提取文字内容 '+badge({cls:"src-ai",txt:"AI识别"})+'</div></div><div class="ds-actions" style="margin-top:12px;"><button class="ds-btn-secondary" style="height:38px;" onclick="toast(\'已转入人工修正\')">人工修正</button><button class="ds-btn-primary" style="height:38px;" onclick="confirmOCR()">保存到'+context+'</button></div>';
+    toast("OCR 提取完成");
+  },1600);
+  function badge(s){return '<span class="ds-source '+s.cls+'">'+s.txt+'</span>';}
+}
+function confirmOCR(){
+  if(demoState.materialPending>0) demoState.materialPending-=1;
+  const chip=$("material-pending-chip");
+  if(chip) chip.textContent=demoState.materialPending+" 项待确认";
+  if(demoState.materialPending===0 && chip) chip.textContent="全部已确认";
+  toast("已入库，来源「AI识别」");
+  // 资料确认后更新 workbench
+  renderWorkbench();
+}
+
+/* ============ 复诊逾期 ============ */
+function renderOverdue(){
+  const body=$("overdue-body");
+  const overdue=demoState.patients.filter(p=>p.status==="overdue");
+  let html='<div class="ds-overdue-summary">复诊逾期 '+overdue.length+' 人</div>'+
+    '<div class="ds-overdue-toolbar">'+
+      '<button class="ds-btn-secondary" type="button" onclick="exportOverduePatients()">导出全部</button>'+
+      '<button class="ds-btn-primary" type="button" onclick="openReminderModal()">批量提醒</button>'+
+    '</div>';
+  overdue.forEach(p=>{
+    const state=p.reminderState||'待提醒';
+    const stateClass=state==='短信已提醒'?'chip-green':(state==='消息已提醒'?'chip-blue':(state==='需人工联系'?'chip-red':'chip-orange'));
+    html+=
+      '<div class="ds-card" style="margin-top:12px;border-left:4px solid var(--doctor-red);">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+          '<div class="ds-card-title">'+p.name+'</div>'+
+          '<span class="ds-chip chip-red">'+p.statusText+' '+p.time.replace("逾期 ","")+'</span>'+
+        '</div>'+
+        '<div class="ds-overdue-meta"><span>'+p.sex+' · '+p.age+' 岁</span><span>'+p.phone+'</span><span>末次就诊 '+(p.lastVisit||'--')+'</span></div>'+
+        '<div class="ds-sub" style="margin-top:9px;line-height:1.55;"><strong style="color:var(--doctor-text);">'+(p.overdueReason||p.brief)+'</strong></div>'+
+        '<div class="ds-reminder-status">'+
+          '<span class="ds-chip '+stateClass+'">'+state+'</span>'+
+        '</div>'+
+      '</div>';
+  });
+  body.innerHTML=html+'<div style="height:16px;"></div>';
+}
+
+/* ============ 医生确认 ============ */
+function renderConfirm(){
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  $("confirm-patient").textContent=p.name+" · "+p.sex+" · "+p.age+" · "+p.phone;
+  $("confirm-synced").style.display = p.confirmed ? "flex":"none";
+  $("confirm-body").innerHTML=
+    '<div style="margin-top:12px;">'+
+      '<div class="ds-frow"><div class="ds-fname">首次发作部位</div><div class="ds-fval">第一跖趾关节（大脚趾根部）</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">近 1 年发作次数</div><div class="ds-fval">5 次以上</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">长期降尿酸用药情况</div><div class="ds-fval">非布司他（间断服用）</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">血尿酸</div><div class="ds-fval">542 μmol/L</div></div>'+
+      '<div class="ds-frow"><div class="ds-fname">合并症 / 并发症</div><div class="ds-fval">无</div></div>'+
+    '</div>'+
+    '<div class="ds-sub" style="margin-top:12px;line-height:1.55;">确认后档案纳入痛风专病管理，患者端即时进入「已纳管」，下次复诊与复查项目将同步下发。</div>';
+}
+
+function confirmArchive(){
+  const p=demoState.patients.find(x=>x.id==="p-zhang");
+  if(p.confirmed){ toast("已确认纳管"); return; }
+  p.confirmed=true; p.status="confirmed"; p.statusText="已纳管"; p.time="已纳管";
+  // 来源标记变「医生确认」
+  ["f1","f2","f3","f4","f5","f6","f7","f8","f9"].forEach(k=>p.sources[k]={cls:"src-confirm",txt:"医生确认"});
+  // 角标 -1，纳管 +1
+  demoState.pendingCount=Math.max(0,demoState.pendingCount-1);
+  demoState.confirmCount+=1;
+  // 待办为纯 IM 流，确认纳管不再移除任务型条目（保持消息完整）；此处仅做安全过滤避免异常
+  demoState.todos=demoState.todos.filter(t=> !(t.title && t.title.includes("确认张明")));
+  renderConfirm();
+  renderWorkbench();
+  renderPatients();
+  // 同步回写提示
+  $("confirm-synced").style.display="flex";
+  toast("档案已确认，患者端进入已纳管");
+}
+
+function rejectArchive(){
+  showModal("驳回档案","驳回后档案退回「待补充」，患者端收到补充提示。演示环境仅作状态提示，不实际退回。");
+}
+
+/* ============ 建档码（固定 QR） ============ */
+function loadFixedQR(){
+  const box=$("qr-fixed");
+  // 优先使用仓库素材，失败则内嵌 SVG 占位
+  box.innerHTML='<img src="'+ASSET_QR+'" alt="建档码" onerror="this.style.display=\'none\';this.parentNode.innerHTML=window.QR_SVG_PLACEHOLDER;" />';
+}
+
+/* ============ 就诊码（动态 QR） ============ */
+function buildQRsvg(seed){
+  // 简易伪随机 QR 风格 SVG（演示用，非真实可扫）
+  let r=0; for(const c of seed) r=(r*31+c.charCodeAt(0))>>>0;
+  const N=11, cell=15, pad=8, size=pad*2+N*cell;
+  let rects='<rect width="'+size+'" height="'+size+'" fill="#fff"/>';
+  function corner(x,y){ return '<rect x="'+(pad+x*cell)+'" y="'+(pad+y*cell)+'" width="'+(cell*3)+'" height="'+(cell*3)+'" fill="#0b1f3a"/><rect x="'+(pad+x*cell+cell)+'" y="'+(pad+y*cell+cell)+'" width="'+cell+'" height="'+cell+'" fill="#fff"/>'; }
+  let rnd=r;
+  for(let i=0;i<N;i++){for(let j=0;j<N;j++){
+    rnd=(rnd*1103515245+12345)&0x7fffffff;
+    if(rnd%100<48){ rects+='<rect x="'+(pad+i*cell)+'" y="'+(pad+j*cell)+'" width="'+cell+'" height="'+cell+'" fill="#0b1f3a"/>'; }
+  }}
+  rects+=corner(0,0)+corner(N-3,0)+corner(0,N-3);
+  return '<svg width="200" height="200" viewBox="0 0 '+size+' '+size+'" xmlns="http://www.w3.org/2000/svg">'+rects+'</svg>';
+}
+function renderVisitQR(){
+  // 真实图片 + 时间戳防缓存，模拟动态刷新
+  const t=Date.now();
+  $("qr-dynamic").innerHTML='<img src="'+ASSET_QR+'?t='+t+'" alt="就诊码" onerror="this.style.display=\'none\';this.parentNode.innerHTML=window.QR_SVG_PLACEHOLDER;" />';
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,"0"); const mm=String(now.getMinutes()).padStart(2,"0");
+  $("visit-refresh").textContent="每 15s 自动刷新 · 上次 "+hh+":"+mm;
+  if(demoState.arrived){
+    $("visit-arrived").style.display="flex";
+    $("visit-arrived-text").textContent=(demoState.visitArrivedName||"患者")+"已扫码到院";
+  } else {
+    $("visit-arrived").style.display="none";
+  }
+  // 启动自动刷新（演示用 15s 更明显）
+  stopVisitQRRefresh();
+  demoState.visitQRTimer=setInterval(()=>{
+    const tt=Date.now();
+    const img=$("qr-dynamic").querySelector("img");
+    if(img){ img.src=ASSET_QR+"?t="+tt; }
+    const n=new Date();
+    $("visit-refresh").textContent="每 15s 自动刷新 · 上次 "+String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0");
+  },15000);
+}
+function stopVisitQRRefresh(){
+  if(demoState.visitQRTimer){ clearInterval(demoState.visitQRTimer); demoState.visitQRTimer=null; }
+}
+function refreshVisitQR(){ renderVisitQR(); toast("接诊码已刷新"); }
+
+/* ============ 语音接诊 ============ */
+let voiceTimer=null;
+function toggleVoice(){
+  const wave=$("voice-wave"); const status=$("voice-status"); const trans=$("voice-transcript");
+  const extract=$("voice-extract"); const confirmBtn=$("voice-confirm"); const toggleTxt=$("voice-toggle-txt");
+  if(!demoState.voiceStarted){
+    demoState.voiceStarted=true;
+    wave.style.display="flex";
+    let bars=''; for(let i=0;i<22;i++) bars+='<span class="bar"></span>';
+    wave.innerHTML=bars;
+    status.textContent="录音中 00:12";
+    toggleTxt.textContent="结束录音";
+    $("voice-confirm").disabled=false; $("voice-confirm").style.opacity="1"; $("voice-confirm").style.cursor="pointer";
+    setTimeout(()=>{
+      trans.style.display="block";
+      trans.innerHTML='<span class="who">医生：</span>张明这次发作主要是大脚趾红肿，最近疼得比较明显，之前吃的非布司他后来自己停了。';
+      status.textContent="转写完成";
+      extract.style.display="block";
+      extract.innerHTML='<div class="ds-card-title" style="font-size:var(--text-base);margin-bottom:4px;">AI 抽取字段</div>'+
+        '<div class="ds-extract-row"><div class="ds-extract-name">当前疼痛和红肿活动状态</div><div class="ds-extract-val">近一周大脚趾红肿明显、疼痛明显 '+badge({cls:"src-voice",txt:"录音识别"})+'</div></div>'+
+        '<div class="ds-extract-row"><div class="ds-extract-name">长期降尿酸用药情况</div><div class="ds-extract-val">非布司他（自行停用） '+badge({cls:"src-voice",txt:"录音识别"})+'</div></div>';
+      confirmBtn.disabled=false; confirmBtn.style.opacity="1"; confirmBtn.style.cursor="pointer";
+      toggleTxt.textContent="重录";
+    },1400);
+  } else {
+    // 重录
+    demoState.voiceStarted=false;
+    wave.style.display="none"; status.textContent="待开始录音";
+    trans.style.display="none"; extract.style.display="none";
+    confirmBtn.disabled=true; confirmBtn.style.opacity=".5"; confirmBtn.style.cursor="not-allowed";
+    toggleTxt.textContent="重新录音";
+    $("voice-synced").style.display="none";
+  }
+  function badge(s){return '<span class="ds-source '+s.cls+'">'+s.txt+'</span>';}
+}
+function writeVoice(){
+  if($("voice-confirm").disabled) return;
+  const pid=demoState.activePatient||"p-zhang";
+  const p=demoState.patients.find(x=>x.id===pid);
+  if(!p) return;
+  p.sources["f5"]={cls:"src-voice",txt:"录音识别"};
+  p.sources["f6"]={cls:"src-voice",txt:"录音识别"};
+  demoState.voiceWritten=true;
+  $("voice-synced").style.display="flex";
+  toast("已写入档案，来源「录音识别」");
+}
+
+/* ============ 主动建档 ============ */
+function segPick(el){
+  el.parentNode.querySelectorAll(".seg-opt").forEach(o=>o.classList.remove("sel"));
+  el.classList.add("sel");
+}
+function submitEnroll(){
+  const name=$("enroll-name").value.trim();
+  if(!name){ toast("请输入患者姓名"); return; }
+  const sex=document.querySelector("#enroll-sex .seg-opt.sel").dataset.v;
+  const phone=$("enroll-phone").value.trim()||"1XX****XXXX";
+  const note=$("enroll-note").value.trim()||"候诊现场建档";
+  const np={ id:"p-"+Date.now(), name, sex, age:0, phone, brief:note, status:"pending", statusText:"待接诊", time:"建档 "+new Date().toLocaleDateString("zh-CN").slice(5), confirmed:false, arrived:false, sources:{} };
+  demoState.patients.unshift(np);
+  demoState.pendingCount+=1;
+  // 保持待办纯 IM：主动建档后给患者发一条消息提示
+  demoState.todos.unshift({type:"im", name:name.charAt(0), avatar:name.charAt(0), text:name+" 已建档，等待您确认痛风专病档案", time:"刚刚"});
+  renderWorkbench(); renderPatients();
+  showModal("建档成功","已为 "+name+" 创建痛风专病档案，进入待接诊队列。");
+  $("enroll-name").value=""; $("enroll-phone").value=""; $("enroll-note").value="";
+}
+
+/* ============ 弹层 ============ */
+function showModal(title,text){
+  $("modal-title").textContent=title; $("modal-text").textContent=text;
+  $("modal").classList.add("show");
+}
+function closeModal(){ $("modal").classList.remove("show"); }
+
+/* ============ 就诊码浮层 ============ */
+function showQRModal(pname){
+  $("qr-modal-title").textContent = pname? (pname+" · 就诊码") : "出示就诊码";
+  $("qr-modal-sub").textContent = pname? ("请 "+pname+" 扫码就诊") : "请患者扫码就诊";
+  refreshQRModal();
+  // 浮层打开期间自动刷新
+  stopQRModalRefresh();
+  demoState.qrModalTimer=setInterval(refreshQRModal,15000);
+  $("qr-modal").classList.add("show");
+}
+function closeQRModal(){
+  $("qr-modal").classList.remove("show");
+  stopQRModalRefresh();
+}
+function stopQRModalRefresh(){
+  if(demoState.qrModalTimer){ clearInterval(demoState.qrModalTimer); demoState.qrModalTimer=null; }
+}
+function refreshQRModal(){
+  const t=Date.now();
+  $("qr-modal-box").innerHTML='<img src="'+ASSET_QR+'?t='+t+'" alt="就诊码" style="width:200px;height:200px;border-radius:12px;" onerror="this.style.display=\'none\';this.parentNode.innerHTML=window.QR_SVG_PLACEHOLDER;" />';
+}
+
+/* ============ 重置 ============ */
+function resetDemo(){
+  // 先清理所有计时器（就诊码屏 / 浮层自动刷新）
+  stopVisitQRRefresh();
+  stopQRModalRefresh();
+  demoState=freshState();
+  demoState.voiceStarted=false;
+  // 复位语音/就诊码屏 UI
+  $("voice-wave").style.display="none";
+  $("voice-status").textContent="待开始录音";
+  $("voice-transcript").style.display="none";
+  $("voice-extract").style.display="none";
+  $("voice-synced").style.display="none";
+  $("voice-confirm").disabled=true; $("voice-confirm").style.opacity=".5"; $("voice-confirm").style.cursor="not-allowed";
+  $("voice-toggle-txt").textContent="结束录音";
+  $("visit-arrived").style.display="none";
+  goScreen("screen-login");
+  toast("演示已重置");
+}
+
+/* ============ 内嵌 QR 占位（素材缺失时回退） ============ */
+window.QR_SVG_PLACEHOLDER = buildQRsvg("FIXED-DOCTOR-QR");
+
+/* ============ 初始化 ============ */
+demoState=freshState();
+// 默认进入登录屏；登录后进入工作台
+goScreen("screen-login");
+</script>
+</body>
+</html>
