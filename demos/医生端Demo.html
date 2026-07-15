@@ -643,6 +643,7 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
 .ds-modal p{margin:0 0 16px;font-size:var(--text-sm);color:var(--doctor-sub);font-weight:700;line-height:1.55;white-space:pre-line;}
 .ds-modal .ds-actions{margin-top:0;}
 .ds-followup-choice{display:flex;align-items:flex-start;gap:9px;margin-top:10px;padding:11px 12px;border:1px solid var(--doctor-line);border-radius:13px;color:var(--doctor-text);font-size:var(--text-sm);font-weight:800;cursor:pointer;}.ds-followup-choice input{margin:2px 0 0;accent-color:var(--patient-primary-2);}.ds-followup-choice strong{display:block;font-size:var(--text-sm);}.ds-followup-choice small{display:block;margin-top:3px;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;line-height:1.45;}.ds-followup-date-field{display:none;margin-top:10px;}.ds-followup-date-field.show{display:block;}
+.ds-maintask-queue-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;padding:10px 2px 0;border:0;border-top:1px solid rgba(1,161,255,.14);background:transparent;color:var(--patient-primary-2);font:800 var(--text-sm) var(--gout-font-family);cursor:pointer;}.ds-maintask-queue{display:grid;gap:8px;margin-top:9px;}.ds-maintask-queue-item{display:flex;align-items:center;gap:9px;width:100%;padding:10px;border:1px solid var(--doctor-line);border-radius:14px;background:#fff;text-align:left;font-family:inherit;cursor:pointer;}.ds-maintask-queue-avatar{width:29px;height:29px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--patient-soft-blue);color:var(--patient-primary-2);font-size:var(--text-sm);font-weight:900;flex:0 0 auto;}.ds-maintask-queue-copy{min-width:0;flex:1;}.ds-maintask-queue-copy strong{display:block;color:var(--doctor-text);font-size:var(--text-sm);}.ds-maintask-queue-copy span{display:block;margin-top:2px;color:var(--doctor-hint);font-size:var(--text-xs);font-weight:700;}.ds-maintask-queue-time{color:var(--doctor-hint);font-size:var(--text-xs);font-weight:800;white-space:nowrap;}
 
 /* ============ 右下角患者端联动模拟入口（演示用，低侵入） ============ */
 .ds-link-panel{position:fixed;right:18px;bottom:18px;width:230px;background:rgba(255,255,255,0.96);border:1px solid rgba(1,161,255,0.25);border-radius:18px;padding:14px;box-shadow:0 16px 40px rgba(15,23,42,0.18);z-index:90;font-family:var(--gout-font-family);}
@@ -815,27 +816,7 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
             </span>
           </div>
 
-          <div class="ds-maintask">
-            <span class="ds-kicker">优先任务</span>
-            <div class="ds-maintask-person"><div class="ds-maintask-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><div><div class="mt-title">张明 · 待接诊</div><div class="mt-desc">已到院 · 资料已补充</div></div></div>
-            <div class="ds-visit-alert" id="workbench-visit-alert"><span>缺少本次就诊号</span><button onclick="openVisitScan('p-zhang','screen-workbench')">扫就诊凭条识别</button></div>
-            <div class="ds-maintask-actions">
-              <button class="ds-btn-primary" onclick="openPatientFlow('p-zhang')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                查看患者档案
-              </button>
-            </div>
-            <div class="ds-maintask-secondary">
-              <button onclick="openVoiceFlow('p-zhang')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg>
-                诊间接诊
-              </button>
-              <button onclick="openWorkbenchUpload()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
-                补录资料
-              </button>
-            </div>
-          </div>
+          <div id="workbench-primary-task"><!-- JS 渲染优先待接诊任务 --></div>
 
           <div class="ds-section-title ds-workbench-section">消息</div>
           <div class="ds-todo-list" id="workbench-todos"><!-- JS 渲染 --></div>
@@ -906,10 +887,10 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
         </div>
         <div class="ds-body" id="patients-body" style="position:relative;">
           <div class="ds-seg" id="patient-seg">
-            <button class="ds-seg-item active" onclick="setPatientTab('pending',this)">待接诊 <span class="ds-seg-count" id="seg-pending">4</span></button>
-            <button class="ds-seg-item" onclick="setPatientTab('all',this)">全部患者 <span class="ds-seg-count" id="seg-all" style="background:var(--doctor-blue-soft);color:var(--patient-primary-2);">5</span></button>
+            <button class="ds-seg-item active" data-patient-tab="pending" onclick="setPatientTab('pending',this)">待接诊 <span class="ds-seg-count" id="seg-pending">4</span></button>
+            <button class="ds-seg-item" data-patient-tab="all" onclick="setPatientTab('all',this)">全部患者 <span class="ds-seg-count" id="seg-all" style="background:var(--doctor-blue-soft);color:var(--patient-primary-2);">5</span></button>
           </div>
-          <div class="ds-patient-toolbar"><div class="ds-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="patient-search" placeholder="搜索姓名、手机号" oninput="renderPatients()" /></div><button class="ds-filter-btn" id="patient-filter-btn" onclick="openPatientFilter()">筛选</button></div>
+          <div class="ds-patient-toolbar"><div class="ds-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="patient-search" placeholder="搜索姓名、拼音、手机号" oninput="renderPatients()" /></div><button class="ds-filter-btn" id="patient-filter-btn" onclick="openPatientFilter()">筛选</button></div>
           <div class="ds-patient-list-head"><div class="ds-patient-list-kicker"><div class="ds-patient-list-title" id="patient-list-title">待接诊患者（4）</div><span class="ds-patient-sort">向下滑动查看全部</span></div><div style="display:flex;gap:6px"><button class="ds-add-patient" onclick="goScreen('screen-enroll')">+ 新增患者</button></div></div>
           <div class="ds-filter-chips" id="patient-filter-chips"></div>
           <div class="ds-im-list ds-patient-list" id="patient-list"><!-- JS 渲染 --></div>
@@ -1026,28 +1007,6 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
         </div>
       </section>
 
-      <!-- ============ 屏：患者资料确认入档 ============ -->
-      <section class="ds-doctor-screen" id="screen-archive-confirm">
-        <div class="ds-statusbar"><span>09:24</span><span class="sb-right">●●● 5G ▮</span></div>
-        <div class="ds-navbar">
-          <button class="ds-back" onclick="goScreen('screen-profile')" aria-label="返回患者档案"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-          <div class="nav-title">确认资料入档</div><div style="width:34px"></div>
-        </div>
-        <div class="ds-body">
-          <div class="ds-card grad-border" style="margin-top:12px;">
-            <div class="ds-card-title">待确认资料</div>
-            <div class="ds-sub" id="archive-confirm-patient" style="margin-top:4px;"></div>
-            <div class="ds-voice-confirm-list" id="archive-confirm-list"></div>
-            <div class="ds-sub" style="margin-top:12px;line-height:1.55;">仅核对需要写入正式档案的病史、用药与录音提取字段。化验报告已直接归档，可在报告列表中编辑；AI 诊疗辅助不计入档案。</div>
-          </div>
-          <div class="ds-synced-tip" id="archive-confirm-synced" style="display:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>资料已确认入档</div>
-        </div>
-        <div class="ds-actionbar">
-          <button class="ds-btn-secondary" onclick="goScreen('screen-profile')">暂不入档</button>
-          <button class="ds-btn-primary" onclick="confirmPatientArchive()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>确认资料入档</button>
-        </div>
-      </section>
-
       <!-- ============ 屏 8：复诊逾期 ============ -->
       <section class="ds-doctor-screen" id="screen-overdue">
         <div class="ds-statusbar">
@@ -1126,7 +1085,7 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
           </div>
           <div class="ds-synced-tip" id="voice-synced" style="display:none;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            已加入待确认资料，来源标记「录音识别」
+            已保留录音识别来源，请在对应病历区块编辑并保存
           </div>
         </div>
         <div class="ds-actionbar">
@@ -1142,19 +1101,19 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
         <div class="ds-statusbar"><span>09:24</span><span class="sb-right">●●● 5G ▮</span></div>
         <div class="ds-navbar">
           <button class="ds-back" onclick="goScreen('screen-voice')" aria-label="返回诊间接诊"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-          <div class="nav-title">接诊内容确认</div><div style="width:34px"></div>
+          <div class="nav-title">核对本次病历</div><div style="width:34px"></div>
         </div>
         <div class="ds-body">
           <div class="ds-card grad-border" style="margin-top:12px;">
-            <div class="ds-card-title">核对识别结果</div>
+            <div class="ds-card-title">录音提取参考</div>
             <div class="ds-sub" id="voice-confirm-patient" style="margin-top:4px;"></div>
             <div class="ds-voice-confirm-list" id="voice-confirm-list"></div>
             <div class="ds-voice-summary"><strong>病史要点：</strong><span id="voice-confirm-summary"></span></div>
           </div>
         </div>
         <div class="ds-actionbar">
-          <button class="ds-btn-secondary" onclick="goScreen('screen-voice')">返回修改</button>
-          <button class="ds-btn-primary" onclick="confirmVoiceArchive()">去确认资料</button>
+          <button class="ds-btn-secondary" onclick="goScreen('screen-voice')">返回接诊</button>
+          <button class="ds-btn-primary" onclick="confirmVoiceArchive()">去完善病历</button>
         </div>
       </section>
 
@@ -1390,7 +1349,16 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
           <div class="ds-followup-date-field" id="followup-date-field"><div class="ds-form-field"><label>下次复诊日期</label><input id="followup-date-input" type="date" value="2026-08-08"></div></div>
           <label class="ds-followup-choice"><input type="radio" name="followup-plan" value="none" onchange="toggleFollowupDateField()"><span><strong>暂无复诊安排</strong><small>患者端展示“暂无复诊安排”，可联系医生。</small></span></label>
           <label class="ds-followup-choice"><input type="radio" name="followup-plan" value="not-needed" onchange="toggleFollowupDateField()"><span><strong>确认当前无需复诊</strong><small>患者端展示“暂无复诊需求”，不展示复诊行动。</small></span></label>
+          <div class="ds-form-field" style="margin-top:12px;"><label>本次医嘱</label><input id="followup-order-input" type="text" placeholder="待确认：可填写本次医嘱"></div>
           <div class="ds-actions"><button class="ds-btn-secondary" onclick="closeFollowupPlanModal()">取消</button><button class="ds-btn-primary" onclick="saveFollowupPlan()">保存记录</button></div>
+        </div>
+      </div>
+
+      <div class="ds-modal-mask" id="duplicate-report-modal">
+        <div class="ds-modal">
+          <h3>发现相似报告</h3>
+          <p id="duplicate-report-copy">请核对后选择保留或合并。</p>
+          <div class="ds-actions"><button class="ds-btn-secondary" onclick="resolveDuplicateReport('keep')">保留两份原件</button><button class="ds-btn-primary" onclick="resolveDuplicateReport('merge')">合并为同一报告</button></div>
         </div>
       </div>
 
@@ -1451,7 +1419,7 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
     <div class="ds-nav-group">
       <h4>接诊与方案</h4>
       <button class="ds-nav-item" data-screen="screen-voice" onclick="goNav(this,'screen-voice')">诊间接诊</button>
-      <button class="ds-nav-item" data-screen="screen-voice-confirm" onclick="goNav(this,'screen-voice-confirm')">接诊内容确认</button>
+      <button class="ds-nav-item" data-screen="screen-voice-confirm" onclick="goNav(this,'screen-voice-confirm')">核对本次病历</button>
     </div>
 
     <div class="ds-nav-group">
@@ -1480,11 +1448,17 @@ body{margin:0;font-family:var(--gout-font-family);background:#1a1a2e;min-height:
 /* ============ 全局状态（双向联动核心） ============ */
 const ASSET_QR = "../assets/doctor-qr.png";
 const PATIENTS_SEED = [
-  { id:"p-zhang", name:"张明", sex:"男", age:45, phone:"138****6688", brief:"痛风性关节炎病程 10 余年，近一年反复急性发作", status:"pending", statusText:"待接诊", time:"建档 07-10", confirmed:false, arrived:false, sources:{}, pendingMaterials:true },
-  { id:"p-chen", name:"陈建国", sex:"男", age:63, phone:"139****2031", fullPhone:"13956202031", brief:"痛风性关节炎病程 3 年，合并 2 型糖尿病", status:"overdue", statusText:"复查逾期", time:"逾期 21 天", lastVisit:"2026-06-22", overdueReason:"血清尿酸及肝肾功能复查逾期", followupAction:"联系改期，并提醒携带近期血糖监测记录", reminderState:"待提醒", confirmed:false, arrived:false, sources:{} },
-  { id:"p-li", name:"李红", sex:"女", age:38, phone:"137****4512", brief:"首次发作痛风性关节炎，双踝红肿", status:"pending", statusText:"待接诊", time:"建档 07-12", confirmed:false, arrived:false, sources:{} },
-  { id:"p-zhou", name:"周国强", sex:"男", age:51, phone:"135****3097", brief:"痛风性关节炎合并原发性高血压，长期降尿酸管理", status:"pending", statusText:"待接诊", time:"建档 07-11", confirmed:false, arrived:false, sources:{} },
-  { id:"p-wang", name:"王丽", sex:"女", age:44, phone:"136****7788", brief:"痛风石形成，双肘皮下结节", status:"pending", statusText:"待接诊", time:"建档 07-09", confirmed:false, arrived:false, sources:{} },
+  { id:"p-zhang", name:"张明", searchPinyin:"zhangming zm", sex:"男", age:45, phone:"138****6688", brief:"痛风性关节炎病程 10 余年，近一年反复急性发作", status:"pending", statusText:"待接诊", time:"建档 07-10", confirmed:false, arrived:false, arrivedAt:"2026-07-13 09:12", sources:{}, pendingMaterials:true },
+  { id:"p-lin", name:"林晓燕", searchPinyin:"linxiaoyan lxy", sex:"女", age:55, phone:"139****6134", brief:"血尿酸持续升高，拟首次专病评估", status:"pending", statusText:"待接诊", time:"建档 07-13", confirmed:false, arrived:false, arrivedAt:"2026-07-13 09:20", sources:{} },
+  { id:"p-fang", name:"方建平", searchPinyin:"fangjianping fjp", sex:"男", age:60, phone:"136****9521", brief:"近期踝关节急性发作，已上传外院化验报告", status:"pending", statusText:"待接诊", time:"建档 07-12", confirmed:false, arrived:false, arrivedAt:"2026-07-13 09:28", sources:{}, pendingMaterials:true },
+  { id:"p-chen", name:"陈建国", searchPinyin:"chenjianguo cjg", sex:"男", age:63, phone:"139****2031", fullPhone:"13956202031", brief:"痛风性关节炎病程 3 年，合并 2 型糖尿病", status:"overdue", statusText:"复查逾期", time:"逾期 21 天", lastVisit:"2026-06-22", overdueReason:"血清尿酸及肝肾功能复查逾期", followupAction:"联系改期，并提醒携带近期血糖监测记录", reminderState:"待提醒", confirmed:false, arrived:false, sources:{} },
+  { id:"p-li", name:"李红", searchPinyin:"lihong lh", sex:"女", age:38, phone:"137****4512", brief:"首次发作痛风性关节炎，双踝红肿", status:"enrolled", statusText:"已建档", time:"建档 07-12", confirmed:false, arrived:false, sources:{} },
+  { id:"p-zhou", name:"周国强", searchPinyin:"zhouguoqiang zgq", sex:"男", age:51, phone:"135****3097", brief:"痛风性关节炎合并原发性高血压，长期降尿酸管理", status:"enrolled", statusText:"已建档", time:"建档 07-11", confirmed:false, arrived:false, sources:{}, pendingMaterials:true },
+  { id:"p-wang", name:"王丽", searchPinyin:"wangli wl", sex:"女", age:44, phone:"136****7788", brief:"痛风石形成，双肘皮下结节", status:"enrolled", statusText:"已建档", time:"建档 07-09", confirmed:false, arrived:false, sources:{} },
+  { id:"p-huang", name:"黄志伟", searchPinyin:"huangzhiwei hzw", sex:"男", age:47, phone:"137****2846", brief:"反复足趾疼痛，近期自行停用降尿酸药", status:"enrolled", statusText:"已建档", time:"建档 07-13", confirmed:false, arrived:false, sources:{}, pendingMaterials:true },
+  { id:"p-jiang", name:"江海涛", searchPinyin:"jianghaitao jht", sex:"男", age:42, phone:"135****4289", brief:"规律服用非布司他，复诊评估用药与尿酸控制", status:"enrolled", statusText:"已建档", time:"建档 07-12", confirmed:false, arrived:false, sources:{} },
+  { id:"p-qian", name:"钱美玲", searchPinyin:"qianmeiling qml", sex:"女", age:50, phone:"138****7416", brief:"近一年多次发作，伴高血压用药史", status:"enrolled", statusText:"已建档", time:"建档 07-11", confirmed:false, arrived:false, sources:{} },
+  { id:"p-song", name:"宋志强", searchPinyin:"songzhiqiang szq", sex:"男", age:58, phone:"137****3068", brief:"外院确诊高尿酸血症，携带近期肾功能报告", status:"enrolled", statusText:"已建档", time:"建档 07-11", confirmed:false, arrived:false, sources:{}, pendingMaterials:true },
   { id:"p-zhao", name:"赵海峰", sex:"男", age:56, phone:"138****5196", brief:"痛风性关节炎病程 8 年，规律降尿酸治疗", status:"confirmed", statusText:"已纳管", time:"纳管 06-18", confirmed:true, arrived:false, sources:{} },
   { id:"p-sun", name:"孙秀兰", sex:"女", age:61, phone:"137****8062", brief:"痛风性关节炎合并原发性高血压，近期血清尿酸稳定", status:"confirmed", statusText:"已纳管", time:"纳管 06-25", confirmed:true, arrived:false, sources:{} },
   { id:"p-luo", name:"罗建军", sex:"男", age:49, phone:"139****3471", brief:"反复足踝关节急性发作，长期随访中", status:"confirmed", statusText:"已纳管", time:"纳管 07-02", confirmed:true, arrived:false, sources:{} }
@@ -1498,7 +1472,7 @@ function freshState(){
     loggedIn:false,
     screen:"screen-login",
     patients: JSON.parse(JSON.stringify(PATIENTS_SEED)),
-    pendingCount:4,          // 待接诊角标（张明/李红/周国强/王丽）
+    pendingCount:10,         // 待接诊角标
     confirmCount:3,          // 已纳管（赵海峰/孙秀兰/罗建军）
     overdueCount:4,          // 复查逾期与失访风险患者
     reminderChannel:"in",   // 批量提醒的渠道：消息 IN / 短信
@@ -1515,9 +1489,12 @@ function freshState(){
     voiceFields:[],
     visitRecords:{},
     followupPlans:{},        // 医生正式保存本次接诊记录后的复诊结论
-    materialPending:2,       // 看诊前资料待确认项数（OCR 入库后递减）
+    workbenchQueueExpanded:false,
+    pendingDuplicateReport:null,
+    archiveSectionHistory:{}, // 分区保存前的正式版本，供后续追溯
+    materialPending:2,       // 看诊前原始资料数量（仅作展示）
     patientSupplied:false,   // 患者是否补充过资料
-    patientTab:"pending",     // 患者队列分段：pending / all
+    patientTab:"pending",     // 患者队列分段：pending / enrolled / all
     patientFilters:[],        // 全部患者视图的状态多选筛选
     activePatient:null,       // 当前打开接诊流程的患者 id
     visitScanReturn:null,     // 进入就诊号识别屏前的来源屏（确认采用后返回）
@@ -1576,7 +1553,7 @@ window.addEventListener("message",event=>{
     renderWorkbench();
   }
   if(msg.type==="patient-arrived"){
-    demoState.arrived=true; demoState.visitArrivedName="张明";
+    demoState.arrived=true; demoState.visitArrivedName="张明"; if(p) p.arrivedAt="2026-07-13 09:12";
     if(demoState.screen==="screen-visitqr") renderVisitQR();
     if(demoState.screen==="screen-workbench") renderWorkbench();
   }
@@ -1621,7 +1598,6 @@ function goScreen(id){
   if(id==="screen-aiassist") renderAIAssist();
   if(id==="screen-overdue") renderOverdue();
   if(id==="screen-confirm") renderConfirm();
-  if(id==="screen-archive-confirm") renderArchiveConfirm();
   if(id==="screen-voice-confirm") renderVoiceConfirm();
   if(id==="screen-visit-scan" && typeof startVisitScan==="function") startVisitScan();
   // 语音屏初始化：若非由 openVoiceFlow（自动录音路径）触发，则重置为空态（按钮“开始录音”、未录音）
@@ -1646,31 +1622,36 @@ function toggleSetting(button){button.classList.toggle("on");toast(button.classL
 function logoutDemo(){demoState.loggedIn=false;goScreen("screen-login");toast("已退出登录");}
 
 /* ============ 工作台 ============ */
+function getPendingEncounterQueue(){
+  return demoState.patients.filter(p=>p.status==="pending"&&(p.encounterStatus||"pending")!=="completed").sort((a,b)=>(a.arrivedAt||"").localeCompare(b.arrivedAt||""));
+}
 function renderWorkbench(){
-  $("stat-pending").textContent=demoState.patients.filter(p=>p.status==="pending").length;
+  $("stat-pending").textContent=getPendingEncounterQueue().length;
   $("stat-all").textContent=demoState.patients.length;
   $("stat-overdue").textContent=demoState.overdueCount;
-  const visitAlert=$("workbench-visit-alert"),visit=demoState.visitRecords["p-zhang"];
-  if(visitAlert){
-    visitAlert.innerHTML=visit?'<span>本次就诊号：'+visit.number+'</span><button onclick="openVisitNumberModal(\'p-zhang\')">修改</button>':'<span>缺少本次就诊号</span><button onclick="openVisitScan(\'p-zhang\',\'screen-workbench\')">扫就诊凭条识别</button>';
-    visitAlert.classList.toggle("is-complete",Boolean(visit));
+  const primary=getPendingEncounterQueue()[0];
+  const primaryBox=$("workbench-primary-task");
+  if(primaryBox&&primary){
+    const visit=demoState.visitRecords[primary.id];
+    const others=getPendingEncounterQueue().slice(1);
+    const queueToggle=others.length?'<button class="ds-maintask-queue-toggle" type="button" onclick="toggleWorkbenchQueue()"><span>'+((demoState.workbenchQueueExpanded?'收起':'展开')+'其他待接诊患者（'+others.length+'）')+'</span><span>'+ (demoState.workbenchQueueExpanded?'⌃':'⌄') +'</span></button>':'';
+    const queueList=demoState.workbenchQueueExpanded&&others.length?'<div class="ds-maintask-queue">'+others.map(p=>'<button class="ds-maintask-queue-item" type="button" onclick="openPatientFlow(\''+p.id+'\')"><span class="ds-maintask-queue-avatar">'+p.name.charAt(0)+'</span><span class="ds-maintask-queue-copy"><strong>'+p.name+' · 待接诊</strong><span>已扫码就诊 · '+(p.pendingMaterials?'资料已补充':'资料待补充')+'</span></span><span class="ds-maintask-queue-time">'+(p.arrivedAt||'') .slice(11)+'</span></button>').join('')+'</div>':'';
+    primaryBox.innerHTML='<div class="ds-maintask"><span class="ds-kicker">优先任务</span><div class="ds-maintask-person"><div class="ds-maintask-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><div><div class="mt-title">'+primary.name+' · 待接诊</div><div class="mt-desc">已到院 · 资料已补充</div></div></div><div class="ds-visit-alert '+(visit?'is-complete':'')+'"><span>'+(visit?'本次就诊号：'+visit.number:'缺少本次就诊号')+'</span><button onclick="'+(visit?'openVisitNumberModal(\''+primary.id+'\')':'openVisitScan(\''+primary.id+'\',\'screen-workbench\')')+'">'+(visit?'修改':'扫就诊凭条识别')+'</button></div><div class="ds-maintask-actions"><button class="ds-btn-primary" onclick="openPatientFlow(\''+primary.id+'\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>查看患者档案</button></div><div class="ds-maintask-secondary"><button onclick="openVoiceFlow(\''+primary.id+'\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg>诊间接诊</button><button onclick="openWorkbenchUpload()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>补录资料</button></div>'+queueToggle+queueList+'</div>';
+  } else if(primaryBox){
+    primaryBox.innerHTML='<div class="ds-empty">当前暂无待接诊患者</div>';
   }
   const list=$("workbench-todos"); list.innerHTML="";
   demoState.todos.slice(0,3).forEach(t=>{
     const d=document.createElement("div");
     d.className="ds-im"; d.onclick=()=>openChat(t.name);
-    d.innerHTML=
-      '<div class="ds-im-avatar">'+t.avatar+'</div>'+
-      '<div class="ds-im-body">'+
-        '<div class="ds-im-head"><span class="ds-im-name">'+t.name+'</span><span class="ds-im-time">'+t.time+'</span></div>'+
-        '<div class="ds-im-text">'+(t.needsDoctor?t.text:(t.aiReply||t.text))+'</div><span class="ds-im-route '+(t.needsDoctor?'needs-doctor':'')+'">'+(t.reply?'医生已回复':(t.needsDoctor?'待医生回复':'智能助手已回复'))+'</span>'+
-      '</div>'+(t.unread?'<span class="ds-im-unread">'+t.unread+'</span>':'');
+    d.innerHTML='<div class="ds-im-avatar">'+t.avatar+'</div><div class="ds-im-body"><div class="ds-im-head"><span class="ds-im-name">'+t.name+'</span><span class="ds-im-time">'+t.time+'</span></div><div class="ds-im-text">'+(t.needsDoctor?t.text:(t.aiReply||t.text))+'</div><span class="ds-im-route '+(t.needsDoctor?'needs-doctor':'')+'">'+(t.reply?'医生已回复':(t.needsDoctor?'待医生回复':'智能助手已回复'))+'</span></div>'+(t.unread?'<span class="ds-im-unread">'+t.unread+'</span>':'');
     list.appendChild(d);
   });
   const more=document.createElement("button");
   more.className="ds-im-more"; more.textContent="查看全部消息"; more.onclick=()=>goScreen("screen-messages");
   list.appendChild(more);
 }
+function toggleWorkbenchQueue(){demoState.workbenchQueueExpanded=!demoState.workbenchQueueExpanded;renderWorkbench();}
 function renderMessageList(){
   const list=$("message-list"); list.innerHTML="";
   demoState.todos.forEach(t=>{
@@ -1725,50 +1706,31 @@ function daysSinceLastVisit(lastVisit){
 function renderPatients(){
   const list=$("patient-list"); list.innerHTML="";
   const tab=demoState.patientTab||"pending";
-  const segPending=$("seg-pending"); if(segPending) segPending.textContent=demoState.patients.filter(p=>p.status==="pending").length;
+  const pendingPatients=getPendingEncounterQueue();
+  const segPending=$("seg-pending"); if(segPending) segPending.textContent=pendingPatients.length;
   const segAll=$("seg-all"); if(segAll) segAll.textContent=demoState.patients.length;
-  const pendingTotal=demoState.patients.filter(p=>p.status==="pending"&&(p.encounterStatus||"pending")!=="completed").length;
-  const title=$("patient-list-title"),switchBtn=$("patient-list-switch"),filterBtn=$("patient-filter-btn"),chips=$("patient-filter-chips");
-  if(title) title.textContent=tab==="pending"?"待接诊患者（"+pendingTotal+"）":"全部患者（"+demoState.patients.length+"）";
-  if(switchBtn) switchBtn.textContent=tab==="pending"?"全部患者 ›":"‹ 只看待接诊";
-  if(filterBtn) filterBtn.style.display="inline-block";
-  if(chips){chips.style.display=tab==="all"&&demoState.patientFilters.length?"flex":"none";chips.innerHTML=demoState.patientFilters.map(key=>'<button class="ds-filter-chip" onclick="removePatientFilter(\''+key+'\')">'+patientFilterLabel(key)+' ×</button>').join('');}
-  document.querySelectorAll("#patient-seg .ds-seg-item").forEach((button,index)=>{
-    const buttonTab=index===0?"pending":"all";
-    button.classList.toggle("active",buttonTab===tab);
-  });
+  const title=$("patient-list-title"),filterBtn=$("patient-filter-btn"),chips=$("patient-filter-chips");
+  const titles={pending:"待接诊患者",all:"全部患者"};
   let arr=demoState.patients.slice();
-  if(tab==="pending") arr=arr.filter(p=>p.status==="pending"&&(p.encounterStatus||"pending")!=="completed");
-  else arr.sort((a,b)=> (a.status==="pending"?-1:1)-(b.status==="pending"?-1:1));
+  if(tab==="pending") arr=pendingPatients;
+  else arr.sort((a,b)=>(a.status==="pending"&&a.encounterStatus!=="completed"?-1:1)-(b.status==="pending"&&b.encounterStatus!=="completed"?-1:1));
+  if(title) title.textContent=(titles[tab]||"患者")+"（"+arr.length+"）";
+  if(filterBtn) filterBtn.style.display=tab==="all"?"inline-block":"none";
+  if(chips){chips.style.display=tab==="all"&&demoState.patientFilters.length?"flex":"none";chips.innerHTML=demoState.patientFilters.map(key=>'<button class="ds-filter-chip" onclick="removePatientFilter(\''+key+'\')">'+patientFilterLabel(key)+' ×</button>').join('');}
+  document.querySelectorAll("#patient-seg .ds-seg-item").forEach(button=>button.classList.toggle("active",button.dataset.patientTab===tab));
   if(tab==="all"&&demoState.patientFilters.length) arr=arr.filter(p=>demoState.patientFilters.includes(patientFilterKey(p)));
   const query=((document.getElementById("patient-search")||{}).value||"").trim().toLowerCase();
-  if(query) arr=arr.filter(p=>p.name.toLowerCase().includes(query)||p.phone.replace(/\*/g,"").includes(query.replace(/\*/g,"")));
-  if(arr.length===0){
-    const emptyText=tab==="pending"?"待接诊患者":"患者";
-    list.innerHTML='<div class="ds-empty">暂无'+emptyText+'</div>';
-    return;
-  }
+  if(query) arr=arr.filter(p=>p.name.toLowerCase().includes(query)||(p.searchPinyin||"").replace(/\s/g,"").includes(query.replace(/\s/g,""))||p.phone.replace(/\*/g,"").includes(query.replace(/\*/g,""))||(p.fullPhone||"").includes(query));
+  if(arr.length===0){list.innerHTML='<div class="ds-empty">暂无'+(titles[tab]||"患者")+'</div>';renderPatientIndex([]);return;}
   arr.forEach(p=>{
     const row=document.createElement("div");
-    row.className="ds-prow";
-    row.dataset.patientName=p.name;
-    row.onclick=()=>openPatientFlow(p.id);
-    const arrival=(p.time||"").replace(/^建档\s*/,"到院 ").replace(/^纳管\s*/,"纳管 ");
-    const encounter=p.encounterStatus||"pending";
-    const statusLabel=p.status==="pending"?(encounter==="completed"?"已接诊":"待接诊"):p.statusText;
-    const materials=p.status==="pending"?"资料待补录":"资料已归档";
-    row.innerHTML=
-      '<div class="ds-avatar">'+p.name.charAt(0)+'</div>'+
-      '<div class="ds-pinfo">'+
-        '<div class="ds-pname">'+p.name+'</div>'+
-        '<div class="ds-pbrief">'+p.brief+'</div>'+
-        '<div class="ds-pchips"><span class="ds-pqueue-chip">'+statusLabel+'</span><span class="ds-pqueue-chip missing">'+materials+'</span></div>'+
-      '</div>'+
-      '<div class="ds-pright">'+
-        '<span class="ds-ptime">'+(p.status==="overdue"&&p.lastVisit?daysSinceLastVisit(p.lastVisit):arrival)+'</span>'+
-        '<button class="ds-prow-mini" type="button" onclick="event.stopPropagation();openOcrCamera(\'archive\',demoState.profileReturn||\'screen-patients\',\''+p.id+'\')">补录资料</button>'+
-      '</div>'+
-      '<div class="ds-prow-foot"><span class="ds-prow-foot-item ds-pnothing"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>'+ (p.pendingMaterials?'有待确认资料':'暂无最新事项') +'</span></div>';
+    row.className="ds-prow"; row.dataset.patientName=p.name; row.onclick=()=>openPatientFlow(p.id);
+    const activityTime=p.status==="enrolled"?(p.time||""):(p.time||"").replace(/^建档\s*/,"到院 ").replace(/^纳管\s*/,"纳管 ");
+    const statusLabel=p.status==="pending"?"待接诊":p.statusText;
+    const materials=p.status==="enrolled"?"已建档 · 未扫码就诊":(p.status==="pending"?"资料待补录":"资料已归档");
+    const primaryLabel=p.status==="enrolled"?"查看档案":"补录资料";
+    const primaryAction=p.status==="enrolled"?"openPatientFlow('"+p.id+"')":"openOcrCamera('archive',demoState.profileReturn||'screen-patients','"+p.id+"')";
+    row.innerHTML='<div class="ds-avatar">'+p.name.charAt(0)+'</div><div class="ds-pinfo"><div class="ds-pname">'+p.name+'</div><div class="ds-pbrief">'+p.brief+'</div><div class="ds-pchips"><span class="ds-pqueue-chip">'+statusLabel+'</span><span class="ds-pqueue-chip missing">'+materials+'</span></div></div><div class="ds-pright"><span class="ds-ptime">'+(p.status==="overdue"&&p.lastVisit?daysSinceLastVisit(p.lastVisit):activityTime)+'</span><button class="ds-prow-mini" type="button" onclick="event.stopPropagation();'+primaryAction+'">'+primaryLabel+'</button></div><div class="ds-prow-foot"><span class="ds-prow-foot-item ds-pnothing"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>'+materials+'</span></div>';
     list.appendChild(row);
   });
   renderPatientIndex(arr);
@@ -1951,15 +1913,18 @@ function renderProfile(pid){
   const body=$("profile-body");
   const data=getPatientDemoData(p);
   const visit=demoState.visitRecords[p.id];
-  const patientInfoCard='<div class="ds-profile-identity"><div class="ds-profile-avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="13" fill="#2f80ed"/><path d="M10 61c2-15 11-22 22-22s20 7 22 22" fill="#2f80ed"/><path d="M19 28c1 9 6 14 13 14s12-5 13-14c-3 3-7 4-13 4s-10-1-13-4" fill="#fff" opacity=".94"/></svg></div><div><div class="ds-profile-name">'+p.name+'</div><div class="ds-profile-visit">本次就诊号：'+(visit?visit.number:'未填写')+' <button onclick="'+(visit?'openVisitNumberModal(\''+p.id+'\')':'openVisitScan(\''+p.id+'\',\''+(demoState.profileReturn||'screen-profile')+'\')')+'">'+(visit?'修改':'填写')+'</button></div></div><div class="ds-profile-meta">'+p.sex+' · '+p.age+' 岁<br>'+p.phone+'</div></div>';
+  const isEnrollment=p.status==="enrolled";
+  const patientInfoCard='<div class="ds-profile-identity"><div class="ds-profile-avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="23" r="13" fill="#2f80ed"/><path d="M10 61c2-15 11-22 22-22s20 7 22 22" fill="#2f80ed"/><path d="M19 28c1 9 6 14 13 14s12-5 13-14c-3 3-7 4-13 4s-10-1-13-4" fill="#fff" opacity=".94"/></svg></div><div><div class="ds-profile-name">'+p.name+'</div><div class="ds-profile-visit">'+(isEnrollment?'已建档 · 未扫码就诊，未建立本次接诊关联':'本次就诊号：'+(visit?visit.number:'未填写')+' <button onclick="'+(visit?'openVisitNumberModal(\''+p.id+'\')':'openVisitScan(\''+p.id+'\',\''+(demoState.profileReturn||'screen-profile')+'\')')+'">'+(visit?'修改':'填写')+'</button>')+'</div></div><div class="ds-profile-meta">'+p.sex+' · '+p.age+' 岁<br>'+p.phone+'</div></div>';
 
   // ── 3. AI 临床摘要：当前风险优先，病史和辅助数据后置 ──
   const riskLabel=data.urateClass?'未达标':'已达标';
   const alertsLine=data.alerts.length?'<div class="ds-ai-alerts-line">⚠ '+data.alerts.join(' · ')+'</div>':'';
   const aiBrief='<div class="ds-ai-brief"><div class="ds-ai-brief-head"><div class="ds-ai-brief-title"><span class="ds-ai-brief-mark">AI</span>临床摘要</div><span class="ds-chip '+data.stageClass+'">'+data.stage+'</span></div><div class="ds-ai-priority"><div><div class="ds-ai-priority-kicker">当前关键指标</div><div class="ds-ai-priority-value">血尿酸 '+data.urate+'</div></div><span class="ds-ai-priority-state">'+riskLabel+'</span></div><div class="ds-ai-support"><div class="ds-ai-support-item"><span>肾功能</span><strong>'+data.renal+'</strong></div><div class="ds-ai-support-item"><span>近期急性发作</span><strong>'+data.attacks+'</strong></div></div>'+(data.summary?'<div class="ds-ai-summary">'+data.summary+'</div>':'')+alertsLine+'</div>';
 
+  const historySection='<div class="ds-section-block" id="section-history"><div class="ds-section-label">痛风病史<span class="ds-section-actions"><button class="ds-section-btn" onclick="event.stopPropagation();openArchiveGroupEditor(\'history\')">编辑并保存</button></span></div><div class="ds-safety-strip"><span>'+data.history.slice(0,3).map(row=>row[0]+'：<strong>'+row[1]+'</strong>').join(' · ')+'</span></div></div>';
+
   // ── 4. 当前用药方案（双卡片：长期降尿酸 / 急性发作处理） ──
-  const medSection='<div class="ds-section-block" id="section-med"><div class="ds-section-label">当前用药方案<span class="ds-section-actions"><button class="ds-section-btn" onclick="event.stopPropagation();openArchiveGroupEditor(\'medication\')">编辑</button><button class="ds-section-btn" onclick="event.stopPropagation();openOcrCamera(\'medication\',demoState.screen,\''+p.id+'\')">拍药盒</button></span></div><div class="ds-med-card"><div class="ds-med-card-head"><span class="dot green"></span>长期降尿酸方案</div><div class="ds-med-card-row">'+data.medPlan+'<span class="sub"> · '+data.adherence+'</span></div></div>'+(data.acutePlan.includes('暂无')?'':'<div class="ds-med-card"><div class="ds-med-card-head"><span class="dot orange"></span>急性发作处理方案</div><div class="ds-med-card-row">'+data.acutePlan+'</div></div>')+'</div>';
+  const medSection='<div class="ds-section-block" id="section-med"><div class="ds-section-label">当前用药方案<span class="ds-section-actions"><button class="ds-section-btn" onclick="event.stopPropagation();openArchiveGroupEditor(\'medication\')">编辑并保存</button><button class="ds-section-btn" onclick="event.stopPropagation();openOcrCamera(\'medication\',demoState.screen,\''+p.id+'\')">拍药盒</button></span></div><div class="ds-med-card"><div class="ds-med-card-head"><span class="dot green"></span>长期降尿酸方案</div><div class="ds-med-card-row">'+data.medPlan+'<span class="sub"> · '+data.adherence+'</span></div></div>'+(data.acutePlan.includes('暂无')?'':'<div class="ds-med-card"><div class="ds-med-card-head"><span class="dot orange"></span>急性发作处理方案</div><div class="ds-med-card-row">'+data.acutePlan+'</div></div>')+'</div>';
 
   // ── 5. 近期急性发作（最近1条精简行） ──
   const attacks=getAttackRecords(p.id).slice().sort((a,b)=>b.date.localeCompare(a.date));
@@ -1976,7 +1941,7 @@ function renderProfile(pid){
   if(data.labReports&&data.labReports.length){
     const latest=data.labReports[0];
     const rest=data.labReports.slice(1);
-    labSection='<div class="ds-section-block" id="section-lab"><div class="ds-section-label">检验报告<span class="ds-section-actions"><button class="ds-section-btn" onclick="event.stopPropagation();openOcrCamera(\'lab\',\'screen-profile\',\''+p.id+'\')">新增报告</button></span></div><div class="ds-lab-timeline" id="profile-lab-section">'+
+    labSection='<div class="ds-section-block" id="section-lab"><div class="ds-section-label">检验报告<span class="ds-section-actions"><button class="ds-section-btn" onclick="event.stopPropagation();openArchiveGroupEditor(\'labs\')">编辑并保存</button><button class="ds-section-btn" onclick="event.stopPropagation();openOcrCamera(\'lab\',\'screen-profile\',\''+p.id+'\')">新增报告</button></span></div><div class="ds-lab-timeline" id="profile-lab-section">'+
       '<div class="ds-lab-item"><div class="ds-lab-item-date">'+latest.date+'</div><div class="ds-lab-item-name">'+latest.name+'</div><div class="ds-lab-item-metrics">'+latest.metrics.map(m=>'<span>'+m[0]+' <strong class="'+(m[2]?'risk':'')+'">'+m[1]+'</strong></span>').join('')+'</div><div class="ds-lab-item-file" onclick="openDocumentPreview(\''+latest.date+'\',\''+latest.name+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>查看原件</div></div>'+
       (rest.length?'<div class="ds-lab-fold" id="lab-fold-toggle" onclick="toggleLabFold()"><span>查看历史报告（'+rest.length+' 份）</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg></div><div class="ds-lab-fold-body" id="lab-fold-body" style="display:none">'+rest.map(r=>'<div class="ds-lab-item"><div class="ds-lab-item-date">'+r.date+'</div><div class="ds-lab-item-name">'+r.name+'</div><div class="ds-lab-item-metrics">'+r.metrics.map(m=>'<span>'+m[0]+' <strong class="'+(m[2]?'risk':'')+'">'+m[1]+'</strong></span>').join('')+'</div><div class="ds-lab-item-file" onclick="openDocumentPreview(\''+r.date+'\',\''+r.name+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>查看原件</div></div>').join('')+'</div>':'')+
       '</div></div>';
@@ -1999,22 +1964,24 @@ function renderProfile(pid){
     materialSection='<div class="ds-section-block" id="section-material"><div class="ds-section-label">补录资料</div><div class="ds-detail-section" id="profile-material-section">'+p.archives.map(a=>'<div class="ds-record-card is-clickable" onclick="toast(\'查看 '+a.title+'\')"><div class="ds-record-head"><span>'+a.time+'</span></div><div class="ds-record-desc">'+a.title+'<br>'+a.desc+'<span class="ds-detail-link">查看完整记录 ›</span></div></div>').join('')+'</div></div>';
   }
   if(p.pendingMaterials){
-    materialSection=(materialSection||'')+'<div class="ds-new-data">有待确认资料，可核对后入档。</div>';
+    materialSection=(materialSection||'')+'<div class="ds-new-data">'+(isEnrollment?'患者已提交资料，待扫码就诊后结合问诊核对。':'患者资料与录音提取仅作编辑参考，请分别保存病史、用药或检查信息。')+'</div>';
   }
 
   let primaryAction='';
-  if(p.status==="confirmed") primaryAction='复诊评估';
+  if(isEnrollment) primaryAction='联系患者';
+  else if(p.status==="confirmed") primaryAction='复诊评估';
   else if(p.status==="overdue") primaryAction='联系患者';
   else primaryAction=p.encounterStatus==="completed"?'查看接诊记录':'开始接诊';
-  const primaryHandler=p.status==="overdue"?"toast('已发送联系提醒')":"openVoiceFlow('"+p.id+"')";
-  const confirmEntry=p.pendingMaterials?'<button class="ds-profile-confirm-entry" onclick="goScreen(\'screen-archive-confirm\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>确认资料入档</button>':'';
+  const primaryHandler=(p.status==="overdue"||isEnrollment)?"toast('已打开联系患者')":(p.encounterStatus==="completed"?"openFollowupPlanModal('"+p.id+"')":"openVoiceFlow('"+p.id+"')");
   const followupPlan=demoState.followupPlans[p.id];
   const followupCopy=followupPlan?(followupPlan.type==='not-needed'?'当前无需复诊':(followupPlan.type==='scheduled'?'下次复诊：'+followupPlan.date:'暂无复诊安排')):'完成接诊后选择复诊安排';
-  const followupEntry='<button class="ds-profile-followup-entry" type="button" onclick="openFollowupPlanModal(\''+p.id+'\')"><span class="ds-profile-followup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><strong>本次接诊记录</strong><span>'+followupCopy+'</span></span><b>›</b></button>';
-  const actionBar='<div class="ds-profile-actions"><button class="ds-profile-action primary" onclick="'+primaryHandler+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 1 6 0v2a3 3 0 0 1-6 0z"/><path d="M5 11v2a7 7 0 0 0 14 0v-2M12 20v2M8 22h8"/></svg>'+primaryAction+'</button><button class="ds-profile-action" onclick="toast(\'已打开联系患者\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.64a2 2 0 0 1-.45 2.11L8 9.75a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.86.29 1.74.5 2.64.62A2 2 0 0 1 22 16.9z"/></svg>联系患者</button><button class="ds-profile-action" onclick="openArchiveEditor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>编辑病历</button></div>'+followupEntry+confirmEntry+'<div class="ds-profile-ai-entry" onclick="goScreen(\'screen-aiassist\')"><span class="ds-profile-ai-mark">AI</span><span class="ds-profile-ai-copy"><strong>AI 辅助建议</strong><span>提供诊疗要点与用药建议</span></span><b>›</b></div>';
+  const canSaveEncounter=Boolean(demoState.followupPlans[p.id])||(p.status==="pending"&&(p.encounterStatus==="in_progress"||Boolean((demoState.archiveEdits[p.id]||{}).history||(demoState.archiveEdits[p.id]||{}).medication||(demoState.archiveEdits[p.id]||{}).labs)));
+  const followupEntry=canSaveEncounter?'<button class="ds-profile-followup-entry" type="button" onclick="openFollowupPlanModal(\''+p.id+'\')"><span class="ds-profile-followup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><strong>'+((p.encounterStatus==="completed")?'本次接诊记录已保存':'保存本次接诊记录')+'</strong><span>'+followupCopy+'</span></span><b>›</b></button>':'';
+  const enrollmentActions='<div class="ds-profile-actions"><button class="ds-profile-action primary" onclick="toast(\'已打开联系患者\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.64a2 2 0 0 1-.45 2.11L8 9.75a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.86.29 1.74.5 2.64.62A2 2 0 0 1 22 16.9z"/></svg>联系患者</button><button class="ds-profile-action" onclick="openArchiveEditor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>查看资料</button></div>';
+  const actionBar=isEnrollment?enrollmentActions:'<div class="ds-profile-actions"><button class="ds-profile-action primary" onclick="'+primaryHandler+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 1 6 0v2a3 3 0 0 1-6 0z"/><path d="M5 11v2a7 7 0 0 0 14 0v-2M12 20v2M8 22h8"/></svg>'+primaryAction+'</button><button class="ds-profile-action" onclick="toast(\'已打开联系患者\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.64a2 2 0 0 1-.45 2.11L8 9.75a16 16 0 0 0 6 6l1.28-1.28a2 2 0 0 1 2.11-.45c.86.29 1.74.5 2.64.62A2 2 0 0 1 22 16.9z"/></svg>联系患者</button><button class="ds-profile-action" onclick="openArchiveEditor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>编辑病历</button></div>'+followupEntry+'<div class="ds-profile-ai-entry" onclick="goScreen(\'screen-aiassist\')"><span class="ds-profile-ai-mark">AI</span><span class="ds-profile-ai-copy"><strong>AI 辅助建议</strong><span>提供诊疗要点与用药建议</span></span><b>›</b></div>';
 
   // ── 组装全部内容（精简三层密度） ──
-  body.innerHTML=patientInfoCard+aiBrief+actionBar+medSection+attackSection+labSection+safetySection+materialSection+'<div style="height:16px"></div>';
+  body.innerHTML=patientInfoCard+aiBrief+actionBar+historySection+medSection+attackSection+labSection+safetySection+materialSection+'<div style="height:16px"></div>';
 
   // 如果有新补录资料需要高亮定位
   if(demoState._highlightNewMaterial && p.archives && p.archives.length){
@@ -2043,7 +2010,7 @@ function renderArchiveGroupForm(){
   const data=getPatientDemoData(p),key=demoState.editingArchiveGroup||"history";
   if(key==="all"){
     const groups=[["基本信息与就诊关系","profile"],["痛风病史","history"],["急性发作记录（"+getAttackRecords(p.id).length+"）","attack"],["用药方案","medication"],["既往史与用药安全（"+data.safetyRecords.length+"）","safety"],["检验记录","labs"]];
-    $("archive-edit-title").textContent="修改档案";
+    $("archive-edit-title").textContent="编辑病历";
     $("archive-edit-save").style.display="none";
     $("history-edit-body").innerHTML='<div class="ds-edit-section"><h5>'+p.name+' · 编辑病历</h5><div class="ds-sub">选择分组后可逐条新增或编辑结构化字段</div></div>'+groups.map(group=>'<div class="ds-overview-card" onclick="openArchiveGroupEditor(\''+group[1]+'\')"><div class="ds-overview-head"><span>'+group[0]+'</span><span class="ds-overview-go">修改 ›</span></div></div>').join('')+'<div style="height:76px"></div>';
     return;
@@ -2053,10 +2020,11 @@ function renderArchiveGroupForm(){
   const item=map[key]||map.history;
   const saved=(demoState.archiveEdits[p.id]||{})[key];
   const rows=saved||item[1];
+  const saveLabels={history:"保存病史",medication:"保存用药",labs:"保存检查信息"};
   $("archive-edit-title").textContent="编辑"+item[0];
   $("archive-edit-save").style.display="inline-flex";
-  $("archive-edit-save").textContent="保存"+item[0];
-  $("history-edit-body").innerHTML='<div class="ds-edit-section"><h5>'+p.name+' · '+item[0]+'</h5><div class="ds-sub">按结构化字段顺序填写，保存后来源记录为"医生补录"。</div>'+rows.map((row,index)=>'<div class="ds-edit-field"><label>'+(index+1)+'. '+row[0]+'</label><input id="archive-field-'+index+'" value="'+escapeHtmlAttribute(row[1])+'" /></div>').join('')+'</div><div style="height:76px"></div>';
+  $("archive-edit-save").textContent=saveLabels[key]||("保存"+item[0]);
+  $("history-edit-body").innerHTML='<div class="ds-edit-section"><h5>'+p.name+' · '+item[0]+'</h5><div class="ds-sub">患者资料、录音提取和原始报告仅作参考；保存的是医生本次编辑后的'+item[0]+'。</div>'+rows.map((row,index)=>'<div class="ds-edit-field"><label>'+(index+1)+'. '+row[0]+'</label><input id="archive-field-'+index+'" value="'+escapeHtmlAttribute(row[1])+'" /></div>').join('')+'</div><div style="height:76px"></div>';
 }
 function escapeHtmlAttribute(value){return String(value).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function saveArchiveGroupForm(){
@@ -2065,10 +2033,18 @@ function saveArchiveGroupForm(){
   if(key==="attack"){saveAttackRecord();return;}
   const map={profile:["基本信息与就诊关系",data.profile],history:["痛风病史",data.history],attack:["急性发作记录",data.attack],medication:["当前用药",data.currentMedication],safety:["既往史与用药安全",data.safety],labs:["检验记录",data.labs]};
   const item=map[key]||map.history;
-  const rows=item[1].map((row,index)=>[row[0],($("archive-field-"+index)||{}).value||row[1]]);
+  const previousRows=item[1].map(row=>[row[0],row[1]]);
+  const rows=previousRows.map((row,index)=>[row[0],($("archive-field-"+index)||{}).value||row[1]]);
   if(!demoState.archiveEdits[p.id])demoState.archiveEdits[p.id]={};
+  if(JSON.stringify(previousRows)!==JSON.stringify(rows)){
+    if(!demoState.archiveSectionHistory[p.id])demoState.archiveSectionHistory[p.id]={};
+    if(!demoState.archiveSectionHistory[p.id][key])demoState.archiveSectionHistory[p.id][key]=[];
+    demoState.archiveSectionHistory[p.id][key].push({savedAt:"2026-07-13 09:24",source:p.sectionSources&&p.sectionSources[key]||"既有正式记录",values:previousRows});
+  }
   demoState.archiveEdits[p.id][key]=rows;
-  toast(item[0]+'已保存，来源"医生补录"'); goScreen("screen-profile");
+  if(!p.sectionSources)p.sectionSources={};
+  p.sectionSources[key]="医生本次编辑";
+  toast((key==="history"?"病史":(key==="medication"?"用药":(key==="labs"?"检查信息":item[0])))+'已保存'); goScreen("screen-profile");
 }
 function getAttackRecords(pid){
   if(!demoState.attackRecords[pid]) demoState.attackRecords[pid]=[];
@@ -2211,8 +2187,8 @@ function renderMaterial(){
   $("material-title").textContent=context+" · 补充资料";
   const isLab=context==="检验记录";
   const recognitionTitle=isLab?"化验单 OCR 识别":(context.includes("用药")?"药盒 / 处方识别":"资料内容识别");
-  const materialState=isLab?'<span class="ds-chip chip-green">报告直接归档，可编辑</span>':'<span class="ds-chip chip-orange" id="material-pending-chip">'+demoState.materialPending+' 项待确认</span>';
-  const materialRow=isLab?'<div class="ds-frow"><div class="ds-fname">2026-07-08 化验单（OCR）</div><div class="ds-fval">已归档，可编辑 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>':'<div class="ds-frow"><div class="ds-fname">补充资料</div><div class="ds-fval">待确认 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>';
+  const materialState=isLab?'<span class="ds-chip chip-green">报告直接归档，可编辑</span>':'<span class="ds-chip chip-orange" id="material-pending-chip">'+demoState.materialPending+' 项原始资料</span>';
+  const materialRow=isLab?'<div class="ds-frow"><div class="ds-fname">2026-07-08 化验单（OCR）</div><div class="ds-fval">已归档，可编辑 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>':'<div class="ds-frow"><div class="ds-fname">补充资料</div><div class="ds-fval">仅作编辑参考 '+badge({cls:"src-upload",txt:"患者上传"})+'</div></div>';
   body.innerHTML=
     '<div class="ds-upload-drop" role="button" tabindex="0" onclick="$(\'archive-file-input\').click()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){$(\'archive-file-input\').click()}"><strong>点击上传'+context+'资料</strong><small>支持拍照、相册图片或 PDF，可多选</small></div><div class="ds-upload-selected" id="upload-selected"></div>'+
     '<div class="ds-field-block" style="margin-top:12px;">'+
@@ -2275,13 +2251,7 @@ function confirmOCR(){
     toast("报告已归入检验记录，可继续编辑");
     return;
   }
-  if(demoState.materialPending>0) demoState.materialPending-=1;
-  const chip=$("material-pending-chip");
-  if(chip) chip.textContent=demoState.materialPending+" 项待确认";
-  if(demoState.materialPending===0 && chip) chip.textContent="全部已确认";
-  toast("已加入待确认资料，可在患者档案中确认入档");
-  // 资料确认后更新 workbench
-  renderWorkbench();
+  toast("资料已保留，可在对应病历区块编辑并保存");
 }
 
 /* ============ 复查逾期 ============ */
@@ -2326,7 +2296,7 @@ function renderConfirm(){
       '<div class="ds-frow"><div class="ds-fname">血清尿酸</div><div class="ds-fval">'+data.urate+'</div></div>'+
       '<div class="ds-frow"><div class="ds-fname">合并症 / 并发症</div><div class="ds-fval">'+data.comorbidity+'</div></div>'+
     '</div>'+
-    '<div class="ds-sub" style="margin-top:12px;line-height:1.55;">确认仅记录本次诊疗方案处理；患者补充资料、OCR 与录音内容需在“确认资料入档”中另行确认。</div>';
+    '<div class="ds-sub" style="margin-top:12px;line-height:1.55;">确认仅记录本次诊疗方案处理；病史、用药和检查信息请在对应区块编辑并保存。</div>';
 }
 
 function confirmTreatmentPlan(){
@@ -2340,35 +2310,9 @@ function confirmTreatmentPlan(){
 
 function rejectArchive(){
   const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang"))||demoState.patients[0];
-  p.pendingMaterials=true;
   demoState.activePatient=p.id;
   goScreen("screen-profile");
-  toast(p.name+"的本次方案未采纳，可继续补充或确认资料");
-}
-
-/* ============ 患者资料确认：独立于本次方案和诊间接诊 ============ */
-function renderArchiveConfirm(){
-  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang"))||demoState.patients[0];
-  $("archive-confirm-patient").textContent=p.name+" · "+p.sex+" · "+p.age+" 岁";
-  const recordState=p.pendingMaterials?"待确认":"已确认";
-  const rows=[
-    ["痛风病史补充","患者自填",recordState],
-    ["近期用药信息","患者自填",recordState]
-  ];
-  if(demoState.voiceWritten) rows.push(["诊间录音提取字段","录音识别",recordState]);
-  $("archive-confirm-list").innerHTML=rows.map(row=>'<div class="ds-voice-confirm-row"><div><span>'+row[0]+' · 来源：'+row[1]+'</span><strong>'+row[2]+'</strong></div><button class="ds-voice-edit" onclick="toast(\'可返回患者档案或接诊内容确认页修正\')">修正</button></div>').join('');
-  $("archive-confirm-synced").style.display=p.pendingMaterials?"none":"flex";
-}
-function confirmPatientArchive(){
-  const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang"))||demoState.patients[0];
-  if(!p.pendingMaterials){toast("当前没有待确认资料");return;}
-  p.pendingMaterials=false;
-  ["f1","f2","f3","f4","f5","f6","f7","f8","f9"].forEach(k=>p.sources[k]={cls:"src-confirm",txt:"医生确认"});
-  $("archive-confirm-synced").style.display="flex";
-  renderWorkbench();
-  renderPatients();
-  broadcastDemoEvent("doctor-archive-confirmed",{patientId:p.id});
-  toast(p.name+"的资料已确认入档");
+  toast(p.name+"的本次方案未采纳，可继续完善病历");
 }
 
 /* ============ 建档码（固定 QR） ============ */
@@ -2461,6 +2405,8 @@ function startVoiceSession(){
     demoState.voiceLines.push(entry.line);
     demoState.voiceFields.push({name:entry.field[0],value:entry.field[1],confirmed:false});
     renderVoiceRecognition();
+    // 已生成候选字段即可进入确认，医生可在下一页继续核对和修正。
+    setVoiceConfirm(true);
   };
   appendNext();
   voiceTimer=setInterval(appendNext,900);
@@ -2469,28 +2415,18 @@ function renderVoiceRecognition(){
   const lines=$("voice-transcript-list"), fields=$("voice-fields-list");
   lines.innerHTML=demoState.voiceLines.map((line,index)=>'<div class="ds-live-line '+(index===demoState.voiceLines.length-1?"is-latest":"")+'"><span class="who">'+(index%2?"医生":"患者")+'：</span>'+line+'</div>').join('');
   lines.scrollTop=lines.scrollHeight;
-  fields.innerHTML=demoState.voiceFields.map((field,index)=>'<button class="ds-voice-field '+(index===demoState.voiceFields.length-1?"is-new":"")+'" onclick="editVoiceField('+index+')"><span class="ds-voice-field-main"><span class="ds-voice-field-name">'+field.name+'</span><span class="ds-voice-field-value">'+field.value+'</span></span>'+(field.confirmed?'<span class="ds-voice-confirm-chip chip-green" onclick="event.stopPropagation();toggleVoiceConfirm('+index+')">已确认</span>':'<span class="ds-voice-confirm-chip ds-voice-pending" onclick="event.stopPropagation();toggleVoiceConfirm('+index+')">待确认</span>')+'</button>').join('');
-  const allConfirmed=demoState.voiceFields.length>0 && demoState.voiceFields.every(f=>f.confirmed);
-  let tip=$("voice-all-confirmed");
-  if(allConfirmed){ if(!tip){ fields.insertAdjacentHTML("afterend",'<div class="ds-voice-all-confirmed" id="voice-all-confirmed">关键字段已全部确认</div>'); } }
-  else if(tip){ tip.remove(); }
+  fields.innerHTML=demoState.voiceFields.map((field,index)=>'<button class="ds-voice-field '+(index===demoState.voiceFields.length-1?"is-new":"")+'" onclick="editVoiceField('+index+')"><span class="ds-voice-field-main"><span class="ds-voice-field-name">'+field.name+'</span><span class="ds-voice-field-value">'+field.value+'</span></span><span class="ds-voice-pending">参考</span></button>').join('');
   $("voice-subtitle-count").textContent="已识别 "+demoState.voiceLines.length+" 句";
-}
-function toggleVoiceConfirm(index){
-  const field=demoState.voiceFields[index]; if(!field) return;
-  field.confirmed=!field.confirmed;
-  renderVoiceRecognition();
-  toast(field.confirmed?("已确认："+field.name):("已取消确认："+field.name));
 }
 function editVoiceField(index){
   const field=demoState.voiceFields[index]; if(!field) return;
   const next=window.prompt("修正“"+field.name+"”",field.value);
-  if(next!==null && next.trim()){field.value=next.trim();renderVoiceRecognition();toast("字段已修正，待确认写入档案");}
+  if(next!==null && next.trim()){field.value=next.trim();renderVoiceRecognition();toast("参考内容已修正，请在对应病历区块保存");}
 }
 function renderVoiceConfirm(){
   const p=demoState.patients.find(x=>x.id===(demoState.activePatient||"p-zhang"))||demoState.patients[0];
   $("voice-confirm-patient").textContent=p.name+" · "+p.sex+" · "+p.age+" 岁";
-  $("voice-confirm-list").innerHTML=demoState.voiceFields.map((field,index)=>'<div class="ds-voice-confirm-row"><div><span>'+field.name+'</span><strong>'+field.value+'</strong></div><div class="ds-voice-confirm-row-actions"><span class="ds-voice-confirm-chip '+(field.confirmed?"chip-green":"ds-voice-pending")+'" onclick="toggleVoiceConfirm('+index+');renderVoiceConfirm()">'+(field.confirmed?"已确认":"待确认")+'</span><button class="ds-voice-edit" onclick="editVoiceFieldFromConfirm('+index+')">修改</button></div></div>').join('');
+  $("voice-confirm-list").innerHTML=demoState.voiceFields.map((field,index)=>'<div class="ds-voice-confirm-row"><div><span>'+field.name+' · 录音提取参考</span><strong>'+field.value+'</strong></div><button class="ds-voice-edit" onclick="editVoiceFieldFromConfirm('+index+')">修改</button></div>').join('');
   $("voice-confirm-summary").textContent="第一跖趾关节急性发作近一周；近一年反复发作；非布司他自行停药；合并高血压。";
 }
 function editVoiceFieldFromConfirm(index){editVoiceField(index);renderVoiceConfirm();}
@@ -2510,7 +2446,12 @@ function toggleVoice(){
   }
 }
 function writeVoice(){
-  if(!demoState.voiceDone || $("voice-confirm").disabled) {toast("请先结束录音并核对关键字段");return;}
+  if(!demoState.voiceFields.length || $("voice-confirm").disabled) {toast("请先识别出至少一项关键字段");return;}
+  if(demoState.voiceStarted && !demoState.voiceDone){
+    stopVoiceTimer();
+    demoState.voiceStarted=false;
+    demoState.voiceDone=true;
+  }
   goScreen("screen-voice-confirm");
 }
 function confirmVoiceArchive(){
@@ -2519,15 +2460,12 @@ function confirmVoiceArchive(){
   if(!p) return;
   p.sources["f5"]={cls:"src-voice",txt:"录音识别"};
   p.sources["f6"]={cls:"src-voice",txt:"录音识别"};
-  p.encounterStatus="completed";
   demoState.voiceWritten=true;
-  p.pendingMaterials=true;
   $("voice-synced").style.display="none";
   setVoiceConfirm(false);
-  toast("诊间资料已加入待确认区");
-  renderPatients();
-  renderWorkbench();
-  goScreen("screen-archive-confirm");
+  demoState.editingArchiveGroup="history";
+  toast("请将核对后的内容保存到对应病历区块");
+  goScreen("screen-history-edit");
 }
 
 function openVisitNumberModal(pid){
@@ -2554,6 +2492,7 @@ function openFollowupPlanModal(pid){
   $("followup-plan-patient").textContent=(p?p.name:"当前患者")+" · 请选择本次接诊后的复诊安排。";
   document.querySelectorAll('input[name="followup-plan"]').forEach(input=>{input.checked=Boolean(current&&input.value===current.type);});
   $("followup-date-input").value=current&&current.date?current.date:"2026-08-08";
+  $("followup-order-input").value=current&&current.order?current.order:"";
   toggleFollowupDateField();
   $("followup-plan-modal").classList.add("show");
 }
@@ -2568,14 +2507,24 @@ function saveFollowupPlan(){
   const patientId=demoState.followupPlanPatient||demoState.activePatient||"p-zhang";
   const type=typeInput.value;
   const date=$("followup-date-input").value;
+  const order=$("followup-order-input").value.trim();
   if(type==="scheduled"&&!date){toast("请选择下次复诊日期");return;}
-  demoState.followupPlans[patientId]={type,date:type==="scheduled"?date:"",savedAt:"2026-07-13"};
+  demoState.followupPlans[patientId]={type,date:type==="scheduled"?date:"",order,savedAt:"2026-07-13"};
   const p=demoState.patients.find(x=>x.id===patientId);
+  if(p&&p.status==="pending"){
+    p.encounterStatus="completed";
+    p.completedAt="2026-07-13 09:24";
+    p.status="confirmed";
+    p.statusText="已接诊";
+    p.confirmed=true;
+  }
   if(type==="not-needed") broadcastDemoEvent("doctor-followup-saved",{patientId,state:"no-followup"});
   else if(type==="scheduled") broadcastDemoEvent("doctor-followup-saved",{patientId,state:"scheduled",date});
   else broadcastDemoEvent("doctor-followup-saved",{patientId,state:"no-plan"});
   closeFollowupPlanModal();
   if(demoState.screen==="screen-profile") renderProfile(patientId);
+  renderWorkbench();
+  renderPatients();
   toast(type==="not-needed"?(p?p.name+"已确认当前无需复诊":"已确认当前无需复诊"):(type==="scheduled"?"本次接诊记录已保存，并同步复诊提醒":"本次接诊记录已保存"));
 }
 
@@ -2744,17 +2693,13 @@ function confirmOcrCamera(){
   if(targetType==="lab"){
     if(hasPatient){
       const patientId=demoState.ocrCameraPatient||demoState.activePatient;
-      // 已确认的化验单写入患者报告时间轴，并保留来源可追溯。
-      if(!demoState.addedLabReports[patientId]) demoState.addedLabReports[patientId]=[];
-      demoState.addedLabReports[patientId].unshift({
+      const report={
         date:"2026-07-14",
         name:"化验单（OCR 识别）",
         metrics:[["血清尿酸","542 μmol/L ↑",true],["血肌酐 (Scr)","78 μmol/L · 正常",false],["谷丙转氨酶 (ALT)","26 U/L · 正常",false]],
         file:"2026-07-14_化验单_OCR.pdf"
-      });
-      renderProfile(patientId||"p-zhang");
-      goScreen(demoState.ocrCameraReturn||"screen-profile");
-      toast("化验单已按报告日期归入检验报告");
+      };
+      openDuplicateReportModal(patientId,report);
     }else{
       if(demoState.ocrCameraReturn==="screen-material") renderMaterial();
       renderMaterialOCR();
@@ -2775,6 +2720,28 @@ function confirmOcrCamera(){
     }
   }
   demoState.ocrCameraTypeOverride=null;
+}
+
+function openDuplicateReportModal(patientId,report){
+  demoState.pendingDuplicateReport={patientId,report,returnScreen:demoState.ocrCameraReturn||"screen-profile"};
+  $("duplicate-report-copy").textContent="发现相似报告，请核对后选择保留或合并。默认保留两份原件，不自动合并或删除。";
+  $("duplicate-report-modal").classList.add("show");
+}
+function resolveDuplicateReport(action){
+  const pending=demoState.pendingDuplicateReport;
+  if(!pending)return;
+  const reports=demoState.addedLabReports[pending.patientId]||(demoState.addedLabReports[pending.patientId]=[]);
+  if(action==="keep"){
+    reports.unshift(pending.report);
+    toast("已保留两份报告原件");
+  }else{
+    reports.unshift({...pending.report,name:"生化全套（已合并 OCR 资料）",merged:true});
+    toast("已合并为同一报告，原件仍可追溯");
+  }
+  $("duplicate-report-modal").classList.remove("show");
+  demoState.pendingDuplicateReport=null;
+  renderProfile(pending.patientId);
+  goScreen(pending.returnScreen);
 }
 
 /* ============ 文档类型加权关键词识别（真做识别逻辑） ============ */
@@ -2837,14 +2804,13 @@ function submitEnroll(){
   const sex=document.querySelector("#enroll-sex .seg-opt.sel").dataset.v;
   const phone=$("enroll-phone").value.trim()||"1XX****XXXX";
   const note=demoState.enrollOCR?"门诊病历 OCR 待确认":"候诊现场建档";
-  const np={ id:"p-"+Date.now(), name, sex, age:0, phone, brief:note, status:"pending", statusText:"待接诊", time:"建档 "+new Date().toLocaleDateString("zh-CN").slice(5), confirmed:false, arrived:false, sources:{}, pendingMaterials:demoState.enrollOCR };
+  const np={ id:"p-"+Date.now(), name, searchPinyin:"", sex, age:0, phone, brief:note, status:"enrolled", statusText:"已建档", time:"建档 "+new Date().toLocaleDateString("zh-CN").slice(5), confirmed:false, arrived:false, sources:{}, pendingMaterials:demoState.enrollOCR };
   const newPatientId=np.id;
   demoState.patients.unshift(np);
-  demoState.pendingCount+=1;
   // 保持待办纯 IM：主动建档后给患者发一条消息提示
-  demoState.todos.unshift({type:"im", name:name.charAt(0), avatar:name.charAt(0), text:name+" 已建档，等待您确认痛风专病档案", time:"刚刚"});
+  demoState.todos.unshift({type:"im", name:name.charAt(0), avatar:name.charAt(0), text:name+" 已建档，待扫码就诊", time:"刚刚"});
   renderWorkbench(); renderPatients();
-  if(demoState.enrollOCR){demoState.activePatient=newPatientId;showModal("建档成功","已创建基础档案。点击“查看患者档案”，继续确认 6 类门诊病历资料。",{label:"查看患者档案",action:()=>openPatientFlow(newPatientId)});}else showModal("建档成功","已为 "+name+" 创建痛风专病档案，进入待接诊队列。");
+  if(demoState.enrollOCR){demoState.activePatient=newPatientId;showModal("建档成功","已创建基础档案。患者扫码就诊后，医生可结合实际接诊核对资料。",{label:"查看患者档案",action:()=>openPatientFlow(newPatientId)});}else showModal("建档成功","已创建基础档案。患者扫码就诊后，将进入待接诊队列。");
   $("enroll-name").value=""; $("enroll-phone").value=""; $("enroll-ocr-file").value=""; $("enroll-ocr-result").classList.remove("show"); demoState.enrollOCR=null;
 }
 
@@ -2909,31 +2875,31 @@ function pmAnnotationBuildContent(data){
     '<h5>【用户动作】</h5>'+line('用户可执行的动作',data.action)+line('触发后的即时反馈',data.feedback)+line('后续页面或状态变化',data.transition)+
     '<h5>【前端规则】</h5>'+line('初始化展示规则',data.initial||'沿用原 Demo 初始化逻辑')+line('输入、选择或上传规则',data.inputRule||'待确认')+line('必填或校验规则',data.validation||'待确认')+line('按钮启用或禁用规则',data.buttonRule||'沿用原 Demo；无明确禁用逻辑')+line('提交中规则',data.submitting||'待确认')+line('提交成功规则',data.success||'沿用原 Demo 的状态更新与提示')+line('提交失败规则',data.failure||'待确认')+line('返回或取消规则',data.back||'沿用原 Demo 页面返回逻辑')+line('页面刷新或数据同步规则',data.sync||'沿用原 Demo 本地状态重渲染；服务端同步规则待确认')+
     '<h5>【字段规则】</h5>'+line('字段中文名',data.fields||'待确认')+line('对应既有字段字典',data.dictionary||'待确认：现有患者端字段字典不覆盖医生端展示字段的完整定义')+line('字段 code',data.fieldCode||'待确认')+line('字段类型',data.fieldType||'待确认')+line('是否必填',data.required||'待确认')+line('取值范围或枚举',data.enums||'待确认')+line('页面展示层级',data.level||'详情')+line('当前资料来源',data.source||'待确认')+line('当前资料属性',data.attribute||'待确认')+line('写入时机',data.writeTime||'待确认')+line('可修改角色',data.editRole||'医生')+line('是否需要医生确认',data.doctorConfirm||'待确认')+line('对正式档案的影响',data.archiveImpact||'待确认')+line('覆盖或冲突处理',data.coverage||'待确认')+
-    '<h5>【边界情况】</h5>'+line('空值',data.empty||'待确认')+line('重复提交',data.duplicate||'待确认')+line('上传失败',data.uploadFailure||'不适用')+line('网络失败',data.networkFailure||'待确认')+line('OCR 未识别或识别不完整',data.ocrFailure||'不适用')+line('OCR 与原报告不一致',data.ocrConflict||'不适用')+line('患者填写与既有正式档案不一致',data.patientConflict||'同一字段新资料仅作为待确认资料，正式值保持不变')+line('权限或状态不允许操作',data.permission||'待确认')+line('其他',data.other||'无')+
+    '<h5>【边界情况】</h5>'+line('空值',data.empty||'待确认')+line('重复提交',data.duplicate||'待确认')+line('上传失败',data.uploadFailure||'不适用')+line('网络失败',data.networkFailure||'待确认')+line('OCR 未识别或识别不完整',data.ocrFailure||'不适用')+line('OCR 与原报告不一致',data.ocrConflict||'不适用')+line('患者填写与既有正式档案不一致',data.patientConflict||'同一字段新资料仅作编辑参考，正式值保持不变')+line('权限或状态不允许操作',data.permission||'待确认')+line('其他',data.other||'无')+
     '<h5>【规则依据】</h5>'+line('字段字典',data.dictionary||'待确认')+line('覆盖原则',data.coverageSource||'《不同端口资料覆盖原则》')+line('需求文档或交互规范',data.requirement||'《医生端1.0产品报告》')+line('原 Demo',data.demoSource||data.screenId+' '+data.targetSelector)+line('无法确认项',data.pending||'见“待确认”')+
     '<h5>【待确认】</h5><p>'+data.pending+'</p>';
 }
 
 const pmAnnotationRegistry=[
   {id:'D-01',role:'doctor',screenId:'screen-login',targetSelector:'#screen-login .ds-btn-primary',anchorPosition:'top-right',title:'登录工作台',visibleWhen:'登录页处于激活状态且按钮可见',pageName:'医生身份登录',container:'#screen-login .ds-login-card',control:'登录工作台',controlType:'按钮',displayText:'登录工作台',action:'使用注册手机号和短信验证码登录，或使用微信授权手机号登录',feedback:'手机号、验证码或账号状态异常时明确提示；未开通账号提示联系管理员',transition:'账号匹配且具备医生端权限后进入今日工作台',fields:'医生登录手机号、短信验证码、微信授权手机号、账号绑定状态',fieldType:'文本、验证码、授权状态',source:'医生输入 / 微信授权',attribute:'身份认证资料',writeTime:'登录或首次绑定时',archiveImpact:'不影响正式档案',initial:'展示手机号登录与微信授权手机号两种入口；已绑定微信的医生可直接完成账号匹配',inputRule:'短信登录需填写已注册手机号和有效验证码；微信首次使用时需取得授权手机号并绑定已开通的医生账号',validation:'手机号必须匹配已开通医生端权限的账号；验证码需校验正确且未失效',buttonRule:'满足对应登录方式的验证条件后允许提交',success:'加载该医生有权访问的医院、科室、专病和患者范围并进入工作台',failure:'验证码错误、验证码失效、手机号未开通、账号停用或无权限时分别提示，不自动创建医生账号',permission:'仅允许查看本人管理、转诊给本人或已授权协作的患者',pending:'无。',ruleSources:['已确认产品规则','原 Demo','医生端1.0产品报告']},
-  {id:'D-02',role:'doctor',screenId:'screen-workbench',targetSelector:'#screen-workbench .ds-topbar-actions .ds-ghost-btn:first-child',anchorPosition:'bottom-right',title:'痛风专病建档码入口',visibleWhen:'工作台激活且顶部操作栏可见',pageName:'今日工作台',container:'#screen-workbench .ds-topbar-actions',control:'建档码',controlType:'按钮',displayText:'建档码',action:'点击查看建档码',feedback:'跳转建档码页面',transition:'进入 screen-qrcode',fields:'建档码关联医生、管理病种',fieldType:'二维码令牌',source:'医生端配置',attribute:'建档入口标识',writeTime:'管理员生成或重新生成建档码时',archiveImpact:'用于患者初次纳入专病管理，不替代正式档案确认',coverage:'建档后患者补充资料不直接形成正式专病档案，需医生确认或修正。',initial:'建档码为绑定当前医生与痛风专病的长期有效固定码，不需要频繁刷新',other:'医生停用、离职、专病权限撤销或管理员重新生成时，原建档码失效',requirement:'《医生端1.0产品报告》快速建档、扫码规则；逻辑基线 ADR-D05',pending:'无。',ruleSources:['逻辑基线 ADR-D05','医生端1.0产品报告','不同端口资料覆盖原则','原 Demo']},
-  {id:'D-03',role:'doctor',screenId:'screen-workbench',targetSelector:'#screen-workbench .ds-maintask',anchorPosition:'top-right',title:'优先任务与患者档案入口',visibleWhen:'工作台激活且优先任务卡可见',pageName:'今日工作台',container:'#screen-workbench .ds-workbench-body',control:'查看患者档案 / 诊间接诊 / 补录资料',controlType:'其他',displayText:'查看患者档案、诊间接诊、补录资料',action:'分别进入患者档案、语音接诊或资料识别路径',feedback:'按点击入口切换 screen',transition:'更新 activePatient；进入对应页面',fields:'患者姓名、就诊号、任务类型、任务时间',fieldType:'展示字段',source:'患者档案、待确认资料、复诊任务及患者消息',attribute:'待办信息',writeTime:'原 Demo 状态初始化及操作后重渲染',initial:'任务优先级固定为：已到院待接诊 > 医生待确认资料 > 逾期且需要人工联系 > 普通患者消息；同一优先级按到达时间或资料提交时间由早到晚排序',archiveImpact:'患者补充资料仅进入待确认资料；医生确认或修正后才影响正式档案',coverage:'已有正式值时，新资料只新增为待确认资料；原正式值不自动覆盖。',other:'工作台不计算、不展示“资料完整度”，资料是否齐全不阻断接诊',pending:'无。',ruleSources:['已确认产品规则','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
+  {id:'D-02',role:'doctor',screenId:'screen-workbench',targetSelector:'#screen-workbench .ds-topbar-actions .ds-ghost-btn:first-child',anchorPosition:'bottom-right',title:'痛风专病建档码入口',visibleWhen:'工作台激活且顶部操作栏可见',pageName:'今日工作台',container:'#screen-workbench .ds-topbar-actions',control:'建档码',controlType:'按钮',displayText:'建档码',action:'点击查看建档码',feedback:'跳转建档码页面',transition:'进入 screen-qrcode',fields:'建档码关联医生、管理病种',fieldType:'二维码令牌',source:'医生端配置',attribute:'建档入口标识',writeTime:'管理员生成或重新生成建档码时',archiveImpact:'用于患者初次纳入专病管理，不替代医生分区保存',coverage:'建档后患者补充资料不直接形成正式专病档案，需医生在对应区块编辑并保存。',initial:'建档码为绑定当前医生与痛风专病的长期有效固定码，不需要频繁刷新',other:'医生停用、离职、专病权限撤销或管理员重新生成时，原建档码失效',requirement:'《医生端1.0产品报告》快速建档、扫码规则；逻辑基线 ADR-D05',pending:'无。',ruleSources:['逻辑基线 ADR-D05','医生端1.0产品报告','不同端口资料覆盖原则','原 Demo']},
+  {id:'D-03',role:'doctor',screenId:'screen-workbench',targetSelector:'#screen-workbench .ds-maintask',anchorPosition:'top-right',title:'优先待接诊任务',visibleWhen:'工作台激活且优先任务卡可见',pageName:'今日工作台',container:'#screen-workbench .ds-workbench-body',control:'查看患者档案 / 诊间接诊 / 补录资料',controlType:'状态卡',displayText:'优先任务、查看患者档案、诊间接诊、补录资料',action:'查看首位待接诊患者；展开其他待接诊患者或进入档案、诊间接诊、资料补录',feedback:'展开后展示其余待接诊患者；按点击入口切换 screen',transition:'按扫码时间排序；点击患者后更新 activePatient 并进入对应档案或诊间接诊',fields:'患者姓名、扫码就诊时间、资料摘要、就诊号、资料状态',fieldType:'展示字段',source:'患者档案、患者资料和扫码就诊状态',attribute:'待办信息',writeTime:'原 Demo 状态初始化及操作后重渲染',initial:'工作台默认只展示扫码时间最早的一张优先待接诊卡；存在其他待接诊患者时显示“展开其他待接诊患者”，展开后按同一排序展示；已建档未扫码就诊患者仅在全部患者列表以状态标识展示',archiveImpact:'患者补充资料仅作编辑参考；医生在对应区块保存后才影响正式档案',coverage:'已建档未扫码就诊不建立本次接诊关联；已有正式值时，新资料仅作编辑参考，原正式值不自动覆盖。',other:'工作台不计算、不展示“资料完整度”，资料是否齐全不阻断接诊',pending:'无。',ruleSources:['已确认产品规则','不同端口资料覆盖原则','患者端首页状态规范','原 Demo']},
   {id:'D-04',role:'doctor',screenId:'screen-patients',targetSelector:'#patient-search',anchorPosition:'bottom-right',title:'患者队列搜索',visibleWhen:'患者队列激活且搜索框可见',pageName:'患者队列',container:'#patients-body .ds-patient-toolbar',control:'搜索姓名、拼音、手机号',controlType:'输入框',displayText:'搜索姓名、手机号',action:'输入中文姓名、完整拼音、拼音首字母、完整手机号或手机号后四位筛选患者列表',feedback:'输入后即时重渲染有权限访问的患者列表',transition:'不切换页面',fields:'患者姓名、姓名拼音索引、手机号',dictionary:'患者端字段字典：姓名、手机号；姓名拼音仅作为检索索引，不新增医疗业务字段',fieldType:'文本、派生检索索引',source:'医生确认档案或患者基础资料',attribute:'检索数据',writeTime:'姓名创建或修改时生成拼音索引；搜索行为不写入档案',editRole:'医生',doctorConfirm:'不适用',archiveImpact:'不影响正式档案',coverage:'不适用',initial:'支持中文姓名模糊搜索、完整拼音、拼音首字母、完整手机号及手机号后四位；忽略拼音大小写和空格',validation:'匹配排序为中文姓名精确匹配 > 完整拼音 > 拼音首字母 > 中文包含匹配；相同缩写匹配多人时展示全部结果',permission:'只返回当前医生有权访问的患者；无权限患者不出现在结果中',other:'一期不做拼音错拼纠正；多音字按患者姓名预生成的标准拼音索引处理',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
   {id:'D-05',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-profile-identity',anchorPosition:'top-right',title:'患者身份与本次就诊号',visibleWhen:'患者档案激活且身份条已动态渲染',pageName:'患者档案',container:'#profile-body',control:'患者身份条与就诊号填写/修改',controlType:'其他',displayText:'本次就诊号、填写/修改',action:'查看身份信息；医生手动填写、修改或扫描就诊凭条识别本次就诊号',feedback:'弹出就诊号表单或进入凭条识别',transition:'医生确认保存后更新 visitRecords 并重渲染档案',fields:'姓名、性别、手机号、就诊号、就诊日期、就诊机构、来源',dictionary:'患者端字段字典：姓名、性别、手机号；其余医生端就诊字段待确认',fieldType:'文本、日期、单选（来源）',source:'医生补录 / 就诊凭条 OCR',attribute:'补充资料',writeTime:'医生确认保存就诊号时',doctorConfirm:'是',archiveImpact:'写入本次就诊记录，不自动改变其他正式专病档案字段',coverage:'相同日期出现相同就诊号时提示医生核对，不自动覆盖已有记录',validation:'按“就诊日期 + 就诊号”识别一条就诊记录；就诊号不能为空',other:'当前阶段没有 HIS 同步机制；原 Demo 中“HIS 同步”来源选项属于旧内容，研发不实现',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
-  {id:'D-06',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-ai-brief',anchorPosition:'top-right',title:'AI 临床摘要',visibleWhen:'患者档案激活且 AI 临床摘要已渲染',pageName:'患者档案',container:'#profile-body .ds-ai-brief',control:'临床摘要、关键指标与风险提示',controlType:'状态卡',displayText:'AI 临床摘要',action:'仅展示，供医生快速浏览资料与风险提示',feedback:'无',transition:'无',fields:'血尿酸、肾功能、近期急性发作、病史摘要、风险提示',dictionary:'患者端字段字典：血尿酸、血肌酐、eGFR、近一年发作次数等；摘要与分期字段 code 待确认',fieldType:'数字、文本、状态',source:'患者资料、报告记录、录音资料和医生确认档案的汇总',attribute:'医生端过程辅助材料',doctorConfirm:'不适用：AI 临床摘要本身不进入资料确认页',archiveImpact:'不计入正式档案、历史记录或患者病历夹',coverage:'AI 临床摘要、冲突提示和补全建议不自动覆盖，也不作为档案字段写入。',other:'若医生需要将某项病史、用药或检查事实写入正式字段，应回到对应资料来源或编辑入口处理，不采纳 AI 摘要本身。',pending:'分期计算、风险阈值、摘要生成条件及每个展示值的确切来源需在后端规则中确认。',ruleSources:['患者端字段字典','医生端1.0产品报告','原 Demo']},
-  {id:'D-07',role:'doctor',screenId:'screen-profile',targetSelector:'#section-med',anchorPosition:'top-right',title:'当前用药方案与药盒识别',visibleWhen:'患者档案激活且用药板块已渲染',pageName:'患者档案',container:'#profile-body #section-med',control:'编辑 / 拍药盒',controlType:'其他',displayText:'当前用药方案、编辑、拍药盒',action:'编辑用药结构化字段或拍摄药盒进入 OCR',feedback:'跳转编辑页或 OCR 相机',transition:'医生保存后更新演示档案；OCR 进入候选资料确认路径',fields:'长期降尿酸用药情况、当前用药、药物名称、用药日期、用药方式、频次、剂量、依从性、急性期用药、用药照片',dictionary:'患者端字段字典：用药记录字段（未提供 code）',fieldType:'单选+填空、文本、日期、数字、文件',source:'患者自填、患者上传、录音提取、AI 识别或医生补录',attribute:'补充资料 / 待确认资料 / 正式档案',doctorConfirm:'用药信息进入正式档案前必须医生确认',archiveImpact:'待医生采纳后更新或待医生修正后更新',coverage:'医生确认后的正式档案不被后续患者补充、OCR、录音提取或 AI 整理自动覆盖。',validation:'药物名称不能为空；剂量填写数字和单位；用药频次从既有选项选择并允许“其他”；开始日期不能晚于当前日期',buttonRule:'信息不完整时允许保存为“待完善”，但不得直接作为完整正式用药方案',duplicate:'同一患者已有相同药物时提示医生修改原记录或新增一条，不自动合并、不自动删除旧记录',failure:'保存失败时保留当前编辑内容并支持重试，不改变原正式用药记录',ocrFailure:'OCR 未识别或不完整时保留原图并进入人工修正',ocrConflict:'OCR 与原图不一致时，医生查看原图后确认或修正',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
-  {id:'D-08',role:'doctor',screenId:'screen-profile',targetSelector:'#section-lab',anchorPosition:'top-right',title:'检验报告与原件追溯',visibleWhen:'患者档案激活且检验报告板块已渲染',pageName:'患者档案',container:'#profile-body #section-lab',control:'新增报告 / 查看原件 / 历史报告',controlType:'列表项',displayText:'检验报告、新增报告、查看原件',action:'上传或拍摄报告；查看原件；展开历史报告；医生可编辑报告信息',feedback:'进入 OCR 相机、弹出原件预览或展开列表',transition:'报告原件及 OCR 提取结果直接归入检验报告记录，不进入确认资料入档',fields:'报告名称、报告医院、检查时间、报告时间、原始报告图片/文件、报告上传方式、血尿酸、血肌酐、eGFR、异常标记',dictionary:'患者端字段字典：化验检查字段（未提供 code）',fieldType:'文本、日期、文件、数字、单选',source:'患者上传、OCR 或医生补录',attribute:'报告记录 / 原始资料',doctorConfirm:'不需要通过资料确认页确认；医生可随时编辑、修正或补全报告信息',archiveImpact:'直接进入检验报告记录；编辑后保留原始报告及 OCR 原始结果用于追溯',coverage:'报告信息不自动转化为诊断、治疗建议或正式医疗结论。',duplicate:'按报告医院、报告时间、报告名称、原始附件指纹和关键指标组合判断疑似重复；疑似重复时保留两份原件，由医生决定是否合并',empty:'报告时间缺失时标记“报告时间待补充”，不进入趋势计算',ocrFailure:'识别失败时保留原图并支持重新识别或人工编辑',ocrConflict:'OCR 与报告原图不一致时，医生可编辑修正，保留 OCR 原始结果',other:'异常展示使用报告原始异常标记；不进入确认资料入档；历史版本均保留',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
-  {id:'D-09',role:'doctor',screenId:'screen-material',targetSelector:'#material-body .ds-upload-drop',anchorPosition:'top-right',title:'补充资料上传与 OCR',visibleWhen:'补充资料页激活且上传区已渲染',pageName:'补充资料',container:'#material-body',control:'点击上传资料 / 拍摄识别 / 文件识别',controlType:'上传区',displayText:'点击上传资料、拍摄识别、文件识别',action:'选择 JPG、PNG 或 PDF，或进入 OCR 相机；单文件不超过 20MB，单次最多 9 个',feedback:'展示上传进度、已选文件、识别状态和候选内容，支持取消及失败重试',transition:'化验报告原件与 OCR 提取直接归入检验报告记录；其他可映射到病史或用药的候选字段进入资料确认页',fields:'原始报告图片/文件、报告上传方式、OCR 提取字段',dictionary:'患者端字段字典：原始报告图片/文件、报告上传方式及化验检查字段',fieldType:'文件、单选、文本/数字',source:'患者上传 / OCR / 医生补录',attribute:'原始资料 / 报告记录 / 待确认资料',doctorConfirm:'化验报告不需要资料确认；病史、用药等候选字段按对应规则进入资料确认',archiveImpact:'报告直接归档并可编辑；其他候选字段待医生采纳或修正后更新',coverage:'原图直接保存；报告 OCR 结果直接进入报告记录并可编辑，不自动形成诊断或治疗结论。',inputRule:'支持 JPG、PNG、PDF；单文件不超过 20MB；单次最多 9 个文件',buttonRule:'上传中允许取消；上传失败允许重试；未完成上传的文件不能进入 OCR 处理',uploadFailure:'保留文件选择结果和失败原因，允许单文件重试，不影响其他已成功上传文件',networkFailure:'网络中断时暂停或标记失败，恢复后由用户重试，不重复生成正式资料',duplicate:'检测到相似或重复文件时提示“已上传过相似资料”，仍允许医生保留，不自动删除',ocrFailure:'保留原始资料并允许重新识别或人工编辑',ocrConflict:'报告 OCR 与原图不一致时，医生可编辑修正并保留原始结果',other:'首次上传前需完成患者资料用于专病管理的告知与授权',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
-  {id:'D-10',role:'doctor',screenId:'screen-aiassist',targetSelector:'#screen-aiassist .ds-actionbar .ds-btn-primary',anchorPosition:'top-right',title:'确认本次方案入口',visibleWhen:'AI 辅助页激活且底部主按钮可见',pageName:'AI 辅助',container:'#screen-aiassist .ds-actionbar',control:'确认本次方案',controlType:'提交按钮',displayText:'确认本次方案',action:'进入本次方案确认页',feedback:'跳转 screen-confirm',transition:'仅记录本次方案处理，不确认患者档案，不进入资料确认页',fields:'诊疗建议、用药建议、复查与随访建议',fieldType:'文本、状态',source:'AI 诊疗辅助',attribute:'医生端过程辅助材料',doctorConfirm:'AI 诊疗辅助仅供医生参考，最终由医生确认和执行',archiveImpact:'AI 诊疗摘要、冲突提示、补全建议和本次方案确认均不计入正式档案、历史记录或患者病历夹',coverage:'AI 诊疗辅助不具备自动覆盖权，也不作为档案字段写入。',pending:'AI 输入数据范围、模型版本、建议留痕、风险拦截与重新生成规则待确认。',ruleSources:['医生端1.0产品报告','原 Demo']},
+  {id:'D-06',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-ai-brief',anchorPosition:'top-right',title:'AI 临床摘要',visibleWhen:'患者档案激活且 AI 临床摘要已渲染',pageName:'患者档案',container:'#profile-body .ds-ai-brief',control:'临床摘要、关键指标与风险提示',controlType:'状态卡',displayText:'AI 临床摘要',action:'仅展示，供医生快速浏览资料与风险提示',feedback:'无',transition:'无',fields:'血尿酸、肾功能、近期急性发作、病史摘要、风险提示',dictionary:'患者端字段字典：血尿酸、血肌酐、eGFR、近一年发作次数等；摘要与分期字段 code 待确认',fieldType:'数字、文本、状态',source:'患者资料、报告记录、录音资料和医生确认档案的汇总',attribute:'医生端过程辅助材料',doctorConfirm:'不适用：AI 临床摘要本身不进入正式档案',archiveImpact:'不计入正式档案、历史记录或患者病历夹',coverage:'AI 临床摘要、冲突提示和补全建议不自动覆盖，也不作为档案字段写入。',other:'若医生需要将某项病史、用药或检查事实写入正式字段，应回到对应资料来源或编辑入口处理，不采纳 AI 摘要本身。',pending:'分期计算、风险阈值、摘要生成条件及每个展示值的确切来源需在后端规则中确认。',ruleSources:['患者端字段字典','医生端1.0产品报告','原 Demo']},
+  {id:'D-07',role:'doctor',screenId:'screen-profile',targetSelector:'#section-med',anchorPosition:'top-right',title:'当前用药方案与药盒识别',visibleWhen:'患者档案激活且用药板块已渲染',pageName:'患者档案',container:'#profile-body #section-med',control:'编辑 / 拍药盒',controlType:'其他',displayText:'当前用药方案、编辑、拍药盒',action:'编辑用药结构化字段或拍摄药盒进入 OCR',feedback:'跳转编辑页或 OCR 相机',transition:'医生点击保存用药后更新用药区块；药盒 OCR 仅作编辑参考',fields:'长期降尿酸用药情况、当前用药、药物名称、用药日期、用药方式、频次、剂量、依从性、急性期用药、用药照片',dictionary:'患者端字段字典：用药记录字段（未提供 code）',fieldType:'单选+填空、文本、日期、数字、文件',source:'患者自填、患者上传、录音提取、AI 识别或医生补录',attribute:'原始资料 / 补充资料 / 正式档案 / 历史记录',doctorConfirm:'医生点击保存用药即确认本次编辑值',archiveImpact:'更新正式用药区块，不影响病史和检查区块',coverage:'医生确认后的正式档案不被后续患者补充、OCR、录音提取或 AI 整理自动覆盖。',validation:'药物名称不能为空；剂量填写数字和单位；用药频次从既有选项选择并允许“其他”；开始日期不能晚于当前日期',buttonRule:'信息不完整时允许保存为“待完善”，但不得直接作为完整正式用药方案',duplicate:'同一患者已有相同药物时提示医生修改原记录或新增一条，不自动合并、不自动删除旧记录',failure:'保存失败时保留当前编辑内容并支持重试，不改变原正式用药记录',ocrFailure:'OCR 未识别或不完整时保留原图，医生可人工编辑后保存用药',ocrConflict:'OCR 与原图不一致时，医生查看原图后确认或修正',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
+  {id:'D-08',role:'doctor',screenId:'screen-profile',targetSelector:'#section-lab',anchorPosition:'top-right',title:'检验报告与原件追溯',visibleWhen:'患者档案激活且检验报告板块已渲染',pageName:'患者档案',container:'#profile-body #section-lab',control:'新增报告 / 查看原件 / 历史报告',controlType:'列表项',displayText:'检验报告、新增报告、查看原件',action:'上传或拍摄报告；查看原件；展开历史报告；医生可编辑报告信息',feedback:'进入 OCR 相机、弹出原件预览或展开列表',transition:'报告原件及 OCR 提取结果直接归入检验报告记录；医生可在检查区块编辑并保存',fields:'报告名称、报告医院、检查时间、报告时间、原始报告图片/文件、报告上传方式、血尿酸、血肌酐、eGFR、异常标记',dictionary:'患者端字段字典：化验检查字段（未提供 code）',fieldType:'文本、日期、文件、数字、单选',source:'患者上传、OCR 或医生补录',attribute:'报告记录 / 原始资料',doctorConfirm:'不需要独立确认页；医生可编辑、修正或补全报告信息并保存',archiveImpact:'直接进入检验报告记录；编辑后保留原始报告及 OCR 原始结果用于追溯',coverage:'报告信息不自动转化为诊断、治疗建议或正式医疗结论。',duplicate:'按报告医院、报告时间、报告名称、原始附件指纹和关键指标组合判断疑似重复；提示“发现相似报告，请核对后选择保留或合并”，默认保留两份原件，不自动合并或删除；医生选择合并后，原始附件仍可追溯',empty:'报告时间缺失时标记“报告时间待补充”，不进入趋势计算',ocrFailure:'识别失败时保留原图并支持重新识别或人工编辑',ocrConflict:'OCR 与报告原图不一致时，医生可编辑修正，保留 OCR 原始结果',other:'异常展示使用报告原始异常标记；不进入独立确认页；历史版本均保留；疑似重复报告由医生明确选择保留或合并',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
+  {id:'D-09',role:'doctor',screenId:'screen-material',targetSelector:'#material-body .ds-upload-drop',anchorPosition:'top-right',title:'补充资料上传与 OCR',visibleWhen:'补充资料页激活且上传区已渲染',pageName:'补充资料',container:'#material-body',control:'点击上传资料 / 拍摄识别 / 文件识别',controlType:'上传区',displayText:'点击上传资料、拍摄识别、文件识别',action:'选择 JPG、PNG 或 PDF，或进入 OCR 相机；单文件不超过 20MB，单次最多 9 个',feedback:'展示上传进度、已选文件、识别状态和候选内容，支持取消及失败重试',transition:'化验报告原件与 OCR 提取直接归入检验报告记录；其他资料仅作病史或用药编辑参考',fields:'原始报告图片/文件、报告上传方式、OCR 提取字段',dictionary:'患者端字段字典：原始报告图片/文件、报告上传方式及化验检查字段',fieldType:'文件、单选、文本/数字',source:'患者上传 / OCR / 医生补录',attribute:'原始资料 / 报告记录',doctorConfirm:'化验报告不需要独立确认；病史、用药仅在医生对应区块编辑并保存时形成正式值',archiveImpact:'报告直接归档并可编辑；病史或用药仅在对应区块保存时更新',coverage:'原图直接保存；报告 OCR 结果直接进入报告记录并可编辑，不自动形成诊断或治疗结论。',inputRule:'支持 JPG、PNG、PDF；单文件不超过 20MB；单次最多 9 个文件',buttonRule:'上传中允许取消；上传失败允许重试；未完成上传的文件不能进入 OCR 处理',uploadFailure:'保留文件选择结果和失败原因，允许单文件重试，不影响其他已成功上传文件',networkFailure:'网络中断时暂停或标记失败，恢复后由用户重试，不重复生成正式资料',duplicate:'检测到相似或重复文件时提示“已上传过相似资料”，仍允许医生保留，不自动删除',ocrFailure:'保留原始资料并允许重新识别或人工编辑',ocrConflict:'报告 OCR 与原图不一致时，医生可编辑修正并保留原始结果',other:'首次上传前需完成患者资料用于专病管理的告知与授权',pending:'无。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']},
+  {id:'D-10',role:'doctor',screenId:'screen-aiassist',targetSelector:'#screen-aiassist .ds-actionbar .ds-btn-primary',anchorPosition:'top-right',title:'确认本次方案入口',visibleWhen:'AI 辅助页激活且底部主按钮可见',pageName:'AI 辅助',container:'#screen-aiassist .ds-actionbar',control:'确认本次方案',controlType:'提交按钮',displayText:'确认本次方案',action:'进入本次方案确认页',feedback:'跳转 screen-confirm',transition:'仅记录本次方案处理，不确认患者档案，不写入任何病历区块',fields:'诊疗建议、用药建议、复查与随访建议',fieldType:'文本、状态',source:'AI 诊疗辅助',attribute:'医生端过程辅助材料',doctorConfirm:'AI 诊疗辅助仅供医生参考，最终由医生确认和执行',archiveImpact:'AI 诊疗摘要、冲突提示、补全建议和本次方案确认均不计入正式档案、历史记录或患者病历夹',coverage:'AI 诊疗辅助不具备自动覆盖权，也不作为档案字段写入。',pending:'AI 输入数据范围、模型版本、建议留痕、风险拦截与重新生成规则待确认。',ruleSources:['医生端1.0产品报告','原 Demo']},
   {id:'D-11',role:'doctor',screenId:'screen-confirm',targetSelector:'#screen-confirm .ds-actionbar',anchorPosition:'top-right',title:'确认执行或忽略建议',visibleWhen:'确认执行页激活且操作条可见',pageName:'确认执行',container:'#screen-confirm .ds-actionbar',control:'忽略建议 / 确认并执行',controlType:'提交按钮',displayText:'忽略建议、确认并执行',action:'医生忽略或确认本次 AI 辅助诊疗方案',feedback:'确认后显示已确认执行；忽略后返回患者档案',transition:'仅记录本次方案处理，不更新患者档案状态或来源标记',fields:'诊疗建议、用药建议、复查与随访建议',fieldType:'文本、状态',source:'AI 诊疗辅助',attribute:'医生端过程辅助材料',doctorConfirm:'是',archiveImpact:'不计入正式档案、历史记录或患者病历夹',coverage:'AI 诊疗建议不自动覆盖，也不作为档案字段写入。',pending:'AI 方案确认的幂等、真实执行回写和失败重试策略待确认。',ruleSources:['原 Demo']},
-  {id:'D-12',role:'doctor',screenId:'screen-qrcode',targetSelector:'#screen-qrcode .ds-qr-area',anchorPosition:'top-right',title:'固定建档码',visibleWhen:'建档码页激活且二维码区域可见',pageName:'建档码',container:'#screen-qrcode .ds-qr-area',control:'痛风专病建档码',controlType:'其他',displayText:'王文龙医生 · 痛风专病建档码',action:'患者使用外部扫码完成后续建档；医生端此页无提交动作',feedback:'原 Demo 仅展示二维码',transition:'患者进入快速建档及诊前资料补充，具体跨端回调由原 Demo 事件模拟',fields:'关联医生、管理病种、建档码',fieldType:'二维码令牌',source:'医生端配置',attribute:'建档入口标识',doctorConfirm:'不适用',archiveImpact:'患者提交资料仍须医生确认后入档',coverage:'患者扫码建档后提交的资料不直接形成正式专病档案。',initial:'长期有效固定码，绑定当前医生与痛风专病；一个建档码默认对应一个专病',other:'二维码只承载随机令牌和医生/专病标识，不承载患者隐私信息；医生停用、离职、专病权限撤销或管理员重新生成时失效',pending:'扫码失败降级方式、跨端鉴权和未来多病种入口规则待确认。',ruleSources:['逻辑基线 ADR-D05','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
-  {id:'D-13',role:'doctor',screenId:'screen-enroll',targetSelector:'#screen-enroll .ds-enroll-card',anchorPosition:'top-right',title:'医生发起快速建档',visibleWhen:'主动建档页激活且表单可见',pageName:'主动建档',container:'#screen-enroll .ds-enroll-card',control:'姓名、性别、手机号、识别门诊病历',controlType:'输入框',displayText:'姓名、性别、手机号（脱敏）、拍病历、上传',action:'填写基础信息，可选拍摄或上传门诊病历，再确认建档',feedback:'原 Demo 创建待接诊患者并弹出成功提示',transition:'新增患者进入待接诊队列；有 OCR 时进入后续资料确认路径',fields:'姓名、性别、手机号',dictionary:'患者端字段字典：姓名、性别、手机号（未提供 code）',fieldType:'文本、单选、文本',required:'姓名与手机号：原 Demo 校验；性别默认选中，真实必填规则待确认',source:'医生补录 / OCR 候选资料',attribute:'基础资料 / 待确认资料',doctorConfirm:'基础信息的确认边界待确认；医疗字段须医生确认后入档',archiveImpact:'快速建档建立管理关系，不代表全部病史已形成正式档案',coverage:'患者或 OCR 后续资料不自动覆盖医生确认的正式档案。',validation:'原 Demo 仅校验姓名和手机号非空；手机号格式、重复患者合并规则待确认。',duplicate:'待确认：应按手机号等锚点判断同一患者，但现有 Demo 未实现。',ocrFailure:'待确认：原 Demo 仅模拟 OCR。',pending:'建档重复识别、手机号校验、OCR 填充字段审阅与取消回滚规则待确认。',ruleSources:['患者端字段字典','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
-  {id:'D-14',role:'doctor',screenId:'screen-voice',targetSelector:'#screen-voice .ds-actionbar',anchorPosition:'top-right',title:'诊间接诊录音与确认',visibleWhen:'诊间接诊页激活且操作条可见',pageName:'诊间接诊',container:'#screen-voice .ds-actionbar',control:'开始录音 / 进入确认',controlType:'提交按钮',displayText:'开始录音、进入确认',action:'开始或结束录音；完成转写后进入接诊内容确认',feedback:'展示实时字幕和已识别关键字段',transition:'接诊内容确认后加入待确认资料，并跳转独立资料确认页',fields:'主诉、现病史、既往史等转写提取字段',dictionary:'患者端字段字典可对应痛风病史、既往史、用药记录；具体映射待确认',fieldType:'文本、结构化候选字段',source:'录音提取',attribute:'待确认资料',doctorConfirm:'录音提取出的病历内容进入正式档案前必须在独立资料确认页确认',archiveImpact:'待医生采纳或修正后更新',coverage:'录音仅为医生端采集和回填来源，不自动覆盖已确认档案。',networkFailure:'待确认',ocrFailure:'不适用',pending:'录音授权、保存时长、转写失败、字段置信度及人工编辑留痕规则待确认。',ruleSources:['不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
+  {id:'D-12',role:'doctor',screenId:'screen-qrcode',targetSelector:'#screen-qrcode .ds-qr-area',anchorPosition:'top-right',title:'固定建档码',visibleWhen:'建档码页激活且二维码区域可见',pageName:'建档码',container:'#screen-qrcode .ds-qr-area',control:'痛风专病建档码',controlType:'其他',displayText:'王文龙医生 · 痛风专病建档码',action:'患者使用外部扫码完成后续建档；医生端此页无提交动作',feedback:'原 Demo 仅展示二维码',transition:'患者进入快速建档及诊前资料补充，具体跨端回调由原 Demo 事件模拟',fields:'关联医生、管理病种、建档码',fieldType:'二维码令牌',source:'医生端配置',attribute:'建档入口标识',doctorConfirm:'不适用',archiveImpact:'患者提交资料仅作编辑参考，医生在对应区块保存后才影响正式档案',coverage:'患者扫码建档后提交的资料不直接形成正式专病档案，医生在对应区块编辑并保存后才更新。',initial:'长期有效固定码，绑定当前医生与痛风专病；一个建档码默认对应一个专病',other:'二维码只承载随机令牌和医生/专病标识，不承载患者隐私信息；医生停用、离职、专病权限撤销或管理员重新生成时失效',pending:'扫码失败降级方式、跨端鉴权和未来多病种入口规则待确认。',ruleSources:['逻辑基线 ADR-D05','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
+  {id:'D-13',role:'doctor',screenId:'screen-enroll',targetSelector:'#screen-enroll .ds-enroll-card',anchorPosition:'top-right',title:'医生发起快速建档',visibleWhen:'主动建档页激活且表单可见',pageName:'主动建档',container:'#screen-enroll .ds-enroll-card',control:'姓名、性别、手机号、识别门诊病历',controlType:'输入框',displayText:'姓名、性别、手机号（脱敏）、拍病历、上传',action:'填写基础信息，可选拍摄或上传门诊病历，再确认建档',feedback:'创建基础档案并弹出成功提示',transition:'新增患者在全部患者中显示为“已建档 · 未扫码就诊”；完成扫码就诊后才进入待接诊队列，医生可在对应区块编辑并保存',fields:'姓名、性别、手机号',dictionary:'患者端字段字典：姓名、性别、手机号（未提供 code）',fieldType:'文本、单选、文本',required:'姓名与手机号：原 Demo 校验；性别默认选中，真实必填规则待确认',source:'医生补录 / OCR 原始资料',attribute:'基础资料 / 原始资料',doctorConfirm:'基础信息的确认边界待确认；医疗字段由医生在对应区块保存',archiveImpact:'快速建档建立管理关系，不代表全部病史已形成正式档案',coverage:'患者或 OCR 后续资料不自动覆盖医生保存的正式档案。',validation:'原 Demo 仅校验姓名和手机号非空；手机号格式、重复患者合并规则待确认。',duplicate:'待确认：应按手机号等锚点判断同一患者，但现有 Demo 未实现。',ocrFailure:'待确认：原 Demo 仅模拟 OCR。',pending:'建档重复识别、手机号校验、OCR 填充字段审阅与取消回滚规则待确认。',ruleSources:['患者端字段字典','不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
+  {id:'D-14',role:'doctor',screenId:'screen-voice',targetSelector:'#screen-voice .ds-actionbar',anchorPosition:'top-right',title:'诊间接诊录音与确认',visibleWhen:'诊间接诊页激活且操作条可见',pageName:'诊间接诊',container:'#screen-voice .ds-actionbar',control:'开始录音 / 进入确认',controlType:'提交按钮',displayText:'开始录音、进入确认',action:'开始或结束录音；完成转写后进入接诊内容确认',feedback:'展示实时字幕和已识别关键字段',transition:'核对后进入病史编辑区块；录音提取只作为本次病历参考',fields:'主诉、现病史、既往史等转写提取字段',dictionary:'患者端字段字典可对应痛风病史、既往史、用药记录；具体映射待确认',fieldType:'文本、结构化候选字段',source:'录音提取',attribute:'原始资料 / 补充资料',doctorConfirm:'医生在对应病史、用药或检查区块保存时确认本次编辑值',archiveImpact:'仅在医生保存对应区块时更新；不自动覆盖正式值',coverage:'录音仅为医生端采集和回填来源，不自动覆盖已确认档案。',networkFailure:'待确认',ocrFailure:'不适用',pending:'录音授权、保存时长、转写失败、字段置信度及人工编辑留痕规则待确认。',ruleSources:['不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
   {id:'D-15',role:'doctor',screenId:'screen-overdue',targetSelector:'#overdue-body .ds-overdue-toolbar',anchorPosition:'bottom-right',title:'复查逾期批量提醒',visibleWhen:'复查逾期页激活且工具栏已渲染',pageName:'复查逾期',container:'#overdue-body',control:'全选、批量导出、消息提醒、短信提醒',controlType:'其他',displayText:'批量导出、消息提醒、短信提醒',action:'选择逾期患者并发起提醒或导出',feedback:'原 Demo 更新提醒状态并提示',transition:'不改变正式病历字段',fields:'复诊建议日期、逾期状态、提醒状态、联系记录',dictionary:'待确认：现有患者端字段字典未明确医生端复诊提醒字段 code',fieldType:'日期、状态、文本',source:'医生确认档案及随访记录',attribute:'待确认',doctorConfirm:'提醒发送不需要逐条确认；复诊医嘱进入正式档案前需医生确认',archiveImpact:'不自动更新正式档案',coverage:'患者修改提醒时间、扫码状态等可直接保存，但不默认进入正式医疗字段。',networkFailure:'待确认：消息或短信下发失败与重试规则未明确。',pending:'逾期阈值、短信合规、导出权限、触达回执与失访判定规则待确认。',ruleSources:['不同端口资料覆盖原则','医生端1.0产品报告','原 Demo']},
   {id:'D-16',role:'doctor',screenId:'screen-visit-scan',targetSelector:'#screen-visit-scan',anchorPosition:'top-right',title:'就诊凭条扫描与手动补录',visibleWhen:'就诊凭条扫描页激活',pageName:'就诊凭条扫描',container:'#screen-visit-scan',control:'扫描区域、手动输入、确认',controlType:'其他',displayText:'扫描就诊凭条',action:'扫描就诊凭条识别就诊号，识别失败时降级为医生手动输入',feedback:'展示识别结果和原始凭证；医生确认后保存本次就诊号',transition:'返回来源页并更新患者档案就诊号',fields:'就诊号、就诊日期、就诊机构、来源',dictionary:'待确认：患者端字段字典未覆盖就诊号字段',fieldType:'文本、日期、单选',source:'凭条 OCR / 医生补录',attribute:'补充资料',doctorConfirm:'是',archiveImpact:'写入本次就诊记录，不自动改变其他正式专病档案字段',coverage:'相同日期出现相同就诊号时提示医生核对，不自动覆盖已有记录',validation:'识别结果仅用于预填，医生确认后才写入；就诊号不能为空',empty:'扫描失败或未识别时允许手动输入，不阻断接诊',ocrFailure:'保留凭条原图和失败状态，支持重试或手动录入',ocrConflict:'OCR 结果与医生核对结果不一致时，以医生修正值为准并保留原始识别结果',other:'保存就诊凭条原图、识别结果、识别时间和确认人；当前阶段不对接 HIS',pending:'无。',ruleSources:['已确认产品规则','医生端1.0产品报告','原 Demo']},
-  {id:'D-17',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-profile-confirm-entry',anchorPosition:'top-right',title:'确认资料入档入口',visibleWhen:'患者档案存在待确认的病史、用药或录音提取字段且入口已渲染',pageName:'患者档案',container:'#profile-body',control:'确认资料入档',controlType:'提交按钮',displayText:'确认资料入档',action:'进入资料确认页，逐项核对病史、用药和录音提取等候选字段',feedback:'跳转 screen-archive-confirm',transition:'不直接写入；需在确认页完成确认资料入档',fields:'痛风病史、用药信息、录音提取字段等',dictionary:'患者端字段字典：病史、用药记录字段',fieldType:'结构化候选字段、文本、数字',source:'患者自填 / 录音提取 / 可映射的资料整理结果',attribute:'待确认资料',doctorConfirm:'是',archiveImpact:'确认或修正后才成为正式档案',coverage:'后续新资料只新增为待确认资料，不自动覆盖已确认正式值',other:'化验报告直接归档可编辑，不进入此确认流程；AI 诊疗辅助不计入档案。',pending:'无。',ruleSources:['已确认产品规则','不同端口资料覆盖原则','原 Demo']},
-  {id:'D-18',role:'doctor',screenId:'screen-archive-confirm',targetSelector:'#screen-archive-confirm .ds-actionbar',anchorPosition:'top-right',title:'确认资料入档',visibleWhen:'资料确认页激活且操作条可见',pageName:'确认资料入档',container:'#screen-archive-confirm .ds-actionbar',control:'暂不入档 / 确认资料入档',controlType:'提交按钮',displayText:'确认资料入档',action:'医生核对病史、用药和录音提取候选字段后确认入档，或暂不入档返回患者档案',feedback:'确认后显示资料已确认入档并更新患者档案待确认状态',transition:'候选字段转为医生确认后的正式档案',fields:'痛风病史、用药信息、录音提取字段等',dictionary:'患者端字段字典：病史、用药记录字段',fieldType:'结构化候选字段、文本、数字',source:'患者自填 / 录音提取 / 可映射的资料整理结果',attribute:'待确认资料 / 正式档案 / 历史记录',doctorConfirm:'是',archiveImpact:'医生确认后更新正式档案',coverage:'医生采纳后新内容成为正式值、旧值进入历史记录；医生修正后以修正值为正式值并保留原始来源；暂不入档不改变正式值',failure:'真实回写失败时不展示已确认入档，保持待确认资料并支持重试',other:'化验报告直接归档可编辑，AI 诊疗辅助不计入档案，均不在本页确认。',pending:'无。',ruleSources:['已确认产品规则','不同端口资料覆盖原则','原 Demo']},
-  {id:'D-19',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-profile-followup-entry',anchorPosition:'top-right',title:'本次接诊记录与复诊结论',visibleWhen:'患者档案激活且本次接诊记录入口已渲染',pageName:'患者档案',container:'#profile-body',control:'本次接诊记录',controlType:'提交按钮',displayText:'本次接诊记录、安排下次复诊、暂无复诊安排、确认当前无需复诊',action:'医生选择本次接诊后的复诊结论并保存记录',feedback:'保存后更新入口摘要；已选择“确认当前无需复诊”时提示同步患者端状态',transition:'安排下次复诊同步患者端“待复诊”；暂无复诊安排同步患者端“暂无复诊安排”；确认当前无需复诊同步患者端“暂无复诊需求”',fields:'复诊结论、下次复诊日期',dictionary:'患者端首页状态规范：S3 待复诊、S6-A 确认无复诊需求、S6-B 暂无复诊安排；字段 code 待确认',fieldType:'单选、日期',source:'医生正式保存的本次接诊记录',attribute:'医生确认记录',doctorConfirm:'是',archiveImpact:'更新患者端复诊状态，不作为病史、用药或检验报告字段写入资料确认页',coverage:'仅医生正式保存记录可更新患者端复诊状态；患者自填提醒不覆盖医生下发的正式复诊安排',validation:'必须选择一项复诊结论；选择“安排下次复诊”时必须填写日期',failure:'真实保存失败时保持原患者端复诊状态，不展示已同步',other:'此入口独立于确认资料入档和 AI 方案确认；“确认当前无需复诊”不展示患者端复诊行动',pending:'订阅消息实际发送失败重试及复诊结论历史追溯字段待确认。',ruleSources:['患者端首页状态规范 v1.1','痛风专病智能体患者端PRD v2.0.2','原 Demo']}
+  {id:'D-19',role:'doctor',screenId:'screen-profile',targetSelector:'#profile-body .ds-profile-followup-entry',anchorPosition:'top-right',title:'保存本次接诊记录',visibleWhen:'待接诊患者已开始接诊或已保存病史、用药、检查任一区块时入口渲染',pageName:'患者档案',container:'#profile-body',control:'保存本次接诊记录',controlType:'提交按钮',displayText:'保存本次接诊记录、安排下次复诊、暂无复诊安排、确认当前无需复诊',action:'医生选择复诊结论并保存，结束本次接诊',feedback:'保存后更新入口摘要、患者端复诊状态与待接诊队列',transition:'该患者退出待接诊队列；安排下次复诊同步患者端“待复诊”；暂无复诊安排同步患者端“暂无复诊安排”；确认当前无需复诊同步患者端“暂无复诊需求”',fields:'复诊结论、下次复诊日期、医嘱',dictionary:'患者端首页状态规范：S3 待复诊、S6-A 确认无复诊需求、S6-B 暂无复诊安排；医嘱字段待确认',fieldType:'单选、日期、文本',source:'医生正式保存的本次接诊记录',attribute:'医生确认记录',doctorConfirm:'是',archiveImpact:'更新患者端复诊状态并结束本次接诊；不写入病史、用药或检查字段',coverage:'仅医生正式保存记录可更新患者端复诊状态；患者自填提醒不覆盖医生下发的正式复诊安排',validation:'必须选择一项复诊结论；选择“安排下次复诊”时必须填写日期',failure:'真实保存失败时保持原患者端复诊状态与待接诊状态，不展示已同步',other:'独立于病史、用药、检查的分区保存和 AI 方案确认。',pending:'医嘱字段、订阅消息实际发送失败重试及复诊结论历史追溯字段待确认。',ruleSources:['患者端首页状态规范 v1.1','痛风专病智能体患者端PRD v2.0.2','原 Demo']},
+  {id:'D-20',role:'doctor',screenId:'screen-profile',targetSelector:'#section-history',anchorPosition:'top-right',title:'痛风病史分区保存',visibleWhen:'患者档案激活且痛风病史区块已渲染',pageName:'患者档案',container:'#profile-body #section-history',control:'编辑并保存',controlType:'按钮',displayText:'痛风病史、编辑并保存',action:'进入病史编辑页，医生修改后保存',feedback:'保存后返回患者档案并提示病史已保存',transition:'仅更新病史区块；旧正式值保存为历史记录',fields:'发病时间、确诊时间、首发部位、主要发作部位、痛风石、近一年发作次数等',dictionary:'患者端字段字典：痛风病史字段；具体 code 待确认',fieldType:'文本、日期、枚举、数字',source:'患者自填 / 录音提取 / 医生本次编辑',attribute:'原始资料 / 补充资料 / 正式档案 / 历史记录',writeTime:'医生点击保存病史时',doctorConfirm:'医生保存即确认本次编辑值',archiveImpact:'更新正式病史区块，不影响用药和检查区块',coverage:'新资料不自动覆盖正式值；医生保存新值前保留旧正式值为历史记录，并保留原始资料来源。',failure:'保存失败时保留当前编辑内容，原正式值不变',pending:'具体字段 code、必填项和历史记录展示规则待确认。',ruleSources:['患者端字段字典','不同端口资料覆盖原则','原 Demo']},
+  {id:'D-21',role:'doctor',screenId:'screen-ocr-camera',targetSelector:'#duplicate-report-modal .ds-modal',anchorPosition:'top-right',title:'疑似重复报告处理',visibleWhen:'化验报告 OCR 已识别为相似报告且选择弹窗已打开',pageName:'化验单 OCR',container:'#duplicate-report-modal',control:'保留两份原件 / 合并为同一报告',controlType:'弹窗',displayText:'发现相似报告、保留两份原件、合并为同一报告',action:'医生核对相似报告后选择保留两份原件或合并为同一报告',feedback:'保留时提示“已保留两份报告原件”；合并时提示“已合并为同一报告，原件仍可追溯”',transition:'选择后返回患者档案并更新检验报告时间轴',fields:'报告医院、报告时间、报告名称、原始附件指纹、关键指标、处理结果',dictionary:'患者端字段字典：化验检查字段；重复判断和处理结果字段 code 待确认',fieldType:'文本、日期、文件、数字、枚举',source:'患者上传 / OCR / 医生选择',attribute:'报告记录 / 原始资料 / 处理记录',writeTime:'医生在相似报告弹窗中选择保留或合并时',doctorConfirm:'是',archiveImpact:'保留：新增一条报告记录并保留两份原件；合并：形成一条报告记录且原始附件仍可追溯',coverage:'默认保留两份原件，不自动合并或删除；只有医生选择合并时才合并报告记录。',validation:'仅在命中疑似重复条件时弹窗；未选择时不写入新报告记录',failure:'待确认：真实保存或合并失败时应保持原报告记录并支持重试',ocrFailure:'不适用：仅在 OCR 已识别出报告信息后触发',ocrConflict:'OCR 与原件不一致时，医生可编辑修正，原始 OCR 结果保留',pending:'疑似重复阈值、附件指纹算法、合并字段优先级和真实失败重试规则待确认。',ruleSources:['已确认产品规则','患者端字段字典','原 Demo']}
 ];
 
 function pmAnnotationEsc(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
